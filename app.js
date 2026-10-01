@@ -1120,7 +1120,8 @@ const REAL_R_KM = {
 	Amalthea: 83.5, Himalia: 85, Mimas: 198.2, Enceladus: 252.1, Tethys: 531.1, Dione: 561.4, Rhea: 763.8,
 	Titan: 2574.7, Iapetus: 734.5, Hyperion: 135, Phoebe: 106.5, Janus: 89.5, Epimetheus: 58.1,
 	Miranda: 235.8, Ariel: 578.9, Umbriel: 584.7, Titania: 788.4, Oberon: 761.4, Puck: 81,
-	Triton: 1353.4, Proteus: 210, Nereid: 170, Charon: 606, Styx: 8, Nix: 25, Kerberos: 9, Hydra: 26
+	Triton: 1353.4, Proteus: 210, Nereid: 170, Charon: 606, Styx: 8, Nix: 25, Kerberos: 9, Hydra: 26,
+	'The Sun': 695700 // tooltip only; the Sun is never rescaled
 };
 const SIZE_SCALE = 1.7 / 696000; // scene units per km, anchored to the Sun's display radius
 
@@ -1680,6 +1681,18 @@ function spinLabel(rotH) {
 	return `${dayDaysLabel(Math.abs(rotH) / 24)}${rotH < 0 ? ' ↺' : ''}`;
 }
 
+// Mean diameter plus a size comparison with Earth: "× Earth" down to a tenth,
+// then a percentage, so the smallest moons don't read as "0.00×".
+function sizeRow(name) {
+	const r = REAL_R_KM[name];
+	if (!r) return '';
+	const km = (2 * r).toLocaleString(undefined, { maximumFractionDigits: 0 });
+	if (name === 'Earth') return `<dt>Diameter</dt><dd>${km} km</dd>`;
+	const x = r / REAL_R_KM.Earth;
+	const rel = x >= 0.1 ? `${x.toPrecision(x >= 100 ? 3 : 2)}× Earth` : `${(x * 100).toPrecision(2)}% of Earth`;
+	return `<dt>Diameter</dt><dd>${km} km · ${rel}</dd>`;
+}
+
 // Earth-relative rows (distance, light time, sky position) for a body at
 // heliocentric ecliptic position p (AU).
 function earthRelRows(p) {
@@ -1727,6 +1740,7 @@ function nextEventRow(name) {
 
 function buildTooltipHTML(d) {
 	let html = `<h2>${d.name}</h2><div class="sub">${d.type}</div>`;
+	if (d.name === 'The Sun') html += `<dl>${sizeRow(d.name)}</dl>`;
 	if (d.comet) {
 		const p = _helioPos(d.el, simDays);
 		const r = Math.sqrt(p.x * p.x + p.y * p.y + p.z * p.z);
@@ -1763,7 +1777,7 @@ function buildTooltipHTML(d) {
 			const p = moonGeocentric(simDays);
 			nowRow = `<dt>Distance now</dt><dd>${fmtKm(Math.hypot(p.x, p.y, p.z))}</dd>`;
 		}
-		html += `<dl><dt>Orbits</dt><dd>${d.parent}</dd>` + nowRow +
+		html += `<dl><dt>Orbits</dt><dd>${d.parent}</dd>` + sizeRow(d.name) + nowRow +
 		        `<dt>Mean orbit</dt><dd>${fmtKm(d.a)}</dd>` +
 		        `<dt>Orbital period</dt><dd>${moonPeriodLabel(d.periodD)}${d.retro ? ' ↺' : ''}</dd>` +
 		        // Day length only for the large, genuinely tidally-locked major moons;
@@ -1784,6 +1798,7 @@ function buildTooltipHTML(d) {
 		        (d.name !== 'Earth' ? earthRelRows(p) : '') +
 		        `<dt>Avg. distance</dt><dd>${d.el.a[0].toFixed(2)} AU</dd>` +
 		        `<dt>Orbital period</dt><dd>${periodLabel(d.el.a[0])}</dd>` +
+		        sizeRow(d.name) +
 		        `<dt>Day length</dt><dd>${spinLabel(d.rotH)}</dd>` +
 		        `<dt>Eccentricity</dt><dd>${d.el.e[0].toFixed(3)}</dd>` +
 		        nextEventRow(d.name) + `</dl>`;
@@ -1838,8 +1853,29 @@ function showTooltip(obj, x, y, above) {
 	tooltip.innerHTML = buildTooltipHTML(obj.userData);
 	tooltip.classList.add('show');
 	placeTooltip(x, y, above);
+	highlightOrbit(obj.userData);
 }
-function hideTooltip() { tipObj = null; tooltip.classList.remove('show'); }
+function hideTooltip() { tipObj = null; tooltip.classList.remove('show'); highlightOrbit(null); }
+
+// While a body's tooltip is open its orbit (or spacecraft path) is drawn
+// bright and near-opaque, then restored. Moon orbits are re-faded every frame
+// by fadeMoonOrbits, which leaves the highlighted one alone.
+const ORBIT_HI = { color: new THREE.Color(0xffd27a), opacity: 0.9 };
+let hiLine = null, hiColor = new THREE.Color(), hiOpacity = 0;
+function orbitLineOf(d) {
+	if (!d) return null;
+	return d.orbitLine || d.pathLine || (bodyByName[d.name] && bodyByName[d.name].orbitLine) || null;
+}
+function highlightOrbit(d) {
+	const line = orbitLineOf(d);
+	if (line === hiLine) return;
+	if (hiLine) { hiLine.material.color.copy(hiColor); hiLine.material.opacity = hiOpacity; }
+	hiLine = line;
+	if (!line) return;
+	hiColor.copy(line.material.color); hiOpacity = line.material.opacity;
+	line.material.color.copy(ORBIT_HI.color);
+	line.material.opacity = ORBIT_HI.opacity;
+}
 function refreshTooltip() {
 	if (!tipObj) return;
 	tooltip.innerHTML = buildTooltipHTML(tipObj.userData);
@@ -2133,6 +2169,7 @@ function fadeMoonOrbits() {
 		const near = aDisp * 0.8, far = aDisp * 2.6;
 		const t = Math.max(0, Math.min(1, (far - camDist) / (far - near)));
 		m.prox = t; // remembered for the moon labels, which share this fade
+		if (m.orbitLine === hiLine) { hiOpacity = 0.4 * t; continue; } // keep it lit; restore to the live fade
 		m.orbitLine.material.opacity = 0.4 * t;
 	}
 }
