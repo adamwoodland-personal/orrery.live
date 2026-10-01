@@ -34,6 +34,11 @@ table.stack { min-width: 720px; }
 .retro { color: #ffc86b; }
 .now-stamp { font-variant-numeric: tabular-nums; }
 svg.topdown { width: 100%; height: auto; max-width: 560px; display: block; margin: 8px auto; }
+/* Label/value pairs (/halleys-comet/ live figures). */
+dl.facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 10px 0; }
+dl.facts dt { color: #9fb0d8; }
+dl.facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+dl.facts .sub { white-space: normal; }
 svg.strip { width: 240px; height: 50px; display: block; }
 .faq h3 { margin-top: 20px; }
 .sources li { margin: 4px 0; }

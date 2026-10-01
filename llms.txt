@@ -13,6 +13,8 @@ Technical: static site built on three.js, MIT licensed, installable PWA that wor
 - [Orrery](https://orrery.live/): the app
 - [Where are the planets right now](https://orrery.live/now/): live table of every planet's distance from the Sun and Earth, light time, evening or morning sky, retrograde motion and next opposition, with a top-down map
 - [Planetary alignments and planet parades](https://orrery.live/planetary-alignment/): upcoming and past planet parade dates (2022 to 2040) with the planets involved, what an alignment really is, and links into the orrery
+- [Where is Halley's Comet now](https://orrery.live/halleys-comet/): live distance from the Sun and Earth, speed and a to-scale map of Halley's orbit; its next perihelion (28 July 2061, on Earth's side of the Sun), famous returns since 240 BC, and its two annual meteor showers
+- [What is an orrery?](https://orrery.live/what-is-an-orrery/): the meaning and pronunciation of "orrery", how mechanical orreries work (gear ratios, why they cannot be to scale), kinds of orrery, and their history from the Antikythera mechanism to today
 - [Sitemap](https://orrery.live/sitemap.xml)
 
 ## Related
