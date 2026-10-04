@@ -27,9 +27,9 @@ controls.minDistance = 3;
 controls.maxDistance = 140;
 
 // The loading overlay stays up until every managed texture has arrived (the
-// optional Milky Way backdrop loads unmanaged — it's hidden by default and
-// shouldn't gate startup). Safety timeout so a stalled download can't strand
-// the overlay; rendering runs behind it regardless.
+// Milky Way backdrop loads unmanaged — a faint backdrop shouldn't gate
+// startup, it just appears when its texture lands). Safety timeout so a
+// stalled download can't strand the overlay; rendering runs behind it regardless.
 const loadManager = new THREE.LoadingManager();
 function dismissLoading() { const el = document.getElementById('loading'); if (el) el.remove(); }
 loadManager.onLoad = dismissLoading;
@@ -838,7 +838,9 @@ function ensureGrid() {
 
 // ---- Category filter (Sun is always visible) ------------------------
 // Labels default ON (2026-09-12): planets alone read as anonymous dots to newcomers.
-const shown = { planet: true, dwarf: false, major: false, minor: false, comets: false, craft: false, labels: true, starlabels: false, trails: false, grid: false, milkyway: false, constellations: false };
+// Milky Way default ON (2026-10-04).
+const DEFAULT_SHOWN = { planet: true, dwarf: false, major: false, minor: false, comets: false, craft: false, labels: true, starlabels: false, trails: false, grid: false, milkyway: true, constellations: false };
+const shown = { ...DEFAULT_SHOWN };
 const BODY_CATS = ['planet', 'dwarf', 'major', 'minor', 'comets', 'craft']; // categories that map to bodies (backdrops/overlays excluded)
 const pickAll = [];
 function rebuildPickable() {
@@ -980,8 +982,8 @@ function buildStars() {
 // coordinates (the band lies along the texture's equator). We orient a large
 // inward-facing sphere so the galactic plane sits where it really is on the
 // sky, matching the catalogue stars. Drawn additively as a faint backdrop.
-// Built lazily on the first toggle (applyFilter), so the 0.3–1.9 MB texture
-// is never downloaded for the (default) visits that leave it off.
+// Built lazily by applyFilter, so the 0.3–1.9 MB texture is never downloaded
+// for visits that turn it off (it is on by default since 2026-10-04).
 let milkyWay = null;
 function raDecToScene(ra, dec) {
 	const r = ra * DEG, d = dec * DEG;
@@ -1072,6 +1074,7 @@ try { stored = JSON.parse(localStorage.getItem(STORE_KEY)); } catch { /* private
 function saveSettings() {
 	try {
 		localStorage.setItem(STORE_KEY, JSON.stringify({
+			v: 2, // 2 = saved after the Milky Way became a default (see the restore below)
 			show: shown,
 			light: +brightSlider.value, size: +sizeSlider.value, orbits: +orbitSlider.value,
 			collapsed: ui.classList.contains('collapsed')
@@ -1083,7 +1086,9 @@ if (showParam !== null) {
 	for (const k in shown) shown[k] = false;                      // link is authoritative
 	for (const k of showParam.split(',')) if (k in shown) shown[k] = true;
 } else if (stored && stored.show) {
-	for (const k in shown) if (typeof stored.show[k] === 'boolean') shown[k] = stored.show[k];
+	// Settings saved before v2 hold milkyway:false only because it was the old default
+	// (saveSettings writes every category on any change), so they get the new default.
+	for (const k in shown) if (typeof stored.show[k] === 'boolean' && (k !== 'milkyway' || stored.v >= 2)) shown[k] = stored.show[k];
 }
 function sliderInit(slider, param, storedVal) {
 	const p = parseFloat(param);
@@ -2075,7 +2080,7 @@ document.addEventListener('fullscreenchange', () => {
 // (the Today button is right there for that). Also forgets saved settings.
 document.getElementById('resetView').addEventListener('click', () => {
 	try { localStorage.removeItem(STORE_KEY); } catch { /* storage unavailable */ }
-	Object.assign(shown, { planet: true, dwarf: false, major: false, minor: false, comets: false, craft: false, labels: true, starlabels: false, trails: false, grid: false, milkyway: false, constellations: false });
+	Object.assign(shown, DEFAULT_SHOWN);
 	syncFilterUI();
 	applyFilter();
 	brightSlider.value = 13; applyBrightness(13);

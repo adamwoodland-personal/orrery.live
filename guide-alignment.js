@@ -8,7 +8,7 @@ import { fill, listNames } from './guide-ui.js';
 
 const INITIAL = { Mercury: 'Me', Venus: 'V', Mars: 'Ma', Jupiter: 'J', Saturn: 'S', Uranus: 'U', Neptune: 'N' };
 const skyText = (p) => p.sky === 'dusk' ? 'evening sky, after sunset' : 'morning sky, before sunrise';
-const orreryLink = (p) => `/?t=${p.days}&show=planet,labels&view=top`;
+const orreryLink = (p) => `/?t=${p.days}&show=planet,labels,milkyway&view=top`;
 
 // Where the planets sit relative to the Sun that day: a 360°-wide strip with
 // the Sun in the middle, morning (west) to the left, evening (east) to the right.
