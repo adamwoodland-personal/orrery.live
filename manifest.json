@@ -12,6 +12,9 @@
 	"orientation": "any",
 	"background_color": "#01020a",
 	"theme_color": "#01020a",
+	"shortcuts": [
+		{ "name": "Night sky tonight", "short_name": "Night sky", "description": "The planets you can see tonight from where you are", "url": "/night-sky/" }
+	],
 	"icons": [
 		{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
 		{ "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },

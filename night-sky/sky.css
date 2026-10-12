@@ -1,0 +1,297 @@
+/* Night sky (/night-sky/): a full-screen sky map with floating controls, built
+   phone-first. Same dark palette and glass panels as the orrery. Strict CSP —
+   no inline styles anywhere; JS only sets positions and colours through the CSSOM. */
+:root {
+	color-scheme: dark;
+	--bg: #01020a;
+	--glass: rgba(4, 8, 18, 0.82);
+	--glass-strong: rgba(4, 8, 18, 0.94);
+	--line: rgba(138, 172, 255, 0.18);
+	--text: #edf2ff;
+	--muted: rgba(237, 242, 255, 0.62);
+	--accent: #8aacff;
+	--accent-fill: rgba(120, 170, 255, 0.2);
+	--sat: env(safe-area-inset-top, 0px);
+	--sab: env(safe-area-inset-bottom, 0px);
+	--sal: env(safe-area-inset-left, 0px);
+	--sar: env(safe-area-inset-right, 0px);
+	--font: -apple-system, "Segoe UI", system-ui, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font: 14px/1.45 var(--font); -webkit-text-size-adjust: 100%; }
+body { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+canvas#sky { position: fixed; inset: 0; display: block; z-index: 1; touch-action: none; cursor: grab; }
+canvas#sky.dragging { cursor: grabbing; }
+#camFeed { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; background: #000; }
+#camFeed[hidden] { display: none; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent); }
+.sr-only {
+	position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+	clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+:focus-visible { outline: 2px solid rgba(120, 180, 255, 0.7); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+#loading {
+	position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+	background: var(--bg); color: #9fb6ee; font: 14px var(--font);
+	transition: opacity .35s ease;
+}
+#loading.done { opacity: 0; pointer-events: none; }
+
+/* ---- Buttons ---------------------------------------------------------- */
+.chip, .pill, .iconBtn {
+	display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	background: var(--glass);
+	backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+	color: var(--text); text-decoration: none; white-space: nowrap;
+}
+.chip { padding: 6px 11px; border-radius: 999px; font-size: 13px; font-weight: 600; min-height: 34px; }
+.pill { padding: 9px 14px; border-radius: 12px; font-size: 14px; font-weight: 600; min-height: 42px; }
+.iconBtn { width: 40px; height: 40px; border-radius: 12px; padding: 0; flex: 0 0 auto; }
+.pill.accent, .chip.accent { border-color: rgba(160, 200, 255, 0.45); background: rgba(56, 96, 190, 0.55); }
+.chip[aria-pressed="true"] { border-color: rgba(160, 200, 255, 0.6); background: rgba(70, 120, 230, 0.6); }
+.pill.wide { width: 100%; }
+.chip:active, .pill:active, .iconBtn:active { transform: scale(0.97); }
+svg { display: block; flex: 0 0 auto; }
+
+/* ---- Top bar ----------------------------------------------------------- */
+#topBar, #arBar {
+	position: fixed; z-index: 10; top: calc(10px + var(--sat)); left: calc(10px + var(--sal)); right: calc(10px + var(--sar));
+	display: flex; align-items: center; gap: 8px; pointer-events: none;
+}
+#topBar > *, #arBar > * { pointer-events: auto; }
+#placeBtn { max-width: calc(100% - 100px); overflow: hidden; }
+#placeName { overflow: hidden; text-overflow: ellipsis; }
+#menuBtn { margin-left: auto; }
+#arBar { justify-content: flex-end; }
+#arStatus {
+	margin-right: auto; padding: 7px 12px; border-radius: 12px; font-size: 13px; line-height: 1.3;
+	background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+	max-width: 60vw;
+}
+
+/* ---- Bottom bar: planet chips, time, scrubber, actions ------------------ */
+#bottomBar {
+	position: fixed; z-index: 10; left: calc(8px + var(--sal)); right: calc(8px + var(--sar)); bottom: calc(8px + var(--sab));
+	display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+}
+#bottomBar > * { pointer-events: auto; }
+/* Phones: one swipeable row. The edge fades appear only on a side that has more chips
+   (classes set by sky.js), so a fully visible row is never clipped. */
+#chips {
+	display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px;
+	overscroll-behavior-x: contain; touch-action: pan-x;
+}
+#chips.moreR { -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+#chips.moreL { -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%); mask-image: linear-gradient(90deg, transparent, #000 12%); }
+#chips.moreL.moreR { -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+#chips::-webkit-scrollbar { display: none; }
+#chips .pchip { flex: 0 0 auto; }
+/* Wide screens: wrap instead, so every chip shows without scrolling. */
+@media (min-width: 900px) {
+	#chips { flex-wrap: wrap; justify-content: center; overflow: visible; }
+	#chips.moreL, #chips.moreR { -webkit-mask-image: none; mask-image: none; }
+}
+#chips:empty { display: none; }
+.pchip { gap: 7px; padding: 5px 11px 5px 9px; }
+.pchip .dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
+.pchip .nm { font-weight: 650; }
+.pchip .hint { font-weight: 500; color: var(--muted); font-size: 12px; }
+.pchip.sel { border-color: rgba(255, 210, 122, 0.7); }
+#timeRow, #scrubWrap, #actionRow { width: 100%; }
+#timeRow {
+	display: flex; align-items: center; gap: 6px; padding: 5px; border-radius: 16px;
+	background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+#timeRow .iconBtn { background: transparent; border-color: transparent; width: 36px; height: 36px; }
+#timeLabel { position: relative; flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: center; line-height: 1.2; cursor: pointer; }
+#timeMain { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+#timeSub { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+#datePick { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; color-scheme: dark; }
+#nowBtn { min-height: 32px; padding: 4px 12px; }
+#nowBtn.live { border-color: rgba(120, 230, 170, 0.55); background: rgba(40, 140, 90, 0.45); }
+#scrubWrap { position: relative; height: 34px; border-radius: 12px; border: 1px solid var(--line); background: #0a1020; }
+#scrub {
+	position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+	-webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; touch-action: pan-y;
+}
+#scrub::-webkit-slider-runnable-track { height: 100%; background: transparent; }
+#scrub::-moz-range-track { height: 100%; background: transparent; }
+#scrub::-webkit-slider-thumb {
+	-webkit-appearance: none; appearance: none; width: 6px; height: 30px; margin-top: 1px; border-radius: 3px;
+	background: #ffd27a; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55), 0 0 10px rgba(255, 210, 122, 0.6);
+}
+#scrub::-moz-range-thumb { width: 6px; height: 30px; border: 0; border-radius: 3px; background: #ffd27a; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55), 0 0 10px rgba(255, 210, 122, 0.6); }
+#scrubTicks { position: absolute; inset: 0; pointer-events: none; }
+.tick { position: absolute; top: 0; bottom: 0; width: 0; }
+.tick::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; border-left: 1px solid rgba(255, 255, 255, 0.22); }
+.tick span {
+	position: absolute; bottom: 3px; left: 4px; font-size: 10px; line-height: 1; white-space: nowrap;
+	color: rgba(237, 242, 255, 0.72); text-shadow: 0 0 3px #000;
+}
+.tick.right span { left: auto; right: 4px; }
+.tick.now::before { border-left: 2px solid rgba(120, 230, 170, 0.85); }
+#actionRow { display: flex; gap: 8px; }
+#actionRow .pill { flex: 1 1 0; min-width: 0; }
+
+/* Outside 1800–2200 (or when a requested date was out of range): says so, above the planet chips. */
+#rangeNote {
+	margin: 0; padding: 7px 11px; border-radius: 12px; font-size: 12.5px; line-height: 1.35;
+	color: #ffe2b0; background: rgba(110, 70, 10, 0.78); border: 1px solid rgba(255, 190, 90, 0.45);
+	backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.tzRow { display: flex; align-items: center; gap: 10px; margin: 14px 0 4px; font-size: 13px; color: var(--muted); }
+.tzRow select {
+	flex: 1 1 auto; min-width: 0; padding: 8px 10px; border-radius: 10px; font-size: 14px; color: var(--text);
+	border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.06); color-scheme: dark;
+}
+.tzRow select option { background: #0b1020; }
+/* No WebGL: the Tonight list is the page. */
+.noglMsg { display: none; }
+body.nogl .noglMsg { display: block; }
+body.nogl canvas#sky, body.nogl #labels, body.nogl #chips, body.nogl #actionRow, body.nogl #sheetClose { display: none; }
+body.nogl #sheet { top: calc(60px + var(--sat)); bottom: calc(150px + var(--sab)); max-height: none; border-radius: 16px; border-bottom: 1px solid var(--line); }
+
+/* ---- Labels projected onto the sky ------------------------------------ */
+#labels { position: fixed; inset: 0; z-index: 5; pointer-events: none; overflow: hidden; }
+#labels > div {
+	position: absolute; left: 0; top: 0; white-space: nowrap; will-change: transform;
+	text-shadow: 0 0 4px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+.b-label { font: 650 12.5px/1 var(--font); letter-spacing: .02em; }
+.b-label small { font-weight: 500; font-size: 10.5px; opacity: .75; margin-left: 4px; }
+.b-label.below { opacity: .45; }
+.b-label.sel { color: #ffd27a !important; }
+.s-label { font: 500 10.5px/1 var(--font); color: #a9bce6; opacity: .8; letter-spacing: .03em; }
+.c-label { font: 600 9.5px/1 var(--font); color: rgba(150, 178, 235, 0.55); letter-spacing: .16em; text-transform: uppercase; }
+.k-label { font: 700 14px/1 var(--font); color: #d2ddf7; letter-spacing: .04em; }
+.k-label.minor { font-size: 11px; font-weight: 600; color: rgba(210, 221, 247, 0.6); }
+.k-label.n { color: #ff9c86; }
+.g-label { font: 500 9.5px/1 var(--font); color: rgba(150, 178, 235, 0.55); }
+
+/* ---- AR reticle and the "turn this way" pointer ------------------------- */
+#reticle { position: fixed; left: 50%; top: 50%; z-index: 6; pointer-events: none; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; }
+#reticleRing { width: 58px; height: 58px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.55); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35); }
+#reticleName {
+	position: absolute; top: calc(100% + 8px); white-space: nowrap; font: 650 13px/1.2 var(--font);
+	padding: 4px 9px; border-radius: 9px; background: rgba(4, 8, 18, 0.7);
+}
+#reticleName:empty { display: none; }
+#pointer {
+	position: fixed; left: 0; top: 0; z-index: 7; pointer-events: none; display: flex; align-items: center; gap: 6px;
+	will-change: transform;
+}
+#pointerArrow {
+	width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 22px solid #ffd27a;
+	filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.8));
+}
+#pointerText { font: 650 12px/1.2 var(--font); padding: 3px 8px; border-radius: 8px; background: rgba(4, 8, 18, 0.78); white-space: nowrap; }
+
+/* ---- The sheet: bottom sheet on phones, side panel on wide screens ------ */
+#sheet {
+	position: fixed; z-index: 20; left: var(--sal); right: var(--sar); bottom: 0;
+	max-height: 72vh; max-height: 72dvh;
+	display: flex; flex-direction: column;
+	background: var(--glass-strong); border: 1px solid var(--line); border-bottom: 0;
+	border-radius: 18px 18px 0 0; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+	box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.5);
+	transform: translateY(105%); visibility: hidden;
+	transition: transform .26s ease, visibility 0s linear .26s;
+	-webkit-user-select: text; user-select: text;
+}
+#sheet.open { transform: translateY(0); visibility: visible; transition: transform .26s ease; }
+#sheetHead { position: relative; display: flex; justify-content: flex-end; padding: 6px 8px 0; flex: 0 0 auto; }
+#sheetGrip { position: absolute; left: 50%; top: 7px; width: 38px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.22); transform: translateX(-50%); }
+#sheetClose { width: 34px; height: 34px; background: transparent; border-color: transparent; }
+#sheetBody { overflow-y: auto; padding: 0 16px calc(16px + var(--sab)); overscroll-behavior: contain; }
+.panel { display: none; }
+.panel.active { display: block; }
+.panel h1 { font-size: 19px; line-height: 1.25; margin: 0 40px 4px 0; }
+.panel h2 { font-size: 17px; line-height: 1.3; margin: 0 40px 4px 0; }
+.panel h3 { font-size: 14px; margin: 16px 0 4px; }
+.panel p { margin: 8px 0; }
+.panel .sub { color: var(--muted); margin-top: 0; font-size: 13px; }
+.panel .note { color: var(--muted); font-size: 12px; }
+.panel .msg { font-size: 13px; padding: 8px 10px; border-radius: 10px; background: rgba(255, 190, 90, 0.12); border: 1px solid rgba(255, 190, 90, 0.35); }
+.panel .disclaimer, .panel .credits { font-size: 11.5px; color: var(--muted); }
+.panel .disclaimer strong { color: #ffcf8a; }
+.sunTimes { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 8px 0 10px; font-size: 12.5px; color: var(--muted); }
+.sunTimes b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+#tonightList { display: flex; flex-direction: column; gap: 6px; }
+.prow {
+	display: grid; grid-template-columns: 14px 1fr auto; gap: 2px 10px; align-items: center; width: 100%; text-align: left;
+	padding: 9px 11px; border-radius: 12px; border: 1px solid var(--line); background: rgba(120, 160, 255, 0.06);
+}
+.prow:hover { background: rgba(120, 160, 255, 0.12); }
+.prow .dot { width: 11px; height: 11px; border-radius: 50%; background: currentColor; grid-row: span 2; }
+.prow .nm { font-weight: 650; color: var(--text); }
+.prow .mag { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.prow .desc { grid-column: 2 / 4; font-size: 12.5px; color: var(--muted); }
+.prow .desc b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.prow.off { opacity: .55; }
+.listHead { margin: 12px 0 2px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.when { font-size: 14px; }
+.when b { font-variant-numeric: tabular-nums; }
+#objFacts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 10px 0; font-size: 13px; }
+#objFacts dt { color: var(--muted); }
+#objFacts dd { font-variant-numeric: tabular-nums; }
+#objActions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+#objActions .pill { flex: 1 1 auto; }
+#placeSearch {
+	width: 100%; margin: 12px 0 6px; padding: 11px 12px; border-radius: 12px; font-size: 16px;
+	border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.06); color-scheme: dark;
+	-webkit-user-select: text; user-select: text;
+}
+#placeResults { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+#placeResults button { width: 100%; text-align: left; padding: 10px 10px; border-radius: 10px; border: 0; background: transparent; }
+#placeResults button:hover, #placeResults button:focus-visible { background: rgba(120, 160, 255, 0.12); }
+#placeResults .where { color: var(--muted); font-size: 12.5px; margin-left: 6px; }
+.toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin: 8px 0 12px; }
+.toggles label { display: flex; align-items: center; gap: 8px; padding: 7px 2px; cursor: pointer; }
+.toggles input { accent-color: #6c8fd0; width: 17px; height: 17px; }
+.menuLinks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.menuLinks .pill { flex: 1 1 auto; }
+
+#toast {
+	position: fixed; z-index: 30; left: 50%; top: calc(62px + var(--sat)); transform: translate(-50%, -8px);
+	max-width: min(92vw, 420px); padding: 9px 14px; border-radius: 12px; text-align: center;
+	background: var(--glass-strong); border: 1px solid var(--line); font-size: 13px;
+	opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Red night mode: multiply everything by pure red, which keeps the eyes dark-adapted. */
+#redFilter { position: fixed; inset: 0; z-index: 100; background: #ff0000; mix-blend-mode: multiply; pointer-events: none; }
+
+/* AR mode: just the sky, the planet chips and the AR bar. */
+body.ar #topBar, body.ar #timeRow, body.ar #scrubWrap, body.ar #actionRow { display: none; }
+body.ar canvas#sky { cursor: default; }
+
+/* ---- Wide screens: the sheet docks on the left, the bar centres --------- */
+@media (min-width: 900px) {
+	#bottomBar { left: 50%; right: auto; width: 560px; transform: translateX(-50%); bottom: calc(14px + var(--sab)); }
+	body.docked #bottomBar { left: calc(50% + 196px); }
+	#sheet {
+		left: calc(14px + var(--sal)); right: auto; top: calc(62px + var(--sat)); bottom: calc(14px + var(--sab));
+		width: 372px; max-height: none; border-radius: 16px; border-bottom: 1px solid var(--line);
+		transform: translateX(calc(-100% - 30px));
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+	}
+	#sheet.open { transform: translateX(0); }
+	#sheetGrip { display: none; }
+	#topBar { right: auto; width: 372px; }
+	#topBar #menuBtn { margin-left: auto; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+	#bottomBar { left: auto; right: calc(8px + var(--sar)); width: min(440px, 60vw); }
+	#sheet { max-height: 88vh; max-height: 88dvh; left: auto; right: 0; width: min(440px, 70vw); }
+}
+@media (prefers-reduced-motion: reduce) {
+	#sheet, #toast, #loading { transition: none; }
+}
+.weekList { margin: 6px 0 6px 18px; }
+.weekList li { margin: 3px 0; }

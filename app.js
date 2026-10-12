@@ -1314,6 +1314,7 @@ function fmtSpeed(dps) {
 const dateFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short', year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false, era: 'short' });
 function refreshDateUI() {
 	simDays = clampDays(simDays);
+	syncSkyLinks();
 	const d = daysToDate(simDays);
 	const y = d.getUTCFullYear(); // astronomical year numbering (0 = 1 BC)
 	dateValue.textContent = dateFmt.format(d) + ' UTC';
@@ -2356,6 +2357,21 @@ start();
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
 	navigator.serviceWorker.register('./sw.js').catch(() => { /* PWA is optional — the site works without it */ });
 }
+
+// Night-sky links carry the simulated moment when it is not "now", so the sky map opens
+// on the same date the orrery is showing. The href itself is kept current (not set on
+// click), so middle-click and "Open in new tab" carry the date too. The sky map covers
+// 1000–3000 AD and explains itself if handed a date outside that. No module-level state:
+// refreshDateUI calls this early in start-up, before this point has run.
+function syncSkyLinks() {
+	const h = Math.abs(simDays - todayDays()) > 1 / 24 ? `/night-sky/?t=${simDays.toFixed(4)}` : '/night-sky/';
+	for (const id of ['skyLink', 'skyRow']) {
+		const a = document.getElementById(id);
+		if (a && a.getAttribute('href') !== h) a.setAttribute('href', h);
+	}
+}
+syncSkyLinks();
+setInterval(syncSkyLinks, 30000); // a paused view drifts away from "now"
 
 // Headless-test hook (same convention as the other fleet sites).
 window.__ORRERY = { bodies, moonObjs, cometObjs, craftObjs, shown, camera };

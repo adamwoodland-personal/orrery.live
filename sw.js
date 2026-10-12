@@ -8,7 +8,7 @@
 //    so repeat visits and offline use skip the download entirely.
 //  - Bump CACHE on deploys that must wipe stale entries (activate deletes
 //    every other cache version).
-const CACHE = 'orrery-v20';
+const CACHE = 'orrery-v21';
 const CORE = [
 	'/',
 	'/index.html',
@@ -21,7 +21,19 @@ const CORE = [
 	'/lib/three.core.js',
 	'/lib/jsm/controls/OrbitControls.js',
 	'/favicon.svg',
-	'/manifest.json'
+	'/manifest.json',
+	// The night-sky map (/night-sky/) and its modules, so it also opens offline.
+	'/night-sky/',
+	'/night-sky/sky.css',
+	'/night-sky/sky.js',
+	'/night-sky/astro.js',
+	'/night-sky/vsop87.js',
+	'/night-sky/orientation.js',
+	'/night-sky/cities.js',
+	'/night-sky/constellation-names.js',
+	'/guide-orbits.js',
+	// The night-sky map's Milky Way (on by default there), so it is there offline too.
+	'/textures/4k_stars_milky_way.jpg'
 ];
 
 self.addEventListener('install', (e) => {
@@ -51,7 +63,8 @@ self.addEventListener('fetch', (e) => {
 				const hit = await c.match(req);
 				if (hit) return hit;
 				const res = await fetch(req);
-				if (res.ok) c.put(req, res.clone());
+				// waitUntil keeps the worker alive until the write lands.
+				if (res.ok) e.waitUntil(c.put(req, res.clone()));
 				return res;
 			})
 		);
@@ -65,7 +78,7 @@ self.addEventListener('fetch', (e) => {
 			.then((res) => {
 				if (res.ok) {
 					const copy = res.clone();
-					caches.open(CACHE).then((c) => c.put(req, copy));
+					e.waitUntil(caches.open(CACHE).then((c) => c.put(req, copy)));
 				}
 				return res;
 			})
@@ -73,7 +86,9 @@ self.addEventListener('fetch', (e) => {
 				const hit = await caches.match(req);
 				if (hit) return hit;
 				if (req.mode === 'navigate') {
-					const shell = await caches.match('/index.html');
+					// Each app page falls back to its own cached shell (query strings and all).
+					const path = new URL(req.url).pathname;
+					const shell = (path.startsWith('/night-sky') && await caches.match('/night-sky/')) || await caches.match('/index.html');
 					if (shell) return shell;
 				}
 				return Response.error();

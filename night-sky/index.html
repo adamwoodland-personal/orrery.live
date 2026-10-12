@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Night Sky Tonight: What Planets Can I See? | Orrery.live</title>
+<meta name="description" content="A free sky map for tonight, from where you are: which planets you can see, when and where to look. Point your phone at the sky to find planets, the Moon, stars and constellations.">
+<meta name="author" content="Adam Woodland">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#01020a">
+<link rel="canonical" href="https://orrery.live/night-sky/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://orrery.live/night-sky/">
+<meta property="og:title" content="Night sky tonight: what planets can I see?">
+<meta property="og:description" content="A free sky map for tonight from your location: the planets you can see, when and where to look. Point your phone at the sky to find them.">
+<meta property="og:site_name" content="Orrery.live">
+<meta property="og:locale" content="en_AU">
+<meta property="og:image" content="https://orrery.live/solar-system.svg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Night sky tonight: what planets can I see?">
+<meta name="twitter:description" content="A free sky map for tonight from your location. Point your phone at the sky to find planets, the Moon and constellations.">
+<meta name="twitter:image" content="https://orrery.live/solar-system.svg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Orrery.live", "item": "https://orrery.live/" },
+        { "@type": "ListItem", "position": 2, "name": "Night sky tonight", "item": "https://orrery.live/night-sky/" }
+      ]
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://orrery.live/night-sky/",
+      "name": "Night sky tonight - Orrery.live",
+      "url": "https://orrery.live/night-sky/",
+      "description": "A free sky map for tonight from your location: which planets you can see, when and where to look, with a point-your-phone-at-the-sky mode.",
+      "applicationCategory": "EducationalApplication",
+      "applicationSubCategory": "Astronomy",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires WebGL",
+      "inLanguage": "en",
+      "isAccessibleForFree": true,
+      "featureList": [
+        "Which planets are visible tonight from your location, with rise and set times",
+        "Live sky map of the planets, the Moon, 1,637 naked-eye stars and the 88 constellations",
+        "Point your phone at the sky to identify what you are looking at",
+        "Scrub through the night from sunset to sunrise, or pick any date from 1000 to 3000 AD",
+        "City search or your phone's location, used on your device and shared only if you choose to send a link with your exact location"
+      ],
+      "author": { "@type": "Person", "name": "Adam Woodland" },
+      "isPartOf": { "@type": "WebSite", "name": "Orrery.live", "url": "https://orrery.live/" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What planets can I see tonight?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on where you are and the date, which is why this page works it out for you: it opens on your city (guessed from your device's time zone, or from your location if you allow it) and lists every planet that will be at least 5 degrees above your horizon after dark tonight, with the time it is best placed, which direction to face and how bright it will be. Mercury, Venus, Mars, Jupiter and Saturn are easy to see with the naked eye when they are up; Uranus and Neptune need binoculars or a telescope." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I find a planet in the sky with my phone?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Tap Point at the sky and hold your phone up: the map turns with the phone, so whatever the back of the phone points at sits in the middle of the screen with its name. Tap a planet in the Tonight list first and an arrow shows which way to turn. If the map looks a little off, move the phone in a figure of eight to calibrate its compass, then drag sideways to nudge the view into line." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I have to share my location?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The page starts on a city guessed from your device's time zone and you can search for any other city. If you tap Use my location, your position (rounded to about a kilometre) is used on your device to work out your sky and is not sent anywhere. The ordinary share link uses the nearest town; only the separate Copy link with my exact location button puts your position in a link, and anyone you send that link to, and the website's server logs, can then see it. City-level accuracy is plenty for the sky." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why doesn't the phone view line up exactly with the sky?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Phone compasses are easily thrown off by metal, magnets and phone cases, and can be several degrees out until they are calibrated. The map already corrects for the difference between magnetic and true north where you are. Move the phone in a figure of eight, keep it away from cars and metal railings, and drag sideways to nudge the view until a bright star or planet lines up." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I see the sky for another night or another place?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Drag the time slider to move through the night from sunset to sunrise, use the arrows to step a night at a time, tap the date to pick any date from 1000 to 3000 AD, and tap the place name to choose any city in the world. Outside 1800 to 2200 the map marks its positions as approximate." }
+        },
+        {
+          "@type": "Question",
+          "name": "How accurate are the positions?",
+          "acceptedAnswer": { "@type": "Answer", "text": "The planets come from the VSOP87 planetary theory and the Moon from Meeus's lunar theory, both checked against JPL Horizons. Between 1800 and 2200 the planets, the Sun and the Moon are within about two thousandths of a degree and rise and set times within a minute or so (three for the Moon), far finer than you can see by eye. Further from the present the map marks its positions as approximate: by 1000 or 3000 AD they can be off by up to about half a degree and times by a minute or two, because Earth's rotation then is uncertain and the stars have drifted. Rise and set times are for a flat horizon and normal air, so hills and buildings will hide a low planet for longer." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<link rel="stylesheet" href="/night-sky/sky.css">
+</head>
+<body>
+	<video id="camFeed" playsinline muted hidden></video>
+	<div id="labels" aria-hidden="true"></div>
+	<div id="reticle" hidden aria-hidden="true"><span id="reticleRing"></span><span id="reticleName"></span></div>
+	<div id="pointer" hidden aria-hidden="true"><span id="pointerArrow"></span><span id="pointerText"></span></div>
+	<div id="loading">Loading the sky…</div>
+
+	<header id="topBar">
+		<a id="homeLink" class="iconBtn" href="/" title="Back to the 3D orrery" aria-label="Orrery.live home">
+			<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="2.6" fill="#ffd166"/><ellipse cx="9" cy="9" rx="7.2" ry="3.2" fill="none" stroke="currentColor" stroke-width="1.2" transform="rotate(-20 9 9)"/></svg>
+		</a>
+		<button id="placeBtn" class="chip" aria-haspopup="dialog" title="Change location">
+			<svg width="13" height="13" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 11.2s-3.8-3.9-3.8-6.6a3.8 3.8 0 0 1 7.6 0c0 2.7-3.8 6.6-3.8 6.6z" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="4.6" r="1.3" fill="currentColor"/></svg>
+			<span id="placeName">…</span>
+		</button>
+		<button id="menuBtn" class="iconBtn" aria-haspopup="dialog" title="Settings, help and credits" aria-label="Settings, help and credits">
+			<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+		</button>
+	</header>
+
+	<div id="arBar" hidden>
+		<span id="arStatus">Hold your phone up to the sky</span>
+		<button id="camBtn" class="chip" aria-pressed="false" title="Show the camera behind the map">
+			<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 4.5h2.4l1.2-1.8h3.8l1.2 1.8h2.4v7h-11z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="7" cy="7.8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+			Camera
+		</button>
+		<button id="arNow" class="chip" hidden title="Show the sky right now">Now</button>
+		<button id="arExit" class="chip">Done</button>
+	</div>
+
+	<footer id="bottomBar">
+		<p id="rangeNote" role="status" hidden></p>
+		<div id="chips" role="list" aria-label="Planets visible tonight"></div>
+		<div id="timeRow">
+			<button id="prevNight" class="iconBtn" title="Previous night" aria-label="Previous night">
+				<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2.5 4.5 7 9 11.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+			<label id="timeLabel" title="Pick a date">
+				<span id="timeMain">—</span><span id="timeSub"></span>
+				<input type="date" id="datePick" min="1000-01-01" max="2999-12-31" aria-label="Pick a date">
+			</label>
+			<button id="nextNight" class="iconBtn" title="Next night" aria-label="Next night">
+				<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2.5 9.5 7 5 11.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+			</button>
+			<button id="nowBtn" class="chip" title="Back to the sky right now">Now</button>
+		</div>
+		<div id="scrubWrap">
+			<input type="range" id="scrub" min="0" max="1000" step="1" value="0" aria-label="Time through the night">
+			<div id="scrubTicks" aria-hidden="true"></div>
+		</div>
+		<div id="actionRow">
+			<button id="tonightBtn" class="pill" aria-haspopup="dialog">
+				<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.3" fill="none" stroke="currentColor" stroke-width="1.3"/><ellipse cx="8" cy="8" rx="7" ry="2.2" fill="none" stroke="currentColor" stroke-width="1.2" transform="rotate(-18 8 8)"/></svg>
+				Tonight’s planets
+			</button>
+			<button id="arBtn" class="pill accent" hidden>
+				<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><rect x="4.5" y="1.5" width="7" height="13" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M7 12.4h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+				Point at the sky
+			</button>
+		</div>
+	</footer>
+
+	<!-- One sheet, several panels: slides up from the bottom on phones, docks on the left on wide screens. -->
+	<section id="sheet" aria-hidden="true">
+		<div id="sheetHead">
+			<span id="sheetGrip" aria-hidden="true"></span>
+			<button id="sheetClose" class="iconBtn" title="Close" aria-label="Close">
+				<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+			</button>
+		</div>
+		<div id="sheetBody">
+
+			<div class="panel" id="panelTonight" role="dialog" aria-labelledby="tonightTitle">
+				<h1 id="tonightTitle">What planets can I see tonight?</h1>
+				<p id="tonightPlace" class="sub">From your location, after dark.</p>
+				<p class="msg noglMsg">This browser can’t draw the sky map (WebGL is switched off or not supported), but everything below still works: tonight’s planets, times and directions for any place and date.</p>
+				<div id="sunTimes" class="sunTimes"></div>
+				<div id="tonightList">
+					<!-- snap:week --><p>The planets this week (as of 12 Oct 2026), seen from anywhere on Earth:</p><ul class="weekList"><li><b>Mercury</b> is in the evening sky after sunset.</li><li><b>Venus</b> is in the evening sky after sunset.</li><li><b>Mars</b> is in the morning sky before sunrise.</li><li><b>Jupiter</b> is in the morning sky before sunrise.</li><li><b>Saturn</b> is up most of the night.</li></ul><p>Pick your location to see exact times, directions and the Moon.</p><!-- /snap:week -->
+				</div>
+				<p class="note">Times are for <span id="tzNote">your location</span>. Uranus and Neptune need binoculars or a telescope.</p>
+			</div>
+
+			<div class="panel" id="panelObject" role="dialog" aria-labelledby="objName">
+				<h2 id="objName">—</h2>
+				<p id="objSub" class="sub"></p>
+				<p id="objWhen" class="when"></p>
+				<dl id="objFacts"></dl>
+				<div id="objActions"></div>
+			</div>
+
+			<div class="panel" id="panelPlace" role="dialog" aria-labelledby="placeTitle">
+				<h2 id="placeTitle">Where are you?</h2>
+				<button id="gpsBtn" class="pill accent wide">
+					<svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 0.5v2.2M8 13.3v2.2M0.5 8h2.2M13.3 8h2.2" stroke="currentColor" stroke-width="1.3"/></svg>
+					Use my location
+				</button>
+				<p id="gpsMsg" class="msg" hidden></p>
+				<input type="search" id="placeSearch" placeholder="Search for a city" autocomplete="off" spellcheck="false" aria-label="Search for a city">
+				<ul id="placeResults" role="listbox" aria-label="Matching places"></ul>
+				<div class="tzRow"><label for="tzSelect">Times shown in</label><select id="tzSelect"></select></div>
+				<p class="note">Your location is used on this device to work out your sky. It is not sent anywhere unless you choose to copy a link with your exact location.</p>
+			</div>
+
+			<div class="panel" id="panelMenu" role="dialog" aria-labelledby="menuTitle">
+				<h2 id="menuTitle">Show</h2>
+				<div class="toggles">
+					<label><input type="checkbox" id="optLines" checked> Constellation lines</label>
+					<label><input type="checkbox" id="optCNames" checked> Constellation names</label>
+					<label><input type="checkbox" id="optSNames" checked> Star names</label>
+					<label><input type="checkbox" id="optMilky" checked> Milky Way</label>
+					<label><input type="checkbox" id="optGrid"> Altitude grid</label>
+					<label><input type="checkbox" id="optGround" checked> Ground</label>
+					<label><input type="checkbox" id="optRed"> Red night mode</label>
+				</div>
+				<div class="menuLinks">
+					<button id="copyLink" class="pill">Copy a link to this sky</button>
+					<button id="copyExact" class="pill" hidden>Copy link with my exact location</button>
+					<a class="pill" href="/">Open the 3D orrery</a>
+				</div>
+				<p id="copyNote" class="note" hidden>The first link shows the nearest town, not where you are. The exact-location link shows anyone you send it to, and the website’s server logs, your position to within about a kilometre.</p>
+				<h2>About this sky map</h2>
+				<p>The sky above your horizon, from real data: the planets from the VSOP87 planetary theory and the Moon from Meeus’s lunar theory, both checked against JPL Horizons, and 1,637 naked-eye stars from the HYG catalogue. Drag to look around, pinch or scroll to zoom, and tap anything to find out what it is. On a phone, <strong>Point at the sky</strong> turns the map with the phone so you can hold it up and identify what you are looking at.</p>
+				<p>Dates from 1000 to 3000 AD are covered; positions are most accurate between 1800 and 2200 and marked approximate outside that. Times are local to the place you choose. A planet counts as visible when it is at least 5° above a flat horizon while the sky is dark enough for its brightness; hills, trees and buildings will hide low ones for longer. Phone compasses are corrected for magnetic declination where you are, but can still be a few degrees out: move the phone in a figure of eight to calibrate, and drag sideways to nudge the view into line.</p>
+				<h3>More guides</h3>
+				<p><a href="/now/">Where the planets are right now</a> · <a href="/planetary-alignment/">Planetary alignments &amp; planet parades</a> · <a href="/halleys-comet/">Halley’s Comet</a> · <a href="/what-is-an-orrery/">What is an orrery?</a></p>
+				<p class="disclaimer"><strong>Disclaimer:</strong> an educational visualisation. The data and model have not been independently verified and should not be relied upon for scientific, navigational or any other precise purpose.</p>
+				<p class="credits" id="credits">Star data: <a href="https://codeberg.org/astronexus/hyg" target="_blank" rel="noopener">HYG database</a> (CC BY-SA 4.0) · Constellations: <a href="https://github.com/ofrohn/d3-celestial" target="_blank" rel="noopener">d3-celestial</a> (BSD-3) · Places: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> and the IANA time zone database (public domain) · Constellation boundaries: IAU (Delporte 1930) via Roman (1987), CDS VI/42 · Magnetic declination: NOAA World Magnetic Model (public domain) · Milky Way: <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> (CC BY 4.0) · Built with <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> (MIT)</p>
+				<p class="credits">
+					<a href="mailto:adam@orrery.live">Contact: adam@orrery.live</a> · Code licensed under the <a href="/LICENSE">MIT licence</a>.<br>
+					Design, code and content developed with the assistance of AI (Anthropic Claude).<br>
+					More toys and tools at <a href="https://games.adamwoodland.com/" target="_blank" rel="noopener">Adam's Arcade</a> · Made by <a href="https://adamwoodland.com/" target="_blank" rel="noopener">Adam Woodland</a>.
+				</p>
+			</div>
+
+		</div>
+	</section>
+
+	<div id="toast" role="status" aria-live="polite"></div>
+	<div id="redFilter" hidden aria-hidden="true"></div>
+
+	<!-- Crawlable text behind the WebGL canvas: what the page does, in words. -->
+	<section id="seo-content" class="sr-only">
+		<h2>Night sky tonight, from where you are</h2>
+		<p>This free sky map shows the sky above your own horizon tonight: the planets, the Moon,
+		the brightest stars and the constellations, placed where they really are. It opens on your
+		city and works out which planets are up after dark, when each is best placed, which
+		direction to face and how high to look. Drag the time slider to watch the sky turn through
+		the night from sunset to sunrise, or step to another night or another city.</p>
+		<h2>Point your phone at the sky</h2>
+		<p>On a phone, tap Point at the sky and hold the phone up. The map follows the phone, so the
+		planet or star in the middle of the screen is the one in front of you, and an arrow shows
+		which way to turn to find the planet you picked. Switch on the camera to see the labels over
+		the real view. The compass is corrected for magnetic declination at your location.</p>
+		<h2>Which planets can you see with the naked eye?</h2>
+		<p>Five planets are easy to see without a telescope when they are above the horizon in a dark
+		sky: Mercury, Venus, Mars, Jupiter and Saturn. Venus and Jupiter outshine every star. Mercury
+		never strays far from the Sun, so it is only ever seen low in the twilight after sunset or
+		before sunrise. Uranus is at the limit of naked-eye visibility from a dark site and Neptune
+		needs binoculars or a telescope. A planet that is lined up with the Sun cannot be seen at all
+		until it moves out of the Sun's glare.</p>
+		<p>See also <a href="/now/">where the planets are right now</a>,
+		<a href="/planetary-alignment/">planetary alignments and planet parades</a> and the
+		<a href="/">3D orrery</a>, which shows why each planet is in the evening or morning sky.</p>
+	</section>
+
+	<script type="module" src="/night-sky/sky.js"></script>
+</body>
+</html>

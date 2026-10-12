@@ -168,6 +168,7 @@
 		</div>
 		<div id="uiBody">
 		<p>Drag to orbit · scroll to zoom · right-drag or two-finger drag to pan. Hover or tap a body for facts · double-click to follow it.</p>
+		<a id="skyRow" class="btn" href="/night-sky/">Night sky tonight: what can I see from here? ›</a>
 		<div id="followRow" hidden><span id="followName">◎ Following —</span><button id="followStop" class="btn" title="Stop following (Esc)">✕ Stop</button></div>
 		<div id="dateRow"><span id="dateValue">—</span></div>
 		<div id="gotoRow">
@@ -239,7 +240,7 @@
 			<div id="disclaimer"><strong>Disclaimer:</strong> this is an educational visualisation. The data and model have not been independently verified and should not be relied upon for scientific, navigational or any other precise purpose.</div>
 			<div id="credits">Textures © <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> (CC BY 4.0) · Star data: <a href="https://codeberg.org/astronexus/hyg" target="_blank" rel="noopener">HYG database</a> (CC BY-SA 4.0) · Constellation lines: <a href="https://github.com/ofrohn/d3-celestial" target="_blank" rel="noopener">d3-celestial</a> (BSD-3) · Spacecraft trajectories: <a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener">JPL Horizons</a> · Pluto: stylised map · Built with <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> (MIT)</div>
 			<div id="about-footer">
-				Guides: <a href="/now/">where the planets are right now</a> · <a href="/planetary-alignment/">planetary alignments &amp; planet parades</a> · <a href="/halleys-comet/">where is Halley’s Comet now</a> · <a href="/what-is-an-orrery/">what is an orrery?</a><br>
+				Guides: <a href="/night-sky/">night sky tonight from where you are</a> · <a href="/now/">where the planets are right now</a> · <a href="/planetary-alignment/">planetary alignments &amp; planet parades</a> · <a href="/halleys-comet/">where is Halley’s Comet now</a> · <a href="/what-is-an-orrery/">what is an orrery?</a><br>
 				<a href="mailto:adam@orrery.live">Contact: adam@orrery.live</a><br>
 				Code licensed under the <a href="LICENSE">MIT licence</a>.<br>
 				Design, code and content developed with the assistance of AI (Anthropic Claude).<br>
@@ -250,6 +251,9 @@
 	</aside>
 	<div id="labels" aria-hidden="true"></div>
 	<div id="tooltip"></div>
+	<!-- Phones: the panel starts collapsed, so the night-sky map gets its own floating button
+	     (desktop uses the row inside the panel). -->
+	<a id="skyLink" class="btn" href="/night-sky/" title="Night sky tonight: the planets you can see from where you are"><svg width="13" height="13" viewBox="0 0 12 12" aria-hidden="true"><path d="M8.6 7.9A4.2 4.2 0 0 1 4.1 2.2a4.2 4.2 0 1 0 5.6 5.6 4.2 4.2 0 0 1-1.1.1z" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M9.3 1.2v1.8M8.4 2.1h1.8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg> Night sky</a>
 	<!-- Floating viewport control: kept out of the panel so the header row stays uncrowded. -->
 	<button id="fullscreen" class="btn" title="Fullscreen (F)" aria-label="Toggle fullscreen">
 		<svg width="13" height="13" viewBox="0 0 12 12" aria-hidden="true">
@@ -281,6 +285,10 @@
 		The 'Jump to a notable alignment' menu travels straight to famous planetary
 		alignments, planet parades and conjunctions so you can see exactly how the
 		planets lined up.</p>
+
+		<p>The <a href="/night-sky/">night sky tonight</a> map turns the same model round to
+		your own horizon: which planets you can see from where you are tonight, when and
+		where to look, with a point-your-phone-at-the-sky mode.</p>
 
 		<p>Two companion pages put the same model into words: <a href="/now/">where the
 		planets are right now</a> lists every planet's distance, light time, evening or

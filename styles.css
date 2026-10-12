@@ -42,6 +42,7 @@ canvas { display: block; }
 /* SVG icons (not font glyphs) so they centre identically in every browser/
    font; the buttons stretch to match the collapse button's height. */
 #homeView, #resetView, #share, #shot { display: inline-flex; align-items: center; justify-content: center; }
+#skyRow { display: block; margin: 0 0 10px; text-align: center; text-decoration: none; font-weight: 600; color: #ffe2a8; border-color: rgba(255, 210, 122, 0.35); background: rgba(255, 190, 90, 0.10); }
 #homeView svg, #resetView svg, #share svg, #shot svg { display: block; }
 #ui.collapsed { width: auto; }
 #ui.collapsed #uiBody { display: none; }
@@ -229,6 +230,23 @@ canvas { display: block; }
 #tooltip dd { text-align: right; font-variant-numeric: tabular-nums; }
 #tooltip .fact { margin-top: 6px; opacity: .85; }
 #tooltip .note { margin-top: 4px; font-size: 10.5px; opacity: .55; font-style: italic; }
+/* Phones only: floating link to the night-sky map, bottom-left. Under the panel (z 8)
+   so an expanded panel covers it; desktop has the #skyRow link inside the panel instead. */
+#skyLink { display: none; }
+@media (max-width: 600px) {
+	#skyLink {
+		position: fixed; z-index: 8;
+		left: calc(10px + env(safe-area-inset-left, 0px));
+		bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+		display: inline-flex; align-items: center; gap: 6px;
+		padding: 8px 12px; border-radius: 10px;
+		font: 600 13px/1 -apple-system, "Segoe UI", system-ui, sans-serif;
+		color: #ffe2a8; text-decoration: none;
+		background: rgba(4, 8, 18, 0.72); border-color: rgba(255, 210, 122, 0.35);
+		backdrop-filter: blur(8px);
+	}
+	#skyLink svg { display: block; }
+}
 /* Floating fullscreen toggle, bottom-right (out of the panel's way). */
 #fullscreen {
 	position: fixed;

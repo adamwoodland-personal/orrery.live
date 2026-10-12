@@ -16,6 +16,8 @@ comets, spacecraft, a naked-eye star background with constellations, and a time 
 - Bookmarked historical events and famous planetary alignments to jump straight to.
 - A true star field with constellation lines behind it all.
 - Installable as an app and usable offline once loaded.
+- A night-sky map at [/night-sky/](https://orrery.live/night-sky/): the sky above your own
+  horizon tonight, which planets you can see and when, with a point-your-phone-at-the-sky mode.
 - Two text guides that share the model: [/now/](https://orrery.live/now/) (where every planet is
   right now) and [/planetary-alignment/](https://orrery.live/planetary-alignment/) (planet parade
   dates, past and future).
