@@ -794,8 +794,7 @@ function select(sel, fromTap) {
 			const b = bodyObjs[sel.key];
 			selRing.scale.setScalar(Math.max(b.sprite.scale.x * 1.5, 3.2 * DEG * R * camera.fov / 70));
 		} else selRing.scale.setScalar(2.6 * DEG * R * camera.fov / 70);
-		if (!ar.on) showObject(sel);
-		else toast(sel.kind === 'body' ? `${sel.key}: follow the arrow` : 'Selected');
+		showObject(sel);
 	} else if (activePanel === 'object') closeSheet();
 	renderChips();
 	dirty = true;
@@ -1016,8 +1015,8 @@ function showObject(sel) {
 			const el = A.elongation(name, state.t);
 			fact('From the Sun', `${Math.abs(el).toFixed(0)}° ${el >= 0 ? 'east (evening side)' : 'west (morning side)'}`);
 		}
-		btn('Centre', () => { if (ar.on) return; lookAt(b.az, clamp(b.altApp, -10, 80)); });
-		if (v && v.visible && Math.abs(state.t - v.best) > 1 / 96) btn('Show at its best', () => { setTime(v.best, false); goToBody(name); });
+		if (!ar.on) btn('Centre', () => lookAt(b.az, clamp(b.altApp, -10, 80)));
+		if (!ar.on && v && v.visible && Math.abs(state.t - v.best) > 1 / 96) btn('Show at its best', () => { setTime(v.best, false); goToBody(name); });
 		if (name !== 'Sun') {
 			const a = document.createElement('a');
 			a.className = 'pill accent';
@@ -1031,6 +1030,7 @@ function showObject(sel) {
 		const s = starIndex[sel.key];
 		const w = _tmp.copy(s.v).applyMatrix4(eqToScene), aa = sceneToAzAlt(w);
 		const [ra, dec] = STARS[sel.key];
+		if (!ar.on) btn('Centre', () => lookAt(aa.az, clamp(aa.alt, -10, 80)));
 		$('objName').textContent = s.name || s.desig || 'Star';
 		$('objName').style.color = '#cfe0ff';
 		$('objSub').textContent = `Star · in ${constellationAt(ra, dec)}`;
@@ -1038,7 +1038,6 @@ function showObject(sel) {
 		fact('Position', aa.alt < -0.5 ? `below the horizon, ${A.compass16(aa.az)}` : dirText(aa.az, aa.alt + A.refraction(aa.alt)));
 		fact('Brightness', `magnitude ${s.mag.toFixed(1)}`);
 		fact('Colour', s.bv < 0 ? 'blue-white' : s.bv < 0.3 ? 'white' : s.bv < 0.6 ? 'yellow-white' : s.bv < 1.0 ? 'yellow-orange' : s.bv < 1.4 ? 'orange' : 'red-orange');
-		btn('Centre', () => { if (ar.on) return; lookAt(aa.az, clamp(aa.alt, -10, 80)); });
 		const key = sel.key;
 		loadSkyInfo().then((m) => {
 			if (!m || token !== showObject.seq) return;
@@ -1059,7 +1058,7 @@ function showObject(sel) {
 		$('objWhen').textContent = '';
 		const w = _tmp.copy(c.v).applyMatrix4(eqToScene), aa = sceneToAzAlt(w);
 		fact('Position', aa.alt < 0 ? `below the horizon, ${A.compass16(aa.az)}` : dirText(aa.az, aa.alt));
-		btn('Centre', () => { if (ar.on) return; lookAt(aa.az, clamp(aa.alt, -10, 80)); });
+		if (!ar.on) btn('Centre', () => lookAt(aa.az, clamp(aa.alt, -10, 80)));
 		loadSkyInfo().then((m) => {
 			if (!m || token !== showObject.seq) return;
 			const info = m.CONST_INFO[c.abbr];
@@ -1083,6 +1082,7 @@ function openSheet(which) {
 	for (const [k, id] of Object.entries(PANELS)) $(id).classList.toggle('active', k === which);
 	const sh = $('sheet');
 	sh.classList.add('open');
+	sh.classList.toggle('peek', ar.on && which === 'object');
 	sh.setAttribute('aria-hidden', 'false');
 	document.body.classList.toggle('docked', wide());
 	$('sheetBody').scrollTop = 0;
@@ -1348,6 +1348,7 @@ function autoArFov() { return innerHeight > innerWidth ? 67 : 45; }
 if (renderer && isTouch && typeof DeviceOrientationEvent !== 'undefined') $('arBtn').hidden = false;
 $('arBtn').addEventListener('click', startAR);
 $('arExit').addEventListener('click', stopAR);
+$('reticleName').addEventListener('click', () => { if (ar.on && ar.reticleSel) select({ ...ar.reticleSel }); });
 $('arNow').addEventListener('click', () => { setTime(dateToDays(new Date()), true); computeTonight(); arStatus(ar.src && ar.src.status); });
 $('camBtn').addEventListener('click', () => camOn() ? stopCamera() : startCamera());
 async function startAR() {
@@ -1393,6 +1394,7 @@ function stopAR() {
 	ar.src = null; ar.on = false;
 	if (ar.wake) { ar.wake.release().catch(() => {}); ar.wake = null; }
 	document.body.classList.remove('ar');
+	$('sheet').classList.remove('peek');
 	$('topBar').hidden = false; $('arBar').hidden = true; $('reticle').hidden = true; $('pointer').hidden = true;
 	save();
 	dirty = true;
@@ -1459,7 +1461,7 @@ function updatePointer() {
 }
 // What sits under the AR reticle.
 function updateReticle() {
-	let best = null, bd = 6 * camera.fov / 67; // degrees
+	let best = null, target = null, bd = 6 * camera.fov / 67; // degrees
 	const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
 	for (const name of BODIES) {
 		const b = bodyObjs[name];
@@ -1467,23 +1469,31 @@ function updateReticle() {
 		if (d < bd && (b.alt > -1 || !state.opts.ground)) {
 			bd = d;
 			best = name === 'Moon' ? 'The Moon' : name === 'Sun' ? 'The Sun' : bodyVisibleNow(b) ? name : `${name} (${b.mag > 6.5 ? 'telescope' : 'binoculars'})`;
+			target = { kind: 'body', key: name };
 		}
 	}
 	if (!best) {
 		let sd = 3.5 * camera.fov / 67;
-		for (const s of starIndex) {
+		for (let i = 0; i < starIndex.length; i++) {
+			const s = starIndex[i];
 			if (!(s.name || s.desig) || s.mag > 3.5) continue;
 			_tmp.copy(s.v).applyMatrix4(eqToScene);
 			const d = Math.acos(clamp(fwd.dot(_tmp), -1, 1)) / DEG;
-			if (d < sd) { sd = d; best = s.name || s.desig; }
+			if (d < sd) { sd = d; best = s.name || s.desig; target = { kind: 'star', key: i }; }
 		}
 	}
 	if (!best) {
 		const raDec = fwd.clone().applyMatrix4(_inv.copy(eqToScene).invert());
 		const aa = sceneToAzAlt(fwd);
-		best = aa.alt < -2 ? `Below the horizon · ${A.compass16(aa.az)}` : `${constellationAt(wrap360(Math.atan2(raDec.y, raDec.x) / DEG), Math.asin(clamp(raDec.z, -1, 1)) / DEG)} · ${A.compass16(aa.az)} ${Math.round(aa.alt)}°`;
+		const con = constellationAt(wrap360(Math.atan2(raDec.y, raDec.x) / DEG), Math.asin(clamp(raDec.z, -1, 1)) / DEG);
+		best = aa.alt < -2 ? `Below the horizon · ${A.compass16(aa.az)}` : `${con} · ${A.compass16(aa.az)} ${Math.round(aa.alt)}°`;
+		const ci = aa.alt < -2 ? -1 : constLabels.findIndex((c) => c.name === con);
+		if (ci >= 0) target = { kind: 'const', key: ci };
 	}
-	if ($('reticleName').textContent !== best) $('reticleName').textContent = best;
+	ar.reticleSel = target;
+	const el = $('reticleName');
+	if (el.textContent !== best) el.textContent = best;
+	el.classList.toggle('tap', !!target);
 }
 
 // ---- Defaults: when to show, where to look --------------------------------------------------------
