@@ -951,6 +951,35 @@ function goToBody(name) {
 }
 
 // ---- Object card ---------------------------------------------------------------------------------
+// What to say about each body on its card, with its Wikipedia article. Stars and
+// constellations come from sky-info.js, loaded the first time a card needs it.
+const BODY_INFO = {
+	Sun: ['Our star, a middle-aged yellow dwarf 109 times wider than Earth. Never look at it directly, and never through binoculars or a telescope.', 'Sun'],
+	Moon: ['Earth’s only natural satellite. It always turns the same face to us, and its phases repeat every 29.5 days as it circles Earth.', 'Moon'],
+	Mercury: ['The smallest planet and the closest to the Sun, so it never strays far from it: look low in the twilight just after sunset or before sunrise.', 'Mercury (planet)'],
+	Venus: ['The brightest planet, wrapped in thick cloud that reflects sunlight. Often called the evening or morning star; it can cast faint shadows.', 'Venus'],
+	Mars: ['The Red Planet, coloured by rusty dust. Its brightness changes a lot: it shines brightest around opposition, every 26 months.', 'Mars'],
+	Jupiter: ['The largest planet, more massive than all the others combined. Binoculars show its four big moons as tiny stars beside it.', 'Jupiter'],
+	Saturn: ['The ringed planet. Any small telescope shows the rings; to the eye it is a steady, pale-gold point.', 'Saturn'],
+	Uranus: ['An ice giant tipped on its side. At the very edge of naked-eye visibility from a dark site; easy in binoculars once you know where to look.', 'Uranus'],
+	Neptune: ['The outermost planet, found in 1846 by maths before anyone saw it. Too faint for the eye: you need a telescope.', 'Neptune'],
+};
+const wikiHref = (title) => 'https://en.wikipedia.org/wiki/' + encodeURIComponent(title.replace(/ /g, '_')).replace(/%2F/g, '/');
+let skyInfo = null; // the lazily imported sky-info.js module (null until loaded or if it fails)
+function loadSkyInfo() {
+	if (!skyInfo) skyInfo = import('./sky-info.js').catch(() => null);
+	return skyInfo;
+}
+function wikiLink(actions, title) {
+	if (!title) return;
+	const a = document.createElement('a');
+	a.className = 'pill wiki';
+	a.href = wikiHref(title);
+	a.target = '_blank';
+	a.rel = 'noopener';
+	a.textContent = 'More on Wikipedia ›';
+	actions.append(a);
+}
 function fmtDist(km) {
 	if (km < 2e6) return `${Math.round(km).toLocaleString()} km`;
 	const au = km / 149597870.7;
@@ -958,8 +987,9 @@ function fmtDist(km) {
 }
 function dirText(az, alt) { return `${Math.round(alt)}° up, ${A.compass16(az)} (${Math.round(az)}°)`; }
 function showObject(sel) {
-	const facts = $('objFacts'), actions = $('objActions');
-	facts.textContent = ''; actions.textContent = '';
+	const facts = $('objFacts'), actions = $('objActions'), about = $('objAbout');
+	facts.textContent = ''; actions.textContent = ''; about.textContent = '';
+	const token = (showObject.seq = (showObject.seq || 0) + 1); // ignore late info for a card already replaced
 	const fact = (k, v) => { const dt = document.createElement('dt'); dt.textContent = k; const dd = document.createElement('dd'); dd.textContent = v; facts.append(dt, dd); };
 	const btn = (text, fn, cls = 'pill') => { const b = document.createElement('button'); b.className = cls; b.textContent = text; b.addEventListener('click', fn); actions.append(b); return b; };
 	const p = state.place;
@@ -969,6 +999,7 @@ function showObject(sel) {
 		$('objName').style.color = BODY_COLOR[name];
 		const ra = b.pos.clone().applyMatrix4(_inv.copy(eqToScene).invert());
 		const con = constellationAt(wrap360(Math.atan2(ra.y, ra.x) / DEG), Math.asin(clamp(ra.z, -1, 1)) / DEG);
+		about.textContent = BODY_INFO[name][0];
 		$('objSub').textContent = name === 'Sun' ? 'Our star' : name === 'Moon' ? `${state.moonPhase.name}, ${Math.round(state.moonPhase.fraction * 100)}% lit · in ${con}` : `Planet · in ${con}`;
 		const v = tonight && tonight.rows[name];
 		$('objWhen').innerHTML = name === 'Sun' ? (b.alt > 0 ? 'Up now. Never look straight at the Sun.' : 'Below the horizon.') : visSentence(name, v);
@@ -995,6 +1026,7 @@ function showObject(sel) {
 			a.title = 'Open the 3D orrery at this moment, looking down on the solar system';
 			actions.append(a);
 		}
+		wikiLink(actions, BODY_INFO[name][1]);
 	} else if (sel.kind === 'star') {
 		const s = starIndex[sel.key];
 		const w = _tmp.copy(s.v).applyMatrix4(eqToScene), aa = sceneToAzAlt(w);
@@ -1007,6 +1039,18 @@ function showObject(sel) {
 		fact('Brightness', `magnitude ${s.mag.toFixed(1)}`);
 		fact('Colour', s.bv < 0 ? 'blue-white' : s.bv < 0.3 ? 'white' : s.bv < 0.6 ? 'yellow-white' : s.bv < 1.0 ? 'yellow-orange' : s.bv < 1.4 ? 'orange' : 'red-orange');
 		btn('Centre', () => { if (ar.on) return; lookAt(aa.az, clamp(aa.alt, -10, 80)); });
+		const key = sel.key;
+		loadSkyInfo().then((m) => {
+			if (!m || token !== showObject.seq) return;
+			const info = m.STAR_INFO[key];
+			about.textContent = m.starSentence(key) || '';
+			if (!info) return;
+			const [ly, spect, desig, title] = info;
+			if (desig && desig !== s.name) $('objSub').textContent = `Star · ${desig} · in ${constellationAt(ra, dec)}`;
+			if (ly != null) fact('Distance', `${ly.toLocaleString()} light-years`);
+			if (spect) fact('Type', spect);
+			if (title) wikiLink(actions, title);
+		});
 	} else {
 		const c = constLabels[sel.key];
 		$('objName').textContent = c.name;
@@ -1016,6 +1060,15 @@ function showObject(sel) {
 		const w = _tmp.copy(c.v).applyMatrix4(eqToScene), aa = sceneToAzAlt(w);
 		fact('Position', aa.alt < 0 ? `below the horizon, ${A.compass16(aa.az)}` : dirText(aa.az, aa.alt));
 		btn('Centre', () => { if (ar.on) return; lookAt(aa.az, clamp(aa.alt, -10, 80)); });
+		loadSkyInfo().then((m) => {
+			if (!m || token !== showObject.seq) return;
+			const info = m.CONST_INFO[c.abbr];
+			if (!info) return;
+			const [meaning, title, note] = info;
+			if (meaning) $('objSub').textContent = `Constellation · ${meaning}`;
+			if (note) about.textContent = note;
+			if (title) wikiLink(actions, title);
+		});
 	}
 	openSheet('object');
 }

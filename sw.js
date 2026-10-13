@@ -8,7 +8,7 @@
 //    so repeat visits and offline use skip the download entirely.
 //  - Bump CACHE on deploys that must wipe stale entries (activate deletes
 //    every other cache version).
-const CACHE = 'orrery-v22';
+const CACHE = 'orrery-v23';
 const CORE = [
 	'/',
 	'/index.html',
@@ -31,6 +31,7 @@ const CORE = [
 	'/night-sky/orientation.js',
 	'/night-sky/cities.js',
 	'/night-sky/constellation-names.js',
+	'/night-sky/sky-info.js',
 	'/guide-orbits.js',
 	// The night-sky map's Milky Way (phone size; on by default there), so it is there offline too.
 	'/textures/milkyway-gaia-4k.jpg'

@@ -236,6 +236,9 @@ body.nogl #sheet { top: calc(60px + var(--sat)); bottom: calc(150px + var(--sab)
 .prow.off { opacity: .55; }
 .listHead { margin: 12px 0 2px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
 .when { font-size: 14px; }
+.panel .about { font-size: 13.5px; line-height: 1.45; color: #d6e0f7; margin: 6px 0 8px; }
+.panel .about:empty { display: none; }
+#objActions .wiki { border-color: rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.06); }
 .when b { font-variant-numeric: tabular-nums; }
 #objFacts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 10px 0; font-size: 13px; }
 #objFacts dt { color: var(--muted); }
