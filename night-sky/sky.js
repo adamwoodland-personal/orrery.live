@@ -182,20 +182,31 @@ const dome = new THREE.Mesh(
 dome.renderOrder = -10;
 scene.add(dome);
 
-// ---- Milky Way: the orrery's galactic panorama, faint, only when dark ------
+// ---- Milky Way: NASA SVS "Deep Star Maps 2020" (Gaia DR2), only when dark -----
+// The milkyway_2020 layer is the band and the faint stars WITHOUT the bright ones (the
+// catalogue points above draw those), tone-mapped by ReferenceFiles/orrery-sky/gen-milkyway.py.
+// It is plate carrée in J2000 RA/Dec: RA 0h in the middle, RA increasing to the left, north up.
+// On an unrotated SphereGeometry that puts (RA, Dec) at (cos d cos RA, sin d, cos d sin RA) — a
+// mirror image of this group's frame (cos d cos RA, cos d sin RA, sin d) — so the texture is
+// flipped in u and the sphere turned +90° about x: local (x, y, z) -> (x, -z, y).
+// 8k (3.9 MB) on desktop GPUs, 4k (1.1 MB) on phones, like the orrery's own Milky Way.
+const MILKY_MAX = 0.42; // opacity when fully dark (this map is far brighter than the old one)
 let milky = null;
 function ensureMilky() {
-	if (milky) return;
-	const ngp = eqVec(192.85948, 27.12825), gc = eqVec(266.40499, -28.93617);
-	const gy = new THREE.Vector3().crossVectors(ngp, gc).normalize();
-	const basis = new THREE.Matrix4().makeBasis(gc, ngp, gy.negate());
-	const tex = new THREE.TextureLoader().load('/textures/4k_stars_milky_way.jpg', () => { dirty = true; });
+	if (milky || !renderer) return;
+	const mobile = /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent) ||
+		(matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 820);
+	const file = !mobile && renderer.capabilities.maxTextureSize >= 8192 ? 'milkyway-gaia-8k.jpg' : 'milkyway-gaia-4k.jpg';
+	const tex = new THREE.TextureLoader().load('/textures/' + file, () => { dirty = true; });
 	tex.colorSpace = THREE.SRGBColorSpace;
+	tex.wrapS = THREE.RepeatWrapping;
+	tex.repeat.x = -1;
+	tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
 	milky = new THREE.Mesh(
-		new THREE.SphereGeometry(R * 1.1, 64, 32),
+		new THREE.SphereGeometry(R * 1.1, 96, 48),
 		new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, depthTest: false })
 	);
-	milky.quaternion.setFromRotationMatrix(basis);
+	milky.rotation.x = Math.PI / 2;
 	milky.renderOrder = -9;
 	skyGroup.add(milky);
 }
@@ -237,7 +248,19 @@ const pointShader = {
 			gl_FragColor = vec4(vColor, vAlpha * core * core * 1.4);
 		}`
 };
-const starLabels = [];       // { v (eq unit Vector3), name, mag, el }
+const starLabels = [];       // { i, v (eq unit Vector3), name, mag, proper, el, w } — sorted brightest first
+// HYG labels are proper names ("Mizar") or Bayer/Flamsteed designations ("Gam2Vel", "13Zet Oph",
+// "Mu  Vel", "16    Lyr"); the latter are shown the usual way ("γ² Vel", "ζ Oph", "16 Lyr").
+const isProperName = (n) => !!n && !/\d/.test(n) && !/^[A-Z][a-z]{1,2}\s+[A-Z][A-Za-z]{2}$/.test(n) && !/\s{2,}/.test(n);
+const GREEK = { Alp: 'α', Bet: 'β', Gam: 'γ', Del: 'δ', Eps: 'ε', Zet: 'ζ', Eta: 'η', The: 'θ', Iot: 'ι', Kap: 'κ', Lam: 'λ', Mu: 'μ', Nu: 'ν', Xi: 'ξ', Omi: 'ο', Pi: 'π', Rho: 'ρ', Sig: 'σ', Tau: 'τ', Ups: 'υ', Phi: 'φ', Chi: 'χ', Psi: 'ψ', Ome: 'ω' };
+const SUPER = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+function designation(raw) {
+	const m = raw.match(/^(\d{0,3})\s*([A-Z][a-z]{1,2})?\s*(\d?)\s*([A-Z][A-Za-z]{2})$/);
+	if (!m) return '';
+	const [, num, letter, sup, con] = m;
+	if (letter && GREEK[letter]) return GREEK[letter] + (sup ? SUPER[+sup] : '') + ' ' + con;
+	return num ? num + ' ' + con : '';
+}
 const starIndex = [];        // { v, mag, name, bv } for picking
 const starMat = new THREE.ShaderMaterial({
 	uniforms: { uPixelRatio: { value: renderer ? renderer.getPixelRatio() : 1 }, uLimit: { value: 5.5 }, uZoom: { value: 1 } },
@@ -255,12 +278,13 @@ const starMat = new THREE.ShaderMaterial({
 		col[i * 3] = r; col[i * 3 + 1] = g; col[i * 3 + 2] = b;
 		siz[i] = clamp(8.5 - m * 1.25, 1.8, 11);
 		mag[i] = m;
-		const name = (label || '').trim();
-		// Proper names only (the catalogue also carries Bayer/Flamsteed labels such as "16 Lyr").
-		const proper = name && !/\d|^[A-Z][a-z]{1,2}\s+[A-Z][A-Za-z]{2}$/.test(name) && !/\s{2,}/.test(name) ? name : '';
-		starIndex.push({ v, mag: m, name: proper, bv });
-		if (proper && m < 2.6) starLabels.push({ v, name: proper, mag: m, el: null });
+		const raw = (label || '').trim();
+		const proper = isProperName(raw) ? raw : '';
+		const desig = proper ? '' : designation(raw);
+		starIndex.push({ v, mag: m, name: proper, desig, bv });
+		if (proper || desig) starLabels.push({ i, v, name: proper || desig, mag: m, proper: !!proper, el: null, w: 0 });
 	}
+	starLabels.sort((a, b) => a.mag - b.mag);
 	const geo = new THREE.BufferGeometry();
 	geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
 	geo.setAttribute('aColor', new THREE.BufferAttribute(col, 3));
@@ -412,16 +436,44 @@ function makeLabel(cls, text) {
 	labelsEl.appendChild(el);
 	return el;
 }
-for (const b of Object.values(bodyObjs)) { b.el = makeLabel('b-label', b.name); b.el.style.color = BODY_COLOR[b.name]; }
-for (const s of starLabels) s.el = makeLabel('s-label', s.name);
-for (const c of constLabels) c.el = makeLabel('c-label', c.name);
-const COMPASS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'].map((t, i) => ({ az: i * 45, el: makeLabel('k-label' + (i % 2 ? ' minor' : '') + (i === 0 ? ' n' : ''), t) }));
+// Label footprints for the declutter, measured once with the label fonts (see sky.css).
+const measureCtx = document.createElement('canvas').getContext('2d');
+function textW(text, font, spacing = 0) { measureCtx.font = font + ' -apple-system, "Segoe UI", system-ui, sans-serif'; return measureCtx.measureText(text).width + spacing * text.length; }
+for (const b of Object.values(bodyObjs)) { b.el = makeLabel('b-label', b.name); b.el.style.color = BODY_COLOR[b.name]; b.w = textW(b.name, '650 12.5px', 0.25); }
+for (const st of starLabels) { st.el = makeLabel(st.proper ? 's-label' : 's-label d', st.name); st.w = textW(st.name, st.proper ? '500 10.5px' : '500 9.5px', 0.3); }
+for (const c of constLabels) { c.el = makeLabel('c-label', c.name); c.w = textW(c.name.toUpperCase(), '600 9.5px', 1.52); }
+const COMPASS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'].map((t, i) => ({ az: i * 45, el: makeLabel('k-label' + (i % 2 ? ' minor' : '') + (i === 0 ? ' n' : ''), t), w: textW(t, i % 2 ? '600 11px' : '700 14px') }));
 const GRID_LABELS = [15, 30, 45, 60, 75].map((alt) => ({ alt, el: makeLabel('g-label', alt + '°') }));
 
 const _v = new THREE.Vector3();
 function project(world) { // -> {x, y, on} in CSS pixels; on = in front of the camera
 	_v.copy(world).project(camera);
 	return { x: (_v.x * 0.5 + 0.5) * innerWidth, y: (-_v.y * 0.5 + 0.5) * innerHeight, on: _v.z < 1 && _v.z > -1 };
+}
+// Declutter: labels claim screen boxes in priority order; one that would overlap an already
+// placed label is hidden this frame. A coarse grid keeps it cheap with ~1,500 candidates.
+const CELL = 96;
+let occ = new Map();
+function claim(x, y, w, h) {
+	const x0 = x - w / 2 - 3, x1 = x + w / 2 + 3, y0 = y - h / 2 - 1, y1 = y + h / 2 + 1;
+	const cx0 = Math.floor(x0 / CELL), cx1 = Math.floor(x1 / CELL), cy0 = Math.floor(y0 / CELL), cy1 = Math.floor(y1 / CELL);
+	for (let cx = cx0; cx <= cx1; cx++) for (let cy = cy0; cy <= cy1; cy++) {
+		const list = occ.get(cx * 10007 + cy);
+		if (list) for (const r of list) if (x0 < r[2] && x1 > r[0] && y0 < r[3] && y1 > r[1]) return false;
+	}
+	const r = [x0, y0, x1, y1];
+	for (let cx = cx0; cx <= cx1; cx++) for (let cy = cy0; cy <= cy1; cy++) {
+		const k = cx * 10007 + cy;
+		const list = occ.get(k);
+		if (list) list.push(r); else occ.set(k, [r]);
+	}
+	return true;
+}
+// Like place(), but only if the label's box is free (force: always place, still reserving the box).
+function placeFree(el, p, dx, dy, w, h, force) {
+	if (!p.on || p.x < -80 || p.x > innerWidth + 80 || p.y < -40 || p.y > innerHeight + 40) { if (!el.hidden) el.hidden = true; return false; }
+	if (!claim(p.x + dx, p.y + dy, w, h) && !force) { if (!el.hidden) el.hidden = true; return false; }
+	return place(el, p, dx, dy);
 }
 function place(el, p, dx, dy) {
 	if (!p.on || p.x < -80 || p.x > innerWidth + 80 || p.y < -40 || p.y > innerHeight + 40) { if (!el.hidden) el.hidden = true; return false; }
@@ -486,7 +538,7 @@ function updateSky(force) {
 	groundMat.uniforms.uDay.value = clamp((sunAlt + 6) / 12, 0, 1);
 	starMat.uniforms.uLimit.value = limitingMag(sunAlt);
 	lineMat.opacity = 0.42 * clamp((-sunAlt + 1) / 11, 0.1, 1);
-	if (milky) milky.material.opacity = state.opts.milky ? 0.32 * clamp((-sunAlt - 12) / 6, 0, 1) : 0;
+	if (milky) milky.material.opacity = state.opts.milky ? MILKY_MAX * clamp((-sunAlt - 12) / 6, 0, 1) : 0;
 	const ph = A.moonPhase(state.t);
 	state.moonPhase = ph;
 	drawMoon(ph.fraction);
@@ -543,9 +595,20 @@ function layoutBodies() {
 }
 const _tmp = new THREE.Vector3();
 
-function labelStarLimit() { return camera.fov > 75 ? 1.0 : camera.fov > 45 ? 1.6 : camera.fov > 25 ? 2.2 : 2.6; }
+// Faintest named star labelled at this zoom; designations ("γ Vel") only once well zoomed in.
+// The declutter keeps them apart, so these can be generous.
+function properLimit() { const f = camera.fov; return f > 80 ? 2.2 : f > 60 ? 2.7 : f > 42 ? 3.3 : f > 28 ? 4.0 : f > 18 ? 4.6 : 5.1; }
+function desigLimit() { const f = camera.fov; return f > 60 ? -99 : f > 42 ? 2.6 : f > 28 ? 3.4 : f > 18 ? 4.2 : 5.1; }
 function updateLabels() {
 	const sel = state.selected;
+	occ = new Map();
+	// The floating controls count as occupied, so optional names don't hide half under them.
+	for (const id of ['topBar', 'arBar', 'chips', 'timeRow', 'scrubWrap', 'actionRow', 'rangeNote']) {
+		const el = $(id);
+		if (!el || el.hidden || !el.offsetParent) continue;
+		const r = el.getBoundingClientRect();
+		if (r.width && r.height) claim((r.left + r.right) / 2, (r.top + r.bottom) / 2, r.width, r.height);
+	}
 	for (const name of BODIES) {
 		const b = bodyObjs[name];
 		const p = project(b.sprite.position);
@@ -553,18 +616,29 @@ function updateLabels() {
 		if (!visible) { b.el.hidden = true; continue; }
 		const r = b.sprite.scale.x / (R * 0.9) / DEG * innerHeight / camera.fov / 2; // sprite radius in px
 		const ringPx = sel && sel.key === name ? selRing.scale.x / (R * 0.9) / DEG * innerHeight / camera.fov / 2 * 0.84 : 0;
-		if (place(b.el, p, 0, Math.max(14, r * 0.55 + 10, ringPx + 9))) {
+		if (placeFree(b.el, p, 0, Math.max(14, r * 0.55 + 10, ringPx + 9), b.w, 15, true)) {
 			b.el.classList.toggle('below', b.alt < -0.5);
 			b.el.classList.toggle('sel', !!(sel && sel.key === name));
 		}
 	}
+	for (const k of COMPASS) placeFree(k.el, project(azAltToScene(k.az, 0.6, R * 0.95)), 0, -9, k.w, 16, true);
 	const showStars = state.opts.snames && sunAlt < -4;
-	const lim = labelStarLimit();
-	for (const s of starLabels) {
-		if (!showStars || s.mag > lim) { s.el.hidden = true; continue; }
-		_tmp.copy(s.v).multiplyScalar(R).applyMatrix4(eqToScene);
-		if (_tmp.y < -0.5 && state.opts.ground) { s.el.hidden = true; continue; }
-		place(s.el, project(_tmp), 0, 11);
+	const pLim = showStars ? properLimit() : -99, dLim = showStars ? desigLimit() : -99;
+	const selStar = sel && sel.kind === 'star' ? sel.key : -1;
+	const starLabel = (st, force) => {
+		_tmp.copy(st.v).multiplyScalar(R).applyMatrix4(eqToScene);
+		if (_tmp.y < -0.5 && state.opts.ground) { st.el.hidden = true; return; }
+		placeFree(st.el, project(_tmp), 0, 11, st.w, 12, force);
+	};
+	// A selected star keeps its label whatever the zoom.
+	const done = new Set();
+	for (const st of starLabels) if (st.i === selStar && (st.proper || st.name)) { starLabel(st, true); done.add(st); }
+	// Brightest stars, then constellation names, then the rest of the named stars, then designations.
+	const BRIGHT = 2.0;
+	for (const st of starLabels) {
+		if (st.mag >= BRIGHT) break;
+		if (done.has(st)) continue;
+		if (st.proper && st.mag <= pLim) { starLabel(st, false); done.add(st); }
 	}
 	const showC = state.opts.cnames && sunAlt < -4 && camera.fov < 95;
 	// Big/famous figures always; the rest as you zoom in (phones would otherwise drown in names).
@@ -573,9 +647,14 @@ function updateLabels() {
 		if (!showC || c.rank > maxRank) { c.el.hidden = true; continue; }
 		_tmp.copy(c.v).multiplyScalar(R).applyMatrix4(eqToScene);
 		if (_tmp.y < 2 && state.opts.ground) { c.el.hidden = true; continue; }
-		place(c.el, project(_tmp), 0, 0);
+		placeFree(c.el, project(_tmp), 0, 0, c.w, 11, false);
 	}
-	for (const k of COMPASS) place(k.el, project(azAltToScene(k.az, 0.6, R * 0.95)), 0, -9);
+	for (const st of starLabels) {
+		if (done.has(st)) continue;
+		const lim = st.proper ? pLim : dLim;
+		if (st.mag > lim) { if (!st.el.hidden) st.el.hidden = true; continue; }
+		starLabel(st, false);
+	}
 	for (const g of GRID_LABELS) {
 		if (!state.opts.grid) { g.el.hidden = true; continue; }
 		const az = Math.round(state.look.az / 30) * 30 + 15;
@@ -920,7 +999,7 @@ function showObject(sel) {
 		const s = starIndex[sel.key];
 		const w = _tmp.copy(s.v).applyMatrix4(eqToScene), aa = sceneToAzAlt(w);
 		const [ra, dec] = STARS[sel.key];
-		$('objName').textContent = s.name || 'Star';
+		$('objName').textContent = s.name || s.desig || 'Star';
 		$('objName').style.color = '#cfe0ff';
 		$('objSub').textContent = `Star · in ${constellationAt(ra, dec)}`;
 		$('objWhen').textContent = aa.alt < 0 ? 'Below the horizon right now.' : '';
@@ -991,8 +1070,10 @@ function fillTzSelect() {
 (function () {
 	let y0 = null;
 	const head = $('sheetHead');
-	head.addEventListener('pointerdown', (e) => { y0 = e.clientY; head.setPointerCapture(e.pointerId); });
-	head.addEventListener('pointerup', (e) => { if (y0 != null && e.clientY - y0 > 40) closeSheet(); y0 = null; });
+	// Not from the close button (capturing the pointer there stole its click), and no capture at all:
+	// a downward swipe that ends anywhere still counts via the window listener below.
+	head.addEventListener('pointerdown', (e) => { y0 = e.target.closest('button') ? null : e.clientY; });
+	addEventListener('pointerup', (e) => { if (y0 != null && e.clientY - y0 > 40) closeSheet(); y0 = null; });
 })();
 
 // ---- Time controls -----------------------------------------------------------------------------
@@ -1156,7 +1237,7 @@ function applyOpts() {
 	if (o.milky) ensureMilky();
 	groundMat.uniforms.uOpacity.value = o.ground ? (camOn() ? 0.55 : 0.94) : 0.0;
 	$('redFilter').hidden = !o.red;
-	if (milky) milky.material.opacity = o.milky ? 0.32 * clamp((-sunAlt - 12) / 6, 0, 1) : 0;
+	if (milky) milky.material.opacity = o.milky ? MILKY_MAX * clamp((-sunAlt - 12) / 6, 0, 1) : 0;
 	for (const [k, id] of Object.entries(OPT_IDS)) $(id).checked = !!o[k];
 	dirty = true;
 }
@@ -1338,10 +1419,10 @@ function updateReticle() {
 	if (!best) {
 		let sd = 3.5 * camera.fov / 67;
 		for (const s of starIndex) {
-			if (!s.name || s.mag > 3) continue;
+			if (!(s.name || s.desig) || s.mag > 3.5) continue;
 			_tmp.copy(s.v).applyMatrix4(eqToScene);
 			const d = Math.acos(clamp(fwd.dot(_tmp), -1, 1)) / DEG;
-			if (d < sd) { sd = d; best = s.name; }
+			if (d < sd) { sd = d; best = s.name || s.desig; }
 		}
 	}
 	if (!best) {

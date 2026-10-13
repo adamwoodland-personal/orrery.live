@@ -167,6 +167,7 @@ body.nogl #sheet { top: calc(60px + var(--sat)); bottom: calc(150px + var(--sab)
 .b-label.below { opacity: .45; }
 .b-label.sel { color: #ffd27a !important; }
 .s-label { font: 500 10.5px/1 var(--font); color: #a9bce6; opacity: .8; letter-spacing: .03em; }
+.s-label.d { font-size: 9.5px; opacity: .6; color: #9db0da; letter-spacing: .02em; }
 .c-label { font: 600 9.5px/1 var(--font); color: rgba(150, 178, 235, 0.55); letter-spacing: .16em; text-transform: uppercase; }
 .k-label { font: 700 14px/1 var(--font); color: #d2ddf7; letter-spacing: .04em; }
 .k-label.minor { font-size: 11px; font-weight: 600; color: rgba(210, 221, 247, 0.6); }
