@@ -1401,7 +1401,7 @@ async function startAR() {
 	try { ar.decl = declination(state.place.lat, state.place.lon, decimalYear(new Date())); } catch (e) { ar.decl = 0; }
 	document.body.classList.add('ar');
 	$('topBar').hidden = true; $('arBar').hidden = false; $('reticle').hidden = false;
-	arStatus(ar.src.status);
+	updateTimeUI(); // shows Back to now at once when the map is on another time; also sets the status
 	try { ar.wake = await navigator.wakeLock.request('screen'); } catch (e) { ar.wake = null; }
 	dirty = true;
 	void ok;

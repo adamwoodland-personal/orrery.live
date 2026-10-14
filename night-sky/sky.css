@@ -77,9 +77,13 @@ svg { display: block; flex: 0 0 auto; }
 #arStatus.off { color: #ffe2b0; background: rgba(110, 70, 10, 0.88); border-color: rgba(255, 190, 90, 0.6); }
 #arStatus.off b { display: block; color: #fff3dc; }
 #arStatus.off .msg { display: block; margin-top: 3px; color: var(--text); }
-/* With a third button up, the status gets its own full-width row under the buttons. */
-#arBar { flex-wrap: wrap; }
-body.offnow #arStatus { order: 1; flex: 1 0 100%; max-width: none; margin-right: 0; }
+/* With a third button up: the status fills the left of two rows, Camera + Done sit to its right
+   and Back to now spans beneath them, so no corner of the screen goes to waste. */
+body.ar.offnow #arBar { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: start; }
+body.ar.offnow #arStatus { grid-column: 1; grid-row: 1 / span 2; align-self: stretch; max-width: none; margin: 0; }
+body.ar.offnow #camBtn { grid-column: 2; grid-row: 1; }
+body.ar.offnow #arExit { grid-column: 3; grid-row: 1; }
+body.ar.offnow #arNow { grid-column: 2 / span 2; grid-row: 2; }
 #arNow, #timeRow.offnow #nowBtn { border-color: #ffd27a; background: #ffc35a; color: #1c1200; }
 /* ... and a thin amber frame round the screen, so it can't be missed while looking up. */
 body.ar.offnow::after {
