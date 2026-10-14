@@ -483,11 +483,12 @@ function place(el, p, dx, dy) {
 }
 
 // ---- Time, place and the night ------------------------------------------------------
-let fmtTime, fmtDay, fmtDate, fmtZone;
+let fmtTime, fmtDay, fmtDayY, fmtDate, fmtZone;
 function setFormatters() {
 	const tz = state.place.tz;
 	fmtTime = new Intl.DateTimeFormat(undefined, { timeZone: tz, hour: 'numeric', minute: '2-digit' });
 	fmtDay = new Intl.DateTimeFormat(undefined, { timeZone: tz, weekday: 'short', day: 'numeric', month: 'short' });
+	fmtDayY = new Intl.DateTimeFormat(undefined, { timeZone: tz, weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 	fmtDate = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' });
 	fmtZone = new Intl.DateTimeFormat(undefined, { timeZone: tz, timeZoneName: 'short' });
 }
@@ -497,6 +498,21 @@ function zoneName(d) {
 	return part ? part.value : state.place.tz;
 }
 const localDate = (d) => fmtDate.format(daysToDate(d)); // YYYY-MM-DD in the place's zone
+// "Wed 15 Oct", with the year when it is not this year (an orrery link can land in 2030).
+const dayStr = (d) => (localDate(d).slice(0, 4) === localDate(dateToDays(new Date())).slice(0, 4) ? fmtDay : fmtDayY).format(daysToDate(d));
+// How far the shown moment is from now: "in 5 h", "3 days ago".
+function fromNow(t) {
+	const diff = t - dateToDays(new Date()), a = Math.abs(diff), min = Math.round(a * 1440);
+	const s = min < 1 ? 'under a minute'
+		: min < 60 ? `${min} min`
+		: min < 180 ? `${Math.floor(min / 60)} h${min % 60 ? ` ${min % 60} min` : ''}`
+		: a < 2 ? `${Math.round(a * 24)} h`
+		: a < 61 ? `${Math.round(a)} days`
+		: a < 730 ? `${Math.round(a / 30.44)} months`
+		: `${Math.round(a / 365.25).toLocaleString()} years`;
+	return diff > 0 ? `in ${s}` : `${s} ago`;
+}
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 let matrixT = NaN, matrixPlace = null, moonKey = '';
 const eqToScene = new THREE.Matrix4();
@@ -896,7 +912,7 @@ $('chips').addEventListener('wheel', (e) => {
 function renderTonight() {
 	if (!tonight) return;
 	const n = tonight.night;
-	$('tonightPlace').textContent = `${state.place.label} · ${fmtDay.format(daysToDate(n.start + 0.1))}`;
+	$('tonightPlace').textContent = `${state.place.label} · ${dayStr(n.start + 0.1)}`;
 	$('tzNote').textContent = `${state.place.name} (${zoneName(state.t)})`;
 	const st = $('sunTimes');
 	st.textContent = '';
@@ -1143,23 +1159,40 @@ function setTime(t, live) {
 function updateTimeUI() {
 	const d = daysToDate(state.t);
 	$('timeMain').textContent = fmtTime.format(d);
-	const n = state.night;
-	const today = localDate(dateToDays(new Date()));
-	const nightStartDate = n ? localDate(n.start + 0.02) : '';
-	let rel = '';
-	if (state.live) rel = 'Now';
-	else if (nightStartDate === today) rel = 'Tonight';
-	$('timeSub').textContent = [rel, fmtDay.format(d), state.place.tz !== deviceTz ? zoneName(state.t) : ''].filter(Boolean).join(' · ');
-	$('nowBtn').classList.toggle('live', state.live);
-	$('nowBtn').setAttribute('aria-pressed', String(state.live));
-	if (n) $('scrub').value = String(Math.round(clamp((state.t - n.start) / (n.end - n.start), 0, 1) * 1000));
+	const n = state.night, live = state.live;
+	// Not now: the time row turns amber, leads with how far off the shown moment is ("In 5 h"),
+	// and its Now button becomes the loudest thing in it.
+	const rel = live ? 'Now' : cap(fromNow(state.t));
+	const rest = [dayStr(state.t), state.place.tz !== deviceTz ? zoneName(state.t) : ''].filter(Boolean).join(' · ');
+	const sub = $('timeSub');
+	if (sub.dataset.k !== rel + '|' + rest) {
+		sub.dataset.k = rel + '|' + rest;
+		const r = document.createElement('b');
+		r.className = 'rel';
+		r.textContent = rel;
+		sub.replaceChildren(r, ' · ' + rest);
+	}
+	$('timeRow').classList.toggle('offnow', !live);
+	document.body.classList.toggle('offnow', !live);
+	const nb = $('nowBtn'), label = live ? 'Live' : 'Back to now';
+	if (nb.textContent !== label) {
+		nb.textContent = label;
+		nb.title = live ? 'Showing the sky right now' : 'Back to the sky right now';
+	}
+	nb.classList.toggle('live', live);
+	if (n) {
+		$('scrub').value = String(Math.round(clamp((state.t - n.start) / (n.end - n.start), 0, 1) * 1000));
+		// Daylight before the night's window: the thumb has no true place on the bar, so it fades and the bar says so.
+		$('scrubWrap').classList.toggle('day', state.t < n.start - 1e-6);
+	}
 	$('datePick').value = localDate(n ? n.start + 0.02 : state.t);
 	const msg = state.rangeMsg || (state.t < T_GOOD_MIN || state.t > T_GOOD_MAX
 		? 'Approximate: this map is most accurate between 1800 and 2200. This far out, positions can be off by up to about half a degree and times by a minute or two.' : '');
 	const note = $('rangeNote');
 	if (note.textContent !== msg) note.textContent = msg;
 	note.hidden = !msg;
-	$('arNow').hidden = !(ar.on && !state.live);
+	$('arNow').hidden = !(ar.on && !live);
+	if (ar.on && ar.src) arStatus(ar.src.status);
 }
 function renderScrub() {
 	const n = state.night, wrap = $('scrubWrap'), ticks = $('scrubTicks');
@@ -1215,13 +1248,16 @@ $('datePick').addEventListener('click', (e) => { try { e.target.showPicker(); } 
 
 // ---- Place: search, GPS ---------------------------------------------------------------------------
 function setPlace(pl, why) {
+	// A time picked inside the night stays in the night at the new place; any other moment
+	// (an orrery link to a daytime instant, say) is kept exactly.
+	const n0 = state.night, inNight = !state.live && n0 && state.t >= n0.start && state.t <= n0.end;
 	state.place = { ...pl, why };
 	setFormatters();
 	$('placeName').textContent = state.place.name;
 	state.night = null;
 	if (state.live) state.t = dateToDays(new Date());
 	computeTonight();
-	if (!state.live && (state.t < state.night.start || state.t > state.night.end)) setTime(defaultTimeFor(state.night), false);
+	if (inNight && (state.t < state.night.start || state.t > state.night.end)) setTime(defaultTimeFor(state.night), false);
 	updateSky(true);
 	updateTimeUI();
 	save();
@@ -1353,6 +1389,7 @@ $('arNow').addEventListener('click', () => { setTime(dateToDays(new Date()), tru
 $('camBtn').addEventListener('click', () => camOn() ? stopCamera() : startCamera());
 async function startAR() {
 	closeSheet();
+	clearTimeout(toastTimer); $('toast').classList.remove('show'); // start-up hints would cover the AR status
 	ar.src = new OrientationSource();
 	ar.src.onstatus = arStatus;
 	let ok = false;
@@ -1373,14 +1410,22 @@ function arStatus(s) {
 	const el = $('arStatus');
 	if (!ar.on) return;
 	const unsure = ar.src && ar.src.accuracy != null && ar.src.accuracy >= 25;
-	if (s === 'ok') el.textContent = unsure ? 'Compass is unsure: move your phone in a figure of eight'
-		: !state.live ? `Showing ${fmtTime.format(daysToDate(state.t))}, ${fmtDay.format(daysToDate(state.t))}, not the sky right now`
-		: 'Drag sideways to line up · pinch to zoom';
-	// iPhone: the compass offset is learnt while the phone is flat or upright facing the horizon.
-	else if (s === 'waiting') el.textContent = unsure ? 'Move your phone in a figure of eight to wake the compass' : ar.src && ar.src.calibrating ? 'Hold the phone upright, facing the horizon, for a moment' : 'Starting the compass…';
-	else if (s === 'relative-only') el.textContent = IOS ? 'This phone is not giving a compass direction, so the map cannot follow it.' :'This browser gives no compass direction. Try Chrome.';
-	else if (s === 'unsupported') el.textContent = 'No motion sensors found on this device.';
-	else if (s === 'denied') el.textContent = 'Motion sensors are blocked for this site.';
+	const msg = s === 'ok' ? (unsure ? 'Compass is unsure: move your phone in a figure of eight' : state.live ? 'Drag sideways to line up · pinch to zoom' : '')
+		// iPhone: the compass offset is learnt while the phone is flat or upright facing the horizon.
+		: s === 'waiting' ? (unsure ? 'Move your phone in a figure of eight to wake the compass' : ar.src && ar.src.calibrating ? 'Hold the phone upright, facing the horizon, for a moment' : 'Starting the compass…')
+		: s === 'relative-only' ? (IOS ? 'This phone is not giving a compass direction, so the map cannot follow it.' : 'This browser gives no compass direction. Try Chrome.')
+		: s === 'unsupported' ? 'No motion sensors found on this device.'
+		: s === 'denied' ? 'Motion sensors are blocked for this site.' : null;
+	if (msg == null) return;
+	// Another time: amber, and said first, above any compass message.
+	el.classList.toggle('off', !state.live);
+	if (state.live) { el.textContent = msg; return; }
+	const b = document.createElement('b'), when = document.createElement('span');
+	b.textContent = 'Not the sky right now';
+	when.textContent = `${fmtTime.format(daysToDate(state.t))} · ${dayStr(state.t)} · ${fromNow(state.t)}`;
+	const parts = [b, when];
+	if (msg) { const m = document.createElement('span'); m.className = 'msg'; m.textContent = msg; parts.push(m); }
+	el.replaceChildren(...parts);
 }
 function stopAR() {
 	if (!ar.on) return;
@@ -1497,7 +1542,8 @@ function updateReticle() {
 }
 
 // ---- Defaults: when to show, where to look --------------------------------------------------------
-// Opening in daylight shows tonight instead: the page answers "what can I see tonight".
+// A good time to look on night n: half an hour after nautical dusk. Used when a time picked in the
+// night lands in daylight at a newly chosen place. (The page itself always opens on now, or a link's ?t=.)
 function defaultTimeFor(n) {
 	if (n.polar === 'day' || n.sunset == null) return state.t;
 	const dark = n.nauticalDusk ?? n.civilDusk ?? n.sunset + 1 / 24;
@@ -1535,7 +1581,11 @@ function frame(now) {
 		updateTimeUI();
 		dirty = true;
 	}
-	if (now - lastNightCheck > 60000) { lastNightCheck = now; if (state.night && state.t > state.night.end) computeTonight(); }
+	if (now - lastNightCheck > 60000) {
+		lastNightCheck = now;
+		if (state.night && state.t > state.night.end) computeTonight();
+		if (!state.live) updateTimeUI(); // "in 5 h" counts down
+	}
 	if (anim) { anim(now); dirty = true; }
 	if (!drag && !pinch && !ar.on && (Math.abs(vel.az) > 0.01 || Math.abs(vel.alt) > 0.01)) {
 		state.look = { az: wrap360(state.look.az + vel.az), alt: clamp(state.look.alt + vel.alt, -60, 89) };
@@ -1564,11 +1614,9 @@ function frame(now) {
 function start() {
 	setFormatters();
 	$('placeName').textContent = state.place.name;
+	// Always opens on now (or a link's ?t=), never jumps ahead to tonight; in daylight the time bar
+	// and a toast say how to get to the night.
 	computeTonight();
-	if (state.live) {
-		updateSky(true);
-		if (sunAlt > -6 && state.night.polar !== 'day') setTime(defaultTimeFor(state.night), false);
-	}
 	updateSky(true);
 	if (!state.lookFromLink) { const d = defaultLook(); state.look = { az: d.az, alt: d.alt }; state.fov = d.fov; }
 	applyOpts();
@@ -1578,7 +1626,13 @@ function start() {
 	if (renderer) renderer.setAnimationLoop(frame);
 	else setInterval(() => frame(performance.now()), 1000); // keeps the live time and list current
 	requestAnimationFrame(() => { const l = $('loading'); l.classList.add('done'); setTimeout(() => l.remove(), 400); });
-	if (state.place.why === 'guess') toast(`Showing the sky from ${state.place.name}. Tap the place name to change it.`, 4200);
+	const hints = [];
+	if (state.place.why === 'guess') hints.push(`Showing the sky from ${state.place.name}. Tap the place name to change it.`);
+	if (sunAlt > -0.8333 && state.night.polar !== 'day' && state.t < state.night.start) {
+		hints.push(state.live ? 'It’s daytime, so the stars are hidden: slide the time bar to see tonight.'
+			: 'That moment is in daylight, so the stars are hidden: slide the time bar to see the night.');
+	}
+	if (hints.length) toast(hints.join(' '), 2600 + 1800 * hints.length);
 }
 start();
 

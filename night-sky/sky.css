@@ -73,6 +73,19 @@ svg { display: block; flex: 0 0 auto; }
 	background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 	max-width: 60vw;
 }
+/* AR showing another time: the status turns amber and says so first; Now is filled amber. */
+#arStatus.off { color: #ffe2b0; background: rgba(110, 70, 10, 0.88); border-color: rgba(255, 190, 90, 0.6); }
+#arStatus.off b { display: block; color: #fff3dc; }
+#arStatus.off .msg { display: block; margin-top: 3px; color: var(--text); }
+/* With a third button up, the status gets its own full-width row under the buttons. */
+#arBar { flex-wrap: wrap; }
+body.offnow #arStatus { order: 1; flex: 1 0 100%; max-width: none; margin-right: 0; }
+#arNow, #timeRow.offnow #nowBtn { border-color: #ffd27a; background: #ffc35a; color: #1c1200; }
+/* ... and a thin amber frame round the screen, so it can't be missed while looking up. */
+body.ar.offnow::after {
+	content: ""; position: fixed; inset: 0; z-index: 9; pointer-events: none;
+	box-shadow: inset 0 0 0 3px rgba(255, 190, 90, 0.8);
+}
 
 /* ---- Bottom bar: planet chips, time, scrubber, actions ------------------ */
 #bottomBar {
@@ -114,6 +127,13 @@ svg { display: block; flex: 0 0 auto; }
 #datePick { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; color-scheme: dark; }
 #nowBtn { min-height: 32px; padding: 4px 12px; }
 #nowBtn.live { border-color: rgba(120, 230, 170, 0.55); background: rgba(40, 140, 90, 0.45); }
+#nowBtn.live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #7dffb4; box-shadow: 0 0 6px #7dffb4; animation: livePulse 2s ease-in-out infinite; }
+@keyframes livePulse { 50% { opacity: 0.35; } }
+/* Not now: the row turns amber and its sub-line leads with "In 5 h" / "3 days ago". */
+#timeSub .rel { font-weight: 650; }
+#timeRow.offnow { border-color: rgba(255, 190, 90, 0.6); background: rgba(56, 36, 6, 0.9); }
+#timeRow.offnow #timeSub { color: rgba(255, 226, 176, 0.8); }
+#timeRow.offnow #timeSub .rel { color: #ffc35a; }
 #scrubWrap { position: relative; height: 34px; border-radius: 12px; border: 1px solid var(--line); background: #0a1020; }
 #scrub {
 	position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
@@ -135,6 +155,14 @@ svg { display: block; flex: 0 0 auto; }
 }
 .tick.right span { left: auto; right: 4px; }
 .tick.now::before { border-left: 2px solid rgba(120, 230, 170, 0.85); }
+/* Daylight before the night's window: the thumb fades and the bar says what to do. */
+#scrubHint {
+	display: none; position: absolute; left: 0; right: 0; top: 4px; text-align: center; pointer-events: none;
+	font-size: 11px; line-height: 1; color: rgba(237, 242, 255, 0.85); text-shadow: 0 0 3px #000;
+}
+#scrubWrap.day #scrubHint { display: block; }
+#scrubWrap.day #scrub::-webkit-slider-thumb { opacity: 0.4; }
+#scrubWrap.day #scrub::-moz-range-thumb { opacity: 0.4; }
 #actionRow { display: flex; gap: 8px; }
 #actionRow .pill { flex: 1 1 0; min-width: 0; }
 
@@ -305,6 +333,7 @@ body.ar canvas#sky { cursor: default; }
 }
 @media (prefers-reduced-motion: reduce) {
 	#sheet, #toast, #loading { transition: none; }
+	#nowBtn.live::before { animation: none; }
 }
 .weekList { margin: 6px 0 6px 18px; }
 .weekList li { margin: 3px 0; }

@@ -123,7 +123,7 @@
 			<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 4.5h2.4l1.2-1.8h3.8l1.2 1.8h2.4v7h-11z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="7" cy="7.8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
 			Camera
 		</button>
-		<button id="arNow" class="chip" hidden title="Show the sky right now">Now</button>
+		<button id="arNow" class="chip" hidden title="Show the sky right now">Back to now</button>
 		<button id="arExit" class="chip">Done</button>
 	</div>
 
@@ -141,11 +141,12 @@
 			<button id="nextNight" class="iconBtn" title="Next night" aria-label="Next night">
 				<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2.5 9.5 7 5 11.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
 			</button>
-			<button id="nowBtn" class="chip" title="Back to the sky right now">Now</button>
+			<button id="nowBtn" class="chip live" title="Showing the sky right now">Live</button>
 		</div>
 		<div id="scrubWrap">
 			<input type="range" id="scrub" min="0" max="1000" step="1" value="0" aria-label="Time through the night">
 			<div id="scrubTicks" aria-hidden="true"></div>
+			<span id="scrubHint" aria-hidden="true">Daytime · slide to see the night</span>
 		</div>
 		<div id="actionRow">
 			<button id="tonightBtn" class="pill" aria-haspopup="dialog">
@@ -175,7 +176,7 @@
 				<p class="msg noglMsg">This browser can’t draw the sky map (WebGL is switched off or not supported), but everything below still works: tonight’s planets, times and directions for any place and date.</p>
 				<div id="sunTimes" class="sunTimes"></div>
 				<div id="tonightList">
-					<!-- snap:week --><p>The planets this week (as of 13 Oct 2026), seen from anywhere on Earth:</p><ul class="weekList"><li><b>Mercury</b> is in the evening sky after sunset.</li><li><b>Venus</b> is in the evening sky after sunset.</li><li><b>Mars</b> is in the morning sky before sunrise.</li><li><b>Jupiter</b> is in the morning sky before sunrise.</li><li><b>Saturn</b> is up most of the night.</li></ul><p>Pick your location to see exact times, directions and the Moon.</p><!-- /snap:week -->
+					<!-- snap:week --><p>The planets this week (as of 14 Oct 2026), seen from anywhere on Earth:</p><ul class="weekList"><li><b>Mercury</b> is in the evening sky after sunset.</li><li><b>Venus</b> is too close to the Sun to see.</li><li><b>Mars</b> is in the morning sky before sunrise.</li><li><b>Jupiter</b> is in the morning sky before sunrise.</li><li><b>Saturn</b> is up most of the night.</li></ul><p>Pick your location to see exact times, directions and the Moon.</p><!-- /snap:week -->
 				</div>
 				<p class="note">Times are for <span id="tzNote">your location</span>. Uranus and Neptune need binoculars or a telescope.</p>
 			</div>

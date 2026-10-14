@@ -1273,7 +1273,7 @@ document.addEventListener('keydown', (e) => {
 			readSpeed();
 			break;
 		case '0':
-			pausePlayback(); simDays = todayDays(); refreshDateUI();
+			pausePlayback(); simDays = simNowAt = todayDays(); refreshDateUI();
 			break;
 		case 'h': case 'H':
 			goHome();
@@ -1297,6 +1297,9 @@ let simDays = todayDays();
 // unless the link also carries a ?speed= (shared mid-play), applied below.
 const sharedT = parseFloat(params.get('t'));
 if (Number.isFinite(sharedT)) simDays = clampDays(sharedT);
+// The moment the orrery last showed "now" (on load, Today or the 0 key). While the time is untouched
+// the night-sky link opens the live sky, however long the tab has sat paused (see syncSkyLinks).
+let simNowAt = Number.isFinite(sharedT) ? NaN : simDays;
 
 // One bidirectional time slider: −100 (rewind) … 0 (pause) … +100 (forward).
 // `signedDps` is the signed simulated days/second; 0 means paused.
@@ -1367,7 +1370,7 @@ speedSlider.addEventListener('input', readSpeed);
 readSpeed();
 // Jumping to a date stops playback so the chosen moment holds still.
 function pausePlayback() { speedSlider.value = 0; readSpeed(); }
-todayBtn.addEventListener('click', () => { pausePlayback(); simDays = todayDays(); refreshDateUI(); });
+todayBtn.addEventListener('click', () => { pausePlayback(); simDays = simNowAt = todayDays(); refreshDateUI(); });
 // Exact stepping: ±1 day / month / year (pauses playback so the step holds).
 // Month and year steps use real calendar arithmetic, so +1m from 15 Jan lands
 // on 15 Feb, and stepping works across the AD/BC boundary. Shared by the
@@ -2361,17 +2364,19 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 // Night-sky links carry the simulated moment when it is not "now", so the sky map opens
 // on the same date the orrery is showing. The href itself is kept current (not set on
 // click), so middle-click and "Open in new tab" carry the date too. The sky map covers
-// 1000–3000 AD and explains itself if handed a date outside that. No module-level state:
-// refreshDateUI calls this early in start-up, before this point has run.
+// 1000–3000 AD and explains itself if handed a date outside that. No state declared here:
+// refreshDateUI calls this early in start-up, before this point has run (simNowAt sits
+// beside simDays). A time nobody has touched since it was "now" still opens the live sky.
 function syncSkyLinks() {
-	const h = Math.abs(simDays - todayDays()) > 1 / 24 ? `/night-sky/?t=${simDays.toFixed(4)}` : '/night-sky/';
+	const chosen = simDays !== simNowAt && Math.abs(simDays - todayDays()) > 1 / 24;
+	const h = chosen ? `/night-sky/?t=${simDays.toFixed(4)}` : '/night-sky/';
 	for (const id of ['skyLink', 'skyRow']) {
 		const a = document.getElementById(id);
 		if (a && a.getAttribute('href') !== h) a.setAttribute('href', h);
 	}
 }
 syncSkyLinks();
-setInterval(syncSkyLinks, 30000); // a paused view drifts away from "now"
+setInterval(syncSkyLinks, 30000); // a chosen moment drifts more than an hour from "now"
 
 // Headless-test hook (same convention as the other fleet sites).
 window.__ORRERY = { bodies, moonObjs, cometObjs, craftObjs, shown, camera };
