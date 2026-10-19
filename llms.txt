@@ -16,6 +16,7 @@ Technical: static site built on three.js, MIT licensed, installable PWA that wor
 - [Planetary alignments and planet parades](https://orrery.live/planetary-alignment/): upcoming and past planet parade dates (2022 to 2040) with the planets involved, what an alignment really is, and links into the orrery
 - [Where is Halley's Comet now](https://orrery.live/halleys-comet/): live distance from the Sun and Earth, speed and a to-scale map of Halley's orbit; its next perihelion (28 July 2061, on Earth's side of the Sun), famous returns since 240 BC, and its two annual meteor showers
 - [What is an orrery?](https://orrery.live/what-is-an-orrery/): the meaning and pronunciation of "orrery", how mechanical orreries work (gear ratios, why they cannot be to scale), kinds of orrery, and their history from the Antikythera mechanism to today
+- [The perfect alignment?](https://orrery.live/perfect-alignment/): whether all eight planets ever line up; the tightest groupings in 6,000 years (1596 BC, 40°), in 20,000 years of JPL data (5753 AD, 39°) and in a million-year N-body search (863337 AD, 17°); how the rarity scales with the angle (within 30° every ~65,000 years, 20° every ~700,000, 10° every ~40 million, 5° effectively never) and how far ahead any date can be trusted
 - [Sitemap](https://orrery.live/sitemap.xml)
 
 ## Related
