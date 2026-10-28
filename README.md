@@ -21,6 +21,8 @@ comets, spacecraft, a naked-eye star background with constellations, and a time 
 - Two text guides that share the model: [/now/](https://orrery.live/now/) (where every planet is
   right now) and [/planetary-alignment/](https://orrery.live/planetary-alignment/) (planet parade
   dates, past and future).
+- A live Voyager page at [/voyager-1/](https://orrery.live/voyager-1/): where Voyager 1 is right now,
+  the moment it reaches one light-day from Earth (18 November 2026), and the same figures for Voyager 2.
 
 ## How it works
 
