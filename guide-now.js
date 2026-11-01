@@ -7,6 +7,7 @@ import { PLANETS, NAKED_EYE, AU_KM, LIGHT_S_PER_AU, DISPLAY_A, COLOR, dateToDays
          skyPhrase, isRetrograde, nextOpposition, nextElongation, skySpan, fmtDate, fmtDateTime, wrap360 } from './guide-orbits.js';
 import { PARADES } from './guide-parades.js';
 import { fill, toDOM, flatten, listNames } from './guide-ui.js';
+import { seenText } from './guide-alignment.js';
 
 const RAD = 180 / Math.PI;
 const KIND = { Pluto: 'dwarf planet' };
@@ -43,7 +44,7 @@ export function nowView(days) {
 	}
 	const summary = `Evening sky after sunset: ${listNames(groups.evening)}. Morning sky before sunrise: ${listNames(groups.morning)}. ` +
 		`Up most of the night: ${listNames(groups.night)}. Lost in the Sun’s glare: ${listNames(groups.glare)}. ` +
-		'(Uranus needs binoculars; Neptune and Pluto a telescope.)';
+		'(Uranus is at the limit of naked-eye visibility from a dark site and easy in binoculars; Neptune and Pluto need a telescope.)';
 
 	// Top-down map: ecliptic north towards the viewer, 0° longitude to the right,
 	// so the planets run anticlockwise. Orbit spacing as in the orrery's compact view.
@@ -63,11 +64,12 @@ export function nowView(days) {
 	];
 
 	// Planet-parade check: how bunched the five naked-eye planets are, as seen from Earth.
-	const span = skySpan(NAKED_EYE, days), next = PARADES.find(p => p.days >= days - 0.5);
+	// Reported as a measurement, not a yes/no: the parade lists count any few planets
+	// (Uranus and Neptune included) on one side of the Sun, which no single span rule matches.
+	const span = skySpan(NAKED_EYE, days), next = PARADES.find(p => p.days >= days - 0.5), nextSeen = next ? seenText(next) : '';
 	const parade = ['span', null,
-		`The five naked-eye planets (Mercury, Venus, Mars, Jupiter and Saturn) are spread across ${span.toFixed(0)}° of sky right now`,
-		span <= 60 ? ', which is close enough to count as a planet parade. ' : ', so there is no planet parade at the moment. ',
-		next ? ['span', null, 'The next one is on ', ['a', { href: '/planetary-alignment/' }, next.date], `: ${listNames(next.planets)} in the ${next.sky === 'dusk' ? 'evening sky after sunset' : 'morning sky before sunrise'}.`] : null
+		`The five naked-eye planets (Mercury, Venus, Mars, Jupiter and Saturn) are spread across ${span.toFixed(0)}° of sky right now; the summary at the top says which of them are in the evening or morning sky. `,
+		next ? ['span', null, 'The next listed planet parade is on ', ['a', { href: '/planetary-alignment/' }, next.date], `: ${listNames(next.planets)} in the ${next.sky === 'dusk' ? 'evening sky after sunset' : 'morning sky before sunrise'}.`, nextSeen ? ' ' + nextSeen : ''] : null
 	];
 	return { stamp: fmtDateTime(days), summary, rows, map, parade };
 }

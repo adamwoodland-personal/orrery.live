@@ -97,23 +97,32 @@ const planetsData = [
 	  el: { a:[9.54149883,-0.00003065], e:[0.05550825,-0.00032044], I:[2.49424102,0.00451969], L:[50.07571329,1222.11494724], peri:[92.86136063,0.54179478], node:[113.63998702,-0.25015002], bcsf:[0.00025899,-0.13434469,0.87320147,38.35125] } },
 	{ name: 'Uranus', rotH: -17.24, tex: '2k_uranus.jpg',         size: 0.58, displayA: 13.3, type: 'Ice giant', fact: 'Tipped on its side (98° axial tilt), so it rolls around the Sun.',
 	  el: { a:[19.18797948,-0.00020455], e:[0.04685740,-0.00001550], I:[0.77298127,-0.00180155], L:[314.20276625,428.49512595], peri:[172.43404441,0.09266985], node:[73.96250215,0.05739699], bcsf:[0.00058331,-0.97731848,0.17689245,7.67025] } },
-	{ name: 'Neptune', rotH: 16.11, tex: '2k_neptune.jpg',       size: 0.56, displayA: 14.8, type: 'Ice giant', fact: 'Windiest planet, with gusts over 2,000 km/h. Discovered by maths before it was seen.',
+	{ name: 'Neptune', rotH: 16.11, tex: '2k_neptune.jpg',       size: 0.56, displayA: 14.8, type: 'Ice giant', fact: 'Windiest planet, with gusts over 2,000 km/h. Predicted by maths and recognised as a planet in 1846; Galileo had seen it in 1612–13 but took it for a star.',
 	  el: { a:[30.06952752,0.00006447], e:[0.00895439,0.00000818], I:[1.77005520,0.00022400], L:[304.22289287,218.46515314], peri:[46.68158724,0.01009938], node:[131.78635853,-0.00606302], bcsf:[-0.00041348,0.68346318,-0.10162547,7.67025] } },
 	{ name: 'Pluto', rotH: -153.3,                                size: 0.21, displayA: 16.3, type: 'Dwarf planet', fact: 'Reclassified as a dwarf planet in 2006; its tilted, eccentric orbit sometimes brings it closer than Neptune.',
 	  el: { a:[39.48686035,0.00449751], e:[0.24885238,0.00006016], I:[17.14104260,0.00000501], L:[238.96535011,145.18042903], peri:[224.09702598,-0.00968827], node:[110.30167986,-0.00809981], bcsf:[-0.01262724,0.0,0.0,0.0] } },
 	// Remaining IAU dwarf planets. Untextured (no free maps), shaded by `color`.
-	// Elements are J2000 mean values (no per-century rates beyond mean motion),
-	// so orbit shape/size/inclination are accurate and position is approximate.
+	// Same J2000-ecliptic form as the rows above (L = mean longitude at J2000.0 TDB, rates per
+	// Julian century), from JPL Horizons (2026-11-01; target names checked in the headers):
+	//  - Ceres ("1 Ceres (A801 AA)", JPL#48): mean elements least-squares fitted to Horizons
+	//    positions every 30 days 1900–2100. Jupiter drags Ceres's osculating elements by degrees
+	//    per decade, so one epoch's set would be 3° out by 1950. Within 0.6° over 1900–2100, 0.65°
+	//    over 1800–2200.
+	//  - Haumea (136108, JPL#132), Makemake (136472, JPL#130), Eris (136199, JPL#103): osculating
+	//    elements about the solar-system barycentre at epoch 2000-01-01 12:00 TDB (heliocentric ones
+	//    wobble with the Sun's own motion). Within 0.011° over 1900–2100, 0.08° over 1800–2200.
+	// Far from the present they drift (no long-period perturbations). Fit and checks:
+	// ReferenceFiles/orrery-science-review-2026-11-01/fixes-homepage/.
 	{ name: 'Ceres', rotH: 9.074, size: 0.12, displayA: 7.0, type: 'Dwarf planet', color: '#9a9389', fact: 'The largest object in the asteroid belt and the only dwarf planet in the inner solar system; it may hold briny water under its crust.',
-	  el: { a:[2.7691,0], e:[0.0760,0], I:[10.594,0], L:[249.891,7812.6], peri:[153.902,0], node:[80.305,0] } },
+	  el: { a:[2.76729,0], e:[0.07783,0], I:[10.5937,0], L:[160.7659,7819.456], peri:[153.1455,1.766], node:[80.552,-1.494] } },
 	{ name: 'Haumea', rotH: 3.915, size: 0.16, displayA: 17.3, type: 'Dwarf planet', color: '#d9d2c6', fact: 'An egg-shaped, fast-spinning dwarf planet — a day there lasts under four hours — circled by a ring and two moons.',
-	  el: { a:[43.182,0], e:[0.19642,0], I:[28.214,0], L:[219.8,126.85], peri:[1.4,0], node:[121.9,0] } },
+	  el: { a:[43.1029,0], e:[0.19501,0], I:[28.2049,0], L:[192.32,127.2994], peri:[1.8949,0], node:[121.9476,0] } },
 	{ name: 'Makemake', rotH: 22.827, size: 0.15, displayA: 18.1, type: 'Dwarf planet', color: '#b07a5a', fact: 'A large reddish Kuiper Belt dwarf planet with a frigid surface of methane and ethane ice.',
-	  el: { a:[45.430,0], e:[0.16126,0], I:[28.984,0], L:[167.45,117.6], peri:[14.45,0], node:[79.62,0] } },
+	  el: { a:[45.4989,0], e:[0.16039,0], I:[29.002,0], L:[155.6158,117.3773], peri:[15.5116,0], node:[79.4428,0] } },
 	// Eris rotation: tidally locked to its moon Dysnomia (15.786-day lightcurve
 	// period, Szakáts et al. 2023); older catalogues still list 25.9 h.
 	{ name: 'Eris', rotH: 378.86, size: 0.20, displayA: 19.6, type: 'Dwarf planet', color: '#d8d5cc', fact: 'A distant, massive dwarf planet, slightly heavier than Pluto — tidally locked to its moon Dysnomia, so its day lasts 15.8 Earth days. Its 2005 discovery triggered Pluto’s reclassification.',
-	  el: { a:[67.864,0], e:[0.43607,0], I:[44.040,0], L:[31.75,64.39], peri:[187.59,0], node:[35.951,0] } }
+	  el: { a:[67.8351,0], e:[0.43843,0], I:[43.9929,0], L:[21.0407,64.4768], peri:[187.1977,0], node:[35.9765,0] } }
 ];
 
 // --- Axial rotation (tied to simulated time) ------------------------
@@ -128,8 +137,10 @@ const planetsData = [
 // planets and Pluto get their true IAU spin-axis direction (so Saturn's rings
 // and Uranus's sideways roll sit in their real planes) and the real rate, but
 // an arbitrary phase (no solid surface / stylised maps), so their absolute
-// facing isn't claimed. The remaining dwarf planets get the real rate and
-// direction on an upright axis (no reliable pole data).
+// facing isn't claimed. Ceres gets its IAU pole too (Archinal et al. 2018); Haumea,
+// Makemake and Eris get the real rate and direction on an upright axis (their poles
+// are not well established). Mars uses the IAU 2009 linear model (not the latest
+// periodic terms) and Earth a simple rotation, so 'correct longitude' is approximate.
 const SUN_ROT_H = 609.12; // ~25.4-day solar rotation, prograde
 function spinRate(rotH) { return Math.sign(rotH) * 2 * Math.PI / (Math.abs(rotH) / 24); } // rad per day
 const sunSpin = spinRate(SUN_ROT_H);
@@ -179,7 +190,8 @@ const POLES = {
 	Saturn:  { ra: [40.589],  dec: [83.537] },
 	Uranus:  { ra: [77.311],  dec: [15.175] },
 	Neptune: { ra: [299.36],  dec: [43.46] },  // mean pole (0.7° precession wobble ignored)
-	Pluto:   { ra: [132.993], dec: [-6.163] }
+	Pluto:   { ra: [132.993], dec: [-6.163] },
+	Ceres:   { ra: [291.418], dec: [66.764] }
 };
 const _POLE_UP = new THREE.Vector3(0, 1, 0);
 function poleQuat(p) { // rotate scene-up onto the pole; twist (phase) is arbitrary
@@ -193,13 +205,128 @@ function dateToDays(date) { return date.getTime() / 86400000 + 2440587.5 - J2000
 // picked 21:47 at 21:46:59.999 and the label reads a minute early.
 function daysToDate(days) { return new Date(Math.round((days + J2000 - 2440587.5) * 86400000)); }
 
-// Geocentric Moon (km, J2000 ecliptic) from the Astronomical Almanac's
-// low-precision lunar formulae (ecliptic of date), precessed to J2000 so it
-// shares the planets' frame. Checked against JPL Horizons DE441 geocentric
-// vectors at six dates 1900–2100: direction within 0.12°, distance within 0.15%.
+// ---- Clock time vs model time ------------------------------------------------
+// simDays, every EVENTS entry and every ?t= link are MODEL time: days since J2000 in
+// dynamical time (TT ≈ TDB), which the orbital formulae expect. Only the interface
+// converts: "now" is UTC + ΔT; from 1000 to 3000 AD the clock shows, and the date box
+// reads, UTC (= TT − ΔT; ΔT ≈ 69 s today, 35 min in 1000 AD, ~1.2 h by 3000 AD). Outside
+// that span, where ΔT runs to hours (days in the far future) and is a guess, both show
+// TT itself, labelled "TT". The span's ends are UTC instants (see clockOf/fromClock), so
+// whatever the clock shows reads back, through the date box, as the same instant.
+// COPY of night-sky/astro.js deltaT — keep in step. Input: UTC days since J2000.
+// ΔT = TT − UT in seconds. 1900–2025: observed values every five years (IERS / USNO).
+// 2025–2100: held at 69.2 s, as JPL Horizons does beyond its prediction interval (the
+// Earth has not been slowing lately, and any guess is as good). Outside 1900–2100 the
+// Morrison & Stephenson parabola −20 + 32u² takes over, shifted to join the table.
+const DT = [-2.8, 3.9, 10.5, 17.2, 21.2, 23.6, 24.0, 23.9, 24.3, 26.8, 29.2, 31.1, 33.2,
+	35.7, 40.2, 45.5, 50.5, 54.3, 56.9, 60.8, 63.8, 64.7, 66.1, 67.6, 69.4, 69.2];
+const dtParabola = (y) => -20 + 32 * ((y - 1820) / 100) ** 2;
+function deltaT(days) {
+	const y = 2000 + days / 365.25;
+	if (y < 1900) return dtParabola(y) - dtParabola(1900) + DT[0];
+	if (y >= 2025) return 69.2 + (y > 2100 ? dtParabola(y) - dtParabola(2100) : 0);
+	const i = Math.floor((y - 1900) / 5), f = (y - 1900) / 5 - i;
+	return DT[i] + (DT[i + 1] - DT[i]) * f;
+}
+const utcToTT = (d) => d + deltaT(d) / 86400;
+const ttToUTC = (d) => d - deltaT(d - deltaT(d) / 86400) / 86400; // ΔT takes UTC days: one fixed-point step
+// The UTC span of the clock, [1000-01-01 00:00, 3001-01-01 00:00) UTC, as days since J2000.
+const CLOCK_UTC_FROM = dateToDays(new Date(Date.UTC(1000, 0, 1))), CLOCK_UTC_TO = dateToDays(new Date(Date.UTC(3001, 0, 1)));
+const inClockUTC = (u) => u >= CLOCK_UTC_FROM && u < CLOCK_UTC_TO;
+// The clock reading of a model time: { days (since J2000, UTC or TT), scale: 'UTC' | 'TT' }.
+// UTC when the UTC reading falls in the span, TT otherwise.
+function clockOf(simD) {
+	const u = ttToUTC(simD);
+	return inClockUTC(u) ? { days: u, scale: 'UTC' } : { days: simD, scale: 'TT' };
+}
+// Model time from a clock reading R (the date box, the step buttons), given the scale shown
+// before the edit: UTC when R lies in the UTC span, TT otherwise — except that a TT display
+// stays TT when R read as TT is still outside the span (the ~35 min after 1000-01-01 00:00 TT,
+// whose TT readings say 1000 but fall before 1000-01-01 00:00 UTC). So any shown reading comes
+// back as the same instant. TT readings in [3001-01-01 00:00, +ΔT) are never shown; typed, they
+// are taken as TT and come back as the same instant in UTC (3000-12-31, ~23:00 UTC), labelled.
+function fromClock(R, prevScale) {
+	if (!inClockUTC(R)) return R;
+	if (prevScale === 'TT' && !inClockUTC(ttToUTC(R))) return R;
+	return utcToTT(R);
+}
+
+// Geocentric Moon (km, J2000 ecliptic): Meeus, Astronomical Algorithms ch. 47 — the ELP-2000/82
+// series truncated to its 60 largest terms in longitude and distance and 60 in latitude (the same
+// series as night-sky/astro.js) — rotated from the mean ecliptic and equinox of date to J2000 with
+// the IAU 1976 precession. `days` is read as dynamical time, like the planets'. Checked against JPL
+// Horizons DE441 geocentric vectors every 7 days 1900–2100 (10,436 dates): direction within 0.004°,
+// distance within 0.004% (13 km). The low-precision formulae used before were up to 0.37° out.
 const EARTH_MOON_MASS = 1 / 82.30057; // Moon / (Earth + Moon)
 const MOON_A = 384400;                // km, mean distance (the display-radius reference)
 function moonGeocentric(days) {
+	// Rows: multiples of D, M, M′, F, then the longitude (1e-6°) and distance (m) amplitudes
+	// (Meeus table 47.A); latitude rows end with one amplitude in 1e-6° (table 47.B). Built once.
+	const LR = moonGeocentric.LR ??= [
+		0, 0, 1, 0, 6288774, -20905355, 2, 0, -1, 0, 1274027, -3699111, 2, 0, 0, 0, 658314, -2955968, 0, 0, 2, 0, 213618, -569925,
+		0, 1, 0, 0, -185116, 48888, 0, 0, 0, 2, -114332, -3149, 2, 0, -2, 0, 58793, 246158, 2, -1, -1, 0, 57066, -152138,
+		2, 0, 1, 0, 53322, -170733, 2, -1, 0, 0, 45758, -204586, 0, 1, -1, 0, -40923, -129620, 1, 0, 0, 0, -34720, 108743,
+		0, 1, 1, 0, -30383, 104755, 2, 0, 0, -2, 15327, 10321, 0, 0, 1, 2, -12528, 0, 0, 0, 1, -2, 10980, 79661,
+		4, 0, -1, 0, 10675, -34782, 0, 0, 3, 0, 10034, -23210, 4, 0, -2, 0, 8548, -21636, 2, 1, -1, 0, -7888, 24208,
+		2, 1, 0, 0, -6766, 30824, 1, 0, -1, 0, -5163, -8379, 1, 1, 0, 0, 4987, -16675, 2, -1, 1, 0, 4036, -12831,
+		2, 0, 2, 0, 3994, -10445, 4, 0, 0, 0, 3861, -11650, 2, 0, -3, 0, 3665, 14403, 0, 1, -2, 0, -2689, -7003,
+		2, 0, -1, 2, -2602, 0, 2, -1, -2, 0, 2390, 10056, 1, 0, 1, 0, -2348, 6322, 2, -2, 0, 0, 2236, -9884,
+		0, 1, 2, 0, -2120, 5751, 0, 2, 0, 0, -2069, 0, 2, -2, -1, 0, 2048, -4950, 2, 0, 1, -2, -1773, 4130,
+		2, 0, 0, 2, -1595, 0, 4, -1, -1, 0, 1215, -3958, 0, 0, 2, 2, -1110, 0, 3, 0, -1, 0, -892, 3258,
+		2, 1, 1, 0, -810, 2616, 4, -1, -2, 0, 759, -1897, 0, 2, -1, 0, -713, -2117, 2, 2, -1, 0, -700, 2354,
+		2, 1, -2, 0, 691, 0, 2, -1, 0, -2, 596, 0, 4, 0, 1, 0, 549, -1423, 0, 0, 4, 0, 537, -1117,
+		4, -1, 0, 0, 520, -1571, 1, 0, -2, 0, -487, -1739, 2, 1, 0, -2, -399, 0, 0, 0, 2, -2, -381, -4421,
+		1, 1, 1, 0, 351, 0, 3, 0, -2, 0, -340, 0, 4, 0, -3, 0, 330, 0, 2, -1, 2, 0, 327, 0,
+		0, 2, 1, 0, -323, 1165, 1, 1, -1, 0, 299, 0, 2, 0, 3, 0, 294, 0, 2, 0, -1, -2, 0, 8752];
+	const LB = moonGeocentric.LB ??= [
+		0, 0, 0, 1, 5128122, 0, 0, 1, 1, 280602, 0, 0, 1, -1, 277693, 2, 0, 0, -1, 173237, 2, 0, -1, 1, 55413, 2, 0, -1, -1, 46271,
+		2, 0, 0, 1, 32573, 0, 0, 2, 1, 17198, 2, 0, 1, -1, 9266, 0, 0, 2, -1, 8822, 2, -1, 0, -1, 8216, 2, 0, -2, -1, 4324,
+		2, 0, 1, 1, 4200, 2, 1, 0, -1, -3359, 2, -1, -1, 1, 2463, 2, -1, 0, 1, 2211, 2, -1, -1, -1, 2065, 0, 1, -1, -1, -1870,
+		4, 0, -1, -1, 1828, 0, 1, 0, 1, -1794, 0, 0, 0, 3, -1749, 0, 1, -1, 1, -1565, 1, 0, 0, 1, -1491, 0, 1, 1, 1, -1475,
+		0, 1, 1, -1, -1410, 0, 1, 0, -1, -1344, 1, 0, 0, -1, -1335, 0, 0, 3, 1, 1107, 4, 0, 0, -1, 1021, 4, 0, -1, 1, 833,
+		0, 0, 1, -3, 777, 4, 0, -2, 1, 671, 2, 0, 0, -3, 607, 2, 0, 2, -1, 596, 2, -1, 1, -1, 491, 2, 0, -2, 1, -451,
+		0, 0, 3, -1, 439, 2, 0, 2, 1, 422, 2, 0, -3, -1, 421, 2, 1, -1, 1, -366, 2, 1, 0, 1, -351, 4, 0, 0, 1, 331,
+		2, -1, 1, 1, 315, 2, -2, 0, -1, 302, 0, 0, 1, 3, -283, 2, 1, 1, -1, -229, 1, 1, 0, -1, 223, 1, 1, 0, 1, 223,
+		0, 1, -2, -1, -220, 2, 1, -1, -1, -220, 1, 0, 1, 1, -185, 2, -1, -2, -1, 181, 0, 1, 2, 1, -177, 4, 0, -2, -1, 176,
+		4, -1, -1, -1, 166, 1, 0, 1, -1, -164, 4, 0, 1, -1, 132, 1, 0, -1, -1, -119, 4, -1, 0, -1, 115, 2, -2, 0, 1, 107];
+	const T = days / 36525, sin = Math.sin, cos = Math.cos, AS = DEG / 3600;
+	const p = (c0, c1, c2, c3, c4) => (c0 + T * (c1 + T * (c2 + T * (c3 + T * c4)))) * DEG;
+	const Lp = p(218.3164477, 481267.88123421, -0.0015786, 1 / 538841, -1 / 65194000);   // mean longitude
+	const D = p(297.8501921, 445267.1114034, -0.0018819, 1 / 545868, -1 / 113065000);    // mean elongation
+	const M = p(357.5291092, 35999.0502909, -0.0001536, 1 / 24490000, 0);                // Sun's mean anomaly
+	const Mp = p(134.9633964, 477198.8675055, 0.0087414, 1 / 69699, -1 / 14712000);      // Moon's mean anomaly
+	const F = p(93.2720950, 483202.0175233, -0.0036539, -1 / 3526000, 1 / 863310000);    // argument of latitude
+	const A1 = (119.75 + 131.849 * T) * DEG, A2 = (53.09 + 479264.290 * T) * DEG, A3 = (313.45 + 481266.484 * T) * DEG;
+	const E = 1 - T * (0.002516 + 0.0000074 * T), Ek = [1, E, E * E]; // eccentricity factor for terms in M
+	let sl = 3958 * sin(A1) + 1962 * sin(Lp - F) + 318 * sin(A2), sr = 0;
+	let sb = -2235 * sin(Lp) + 382 * sin(A3) + 175 * sin(A1 - F) + 175 * sin(A1 + F) + 127 * sin(Lp - Mp) - 115 * sin(Lp + Mp);
+	for (let i = 0; i < LR.length; i += 6) {
+		const a = LR[i] * D + LR[i + 1] * M + LR[i + 2] * Mp + LR[i + 3] * F, e = Ek[Math.abs(LR[i + 1])];
+		sl += LR[i + 4] * e * sin(a); sr += LR[i + 5] * e * cos(a);
+	}
+	for (let i = 0; i < LB.length; i += 5) sb += LB[i + 4] * Ek[Math.abs(LB[i + 1])] * sin(LB[i] * D + LB[i + 1] * M + LB[i + 2] * Mp + LB[i + 3] * F);
+	const lam = Lp + sl * 1e-6 * DEG, bet = sb * 1e-6 * DEG, r = 385000.56 + sr / 1000;
+	// Mean ecliptic of date -> mean equator of date (obliquity of date) -> J2000 equator (the
+	// transposed IAU 1976 precession matrix, Meeus 21.2–21.4) -> J2000 ecliptic.
+	const eps = (84381.448 - (46.8150 + (0.00059 - 0.001813 * T) * T) * T) * AS, eps0 = 84381.448 * AS;
+	const xd = r * cos(bet) * cos(lam), yl = r * cos(bet) * sin(lam), zl = r * sin(bet);
+	const yd = yl * cos(eps) - zl * sin(eps), zd = yl * sin(eps) + zl * cos(eps);
+	const ze = (2306.2181 + (0.30188 + 0.017998 * T) * T) * T * AS;
+	const zz = (2306.2181 + (1.09468 + 0.018203 * T) * T) * T * AS;
+	const th = (2004.3109 - (0.42665 + 0.041833 * T) * T) * T * AS;
+	const cz = cos(ze), sz = sin(ze), cZ = cos(zz), sZ = sin(zz), ct = cos(th), st = sin(th);
+	const x = (cZ * ct * cz - sZ * sz) * xd + (sZ * ct * cz + cZ * sz) * yd + (st * cz) * zd;
+	const y = (-cZ * ct * sz - sZ * cz) * xd + (-sZ * ct * sz + cZ * cz) * yd + (-st * sz) * zd;
+	const z = (-cZ * st) * xd + (-sZ * st) * yd + ct * zd;
+	return { x, y: y * cos(eps0) + z * sin(eps0), z: -y * sin(eps0) + z * cos(eps0) };
+}
+
+// The Astronomical Almanac's low-precision lunar formulae (ecliptic of date, precessed to J2000 in
+// longitude only): the orrery's Moon until 2026-11. Kept ONLY for heliocentric()'s Earth–Moon-barycentre
+// step below. That step is 1/82 of the Moon's distance (~4,670 km), so this formula's 0.37° / 0.34% error
+// (1900–2100, against Horizons) moves Earth by under 40 km, while the full series above would cost ~20 µs
+// a call in the thousands of Earth positions the event scans need. The displayed Moon uses moonGeocentric.
+function moonGeocentricLow(days) {
 	const T = days / 36525;
 	const s = (a, b) => Math.sin((a + b * T) * DEG), c = (a, b) => Math.cos((a + b * T) * DEG);
 	const lam = (218.32 + 481267.881 * T - 1.39697 * T // last term: ecliptic of date -> J2000
@@ -250,7 +377,7 @@ function heliocentric(el, T) {
 	if (el.emb) {
 		// JPL's "Earth" row is really the Earth–Moon barycentre: step from it to
 		// Earth's centre (≈4,670 km, 3e-5 AU — tiny, but it is what "Earth" means).
-		const m = moonGeocentric(T * 36525), k = EARTH_MOON_MASS / AU_KM;
+		const m = moonGeocentricLow(T * 36525), k = EARTH_MOON_MASS / AU_KM;
 		return { x: x - m.x * k, y: y - m.y * k, z: z - m.z * k };
 	}
 	return { x, y, z };
@@ -360,68 +487,111 @@ for (const planet of planetsData) {
 		new THREE.LineBasicMaterial({ color: 0x6c8fd0, transparent: true, opacity: 0.32 })
 	);
 	scene.add(orbitLine);
-	const orbitEvolves = !!(el.a[1] || el.e[1] || el.I[1] || el.peri[1] || el.node[1]); // dwarfs have fixed mean elements
+	const orbitEvolves = !!(el.a[1] || el.e[1] || el.I[1] || el.peri[1] || el.node[1]); // Haumea, Makemake & Eris have fixed elements
 
 	bodies.push({ planet, cat, holder, tilted, mesh, orbitLine, orbitT: 0, orbitEvolves, scale, iau, pole, spinRate: spinRate(planet.rotH), spacingF: 1 });
 }
 
 // =====================================================================
-//  Moons. Real mean orbital elements (a in km, e, inclination°, sidereal
-//  period in days, retrograde flag) from JPL satellite tables. They feed
-//  the same Kepler solver as the planets, but parented to their planet —
-//  so orbit SHAPE, inclination, period and direction are real, while orbit
-//  SPACING, body size and phase along the orbit are illustrative (like the
-//  rest of the model). Moon orbits ride their planet's true spin plane (IAU
-//  pole), so Saturn's moons share the ring plane, Uranus's orbit on their
-//  side and Pluto's family tips with it — except Earth's Moon, whose
-//  elements (and real orbit) are referenced to the ecliptic.
+//  Moons. `a` (km), `e`, `periodD` and `retro` are published mean values for
+//  the tooltips. Positions come from `orb`: a precessing ellipse in the moon's
+//  real reference plane — its local Laplace plane, its planet's equator or the
+//  ecliptic, as JPL's satellite mean-element table gives them (`ref`, with the
+//  pole RA/Dec in `pole`; ssd.jpl.nasa.gov/sats/elem) — with inclination, node and its
+//  regression, eccentricity, periapsis and its precession, and mean longitude
+//  and its rate least-squares fitted to JPL Horizons positions 1900–2100, plus
+//  fitted resonance terms in the mean longitude (Mimas–Tethys, Enceladus–Dione,
+//  Titan–Hyperion) and Phobos's tidal speed-up (`Lq`). Angles in degrees at
+//  epoch J2000.0 (TDB), rates per day; nodes are measured from the plane's
+//  ascending node on the ICRF equator, as in JPL's table. A retrograde moon
+//  (Triton, Phoebe) is a prograde orbit about the reversed pole. `acc` is the
+//  largest planet-centred direction error found against Horizons over
+//  1900–2100 (degrees); outside 1900–2100 the phases drift. Fit and checks:
+//  ReferenceFiles/orrery-science-review-2026-11-01/fixes-homepage/fit-moons.mjs.
+//  The Moon uses the lunar theory (moonGeocentric) instead. Orbit SPACING is
+//  compressed for display except at the true-scale slider ends (applyMoonScale).
 //  `cls`: 'major' = large round moons; 'minor' = small / irregular moons.
+//  `spinH`/`spinTilt`: rotation period (hours) and an illustrative axis tilt for
+//  moons that are NOT tidally locked; `tumble`: chaotic rotation (Hyperion).
 // =====================================================================
 const moonsData = [
 	// Earth
 	{ name: 'Moon', parent: 'Earth', cls: 'major', a: 384400, e: 0.0549, inc: 5.145, periodD: 27.3217, size: 0.10, tex: '2k_moon.jpg', color: '#b8b3ab', fact: "Earth's only natural satellite; it raises the tides and is drifting away ~3.8 cm a year." },
 	// Mars
-	{ name: 'Phobos', parent: 'Mars', cls: 'minor', a: 9376, e: 0.0151, inc: 1.08, periodD: 0.31891, size: 0.04, color: '#8a7d70', fact: 'Orbits Mars faster than Mars spins; it is spiralling inward and doomed in ~50 million years.' },
-	{ name: 'Deimos', parent: 'Mars', cls: 'minor', a: 23463, e: 0.00033, inc: 1.79, periodD: 1.26244, size: 0.035, color: '#9b8d7e', fact: "Mars's tiny outer moon, only about 12 km across." },
+	{ name: 'Phobos', parent: 'Mars', cls: 'minor', a: 9376, e: 0.0151, periodD: 0.31891, size: 0.04, color: '#8a7d70', fact: 'Orbits Mars faster than Mars spins; it is spiralling inward and doomed in ~50 million years.',
+	  acc: 0.2, orb: { ref: 'Laplace plane', pole: [317.7, 52.9], i: 1.0749, n0: 169.1394, nr: -0.43578937, e: 0.015124, w0: 25.5974, wr: 0.43518326, L0: 215.16646, Lr: 1128.844756184, Lq: 9.442e-9 } },
+	{ name: 'Deimos', parent: 'Mars', cls: 'minor', a: 23463, e: 0.00033, periodD: 1.26244, size: 0.035, color: '#9b8d7e', fact: "Mars's tiny outer moon, only about 12 km across.",
+	  acc: 0.5, orb: { ref: 'Laplace plane', pole: [316.6, 53.5], i: 1.788, n0: 54.271, nr: -0.01806851, e: 0.000091, w0: 332.2752, wr: -0.017373673, L0: 259.48719, Lr: 285.161885731 } },
 	// Jupiter — Galileans (major)
-	{ name: 'Io', parent: 'Jupiter', cls: 'major', a: 421700, e: 0.0041, inc: 0.05, periodD: 1.76914, size: 0.10, color: '#d9c46a', fact: 'The most volcanically active world in the solar system, lit by hundreds of erupting vents.' },
-	{ name: 'Europa', parent: 'Jupiter', cls: 'major', a: 671034, e: 0.0094, inc: 0.47, periodD: 3.55118, size: 0.09, color: '#e8e2d4', fact: 'A smooth crust of ice over a global subsurface ocean — a prime place to hunt for life.' },
-	{ name: 'Ganymede', parent: 'Jupiter', cls: 'major', a: 1070412, e: 0.0013, inc: 0.20, periodD: 7.15455, size: 0.13, color: '#8c8378', fact: 'The largest moon in the solar system — bigger than Mercury, and the only moon with its own magnetic field.' },
-	{ name: 'Callisto', parent: 'Jupiter', cls: 'major', a: 1882709, e: 0.0074, inc: 0.19, periodD: 16.6890, size: 0.12, color: '#5f5a52', fact: 'One of the most heavily cratered surfaces known — a frozen record of the early solar system.' },
+	{ name: 'Io', parent: 'Jupiter', cls: 'major', a: 421700, e: 0.0041, periodD: 1.76914, size: 0.10, color: '#d9c46a', fact: 'The most volcanically active world in the solar system, lit by hundreds of erupting vents.',
+	  acc: 0.1, orb: { ref: 'Laplace plane', pole: [268.1, 64.5], i: 0.0178, n0: 279.2259, nr: 0, e: 0.004126, w0: 49.0218, wr: -0.73950989, L0: 19.90792, Lr: 203.488958315 } },
+	{ name: 'Europa', parent: 'Jupiter', cls: 'major', a: 671034, e: 0.0094, periodD: 3.55118, size: 0.09, color: '#e8e2d4', fact: 'A smooth crust of ice over a global subsurface ocean — a prime place to hunt for life.',
+	  acc: 0.2, orb: { ref: 'Laplace plane', pole: [268.1, 64.5], i: 0.4647, n0: 184.49, nr: -0.032631568, e: 0.009387, w0: 228.8812, wr: -0.73953743, L0: 214.4665, Lr: 101.374724264 } },
+	{ name: 'Ganymede', parent: 'Jupiter', cls: 'major', a: 1070412, e: 0.0013, periodD: 7.15455, size: 0.13, color: '#8c8378', fact: 'The largest moon in the solar system — bigger than Mercury, and the only moon with its own magnetic field.',
+	  acc: 0.3, orb: { ref: 'Laplace plane', pole: [268.2, 64.6], i: 0.2056, n0: 59.0961, nr: -0.0073307352, e: 0.001642, w0: 259.8865, wr: 0.0074845186, L0: 221.65585, Lr: 50.317607268 } },
+	{ name: 'Callisto', parent: 'Jupiter', cls: 'major', a: 1882709, e: 0.0074, periodD: 16.6890, size: 0.12, color: '#5f5a52', fact: 'One of the most heavily cratered surfaces known — a frozen record of the early solar system.',
+	  acc: 0.1, orb: { ref: 'Laplace plane', pole: [268.7, 64.8], i: 0.2252, n0: 305.2307, nr: -0.0020621033, e: 0.007312, w0: 353.1897, wr: 0.001852374, L0: 80.38646, Lr: 21.571072648 } },
 	// Jupiter — minor
-	{ name: 'Amalthea', parent: 'Jupiter', cls: 'minor', a: 181366, e: 0.0032, inc: 0.38, periodD: 0.49818, size: 0.04, color: '#8a3b2e', fact: 'A small, elongated inner moon — the reddest object in the solar system.' },
-	{ name: 'Himalia', parent: 'Jupiter', cls: 'minor', a: 11451000, e: 0.1623, inc: 27.5, periodD: 250.56, size: 0.04, color: '#6b6660', fact: "The largest of Jupiter's distant, irregular outer moons." },
+	{ name: 'Amalthea', parent: 'Jupiter', cls: 'minor', a: 181366, e: 0.0032, periodD: 0.49818, size: 0.04, color: '#8a3b2e', fact: 'A small, elongated inner moon — the reddest object in the solar system.',
+	  acc: 0.1, orb: { ref: 'Laplace plane', pole: [268.1, 64.5], i: 0.3756, n0: 282.8324, nr: -2.5048597, e: 0.003315, w0: 102.9219, wr: 2.5134245, L0: 53.53446, Lr: 722.631721848 } },
+	{ name: 'Himalia', parent: 'Jupiter', cls: 'minor', a: 11451000, e: 0.1623, periodD: 250.56, size: 0.04, color: '#6b6660', fact: "The largest of Jupiter's distant, irregular outer moons.",
+	  spinH: 7.782, spinTilt: 40, acc: 10, orb: { ref: 'ecliptic', pole: [270, 66.561], i: 29.0505, n0: 65.9944, nr: -0.0032781131, e: 0.156378, w0: 37.9389, wr: 0.0037978958, L0: 103.51883, Lr: 1.43674714 } },
 	// Saturn — major
-	{ name: 'Mimas', parent: 'Saturn', cls: 'major', a: 185539, e: 0.0196, inc: 1.57, periodD: 0.94242, size: 0.05, color: '#b0aaa0', fact: 'Its giant Herschel crater gives it an uncanny resemblance to the Death Star.' },
-	{ name: 'Enceladus', parent: 'Saturn', cls: 'major', a: 237948, e: 0.0047, inc: 0.009, periodD: 1.37022, size: 0.05, color: '#f0f4f5', fact: "Jets icy water from a subsurface ocean through the 'tiger stripe' fractures at its south pole." },
-	{ name: 'Tethys', parent: 'Saturn', cls: 'major', a: 294619, e: 0.0001, inc: 1.12, periodD: 1.88780, size: 0.06, color: '#cfc9bd', fact: 'A bright, icy moon scarred by the enormous Odysseus impact crater.' },
-	{ name: 'Dione', parent: 'Saturn', cls: 'major', a: 377396, e: 0.0022, inc: 0.019, periodD: 2.73692, size: 0.06, color: '#c3bdb2', fact: 'Wispy bright ice cliffs streak across its trailing hemisphere.' },
-	{ name: 'Rhea', parent: 'Saturn', cls: 'major', a: 527108, e: 0.0010, inc: 0.345, periodD: 4.51821, size: 0.07, color: '#b9b3a8', fact: "Saturn's second-largest moon; it may even have a faint ring of its own." },
-	{ name: 'Titan', parent: 'Saturn', cls: 'major', a: 1221870, e: 0.0288, inc: 0.34, periodD: 15.945, size: 0.12, color: '#d9923b', fact: 'Bigger than Mercury, wrapped in a thick orange haze, with rivers and lakes of liquid methane.' },
-	{ name: 'Iapetus', parent: 'Saturn', cls: 'major', a: 3560820, e: 0.0286, inc: 15.47, periodD: 79.322, size: 0.07, color: '#6b6055', fact: 'Two-faced: one hemisphere is bright ice, the other as dark as coal.' },
+	{ name: 'Mimas', parent: 'Saturn', cls: 'major', a: 185539, e: 0.0196, periodD: 0.94242, size: 0.05, color: '#b0aaa0', fact: 'Its giant Herschel crater gives it an uncanny resemblance to the Death Star.',
+	  acc: 1.5, orb: { ref: 'Laplace plane', pole: [40.6, 83.5], i: 1.5728, n0: 173.0457, nr: -0.99949621, e: 0.019672, w0: 145.5482, wr: 1.0009165, L0: 160.26249, Lr: 381.994493028, terms: [[0.0139388443, -33.5916, 27.4015]] } },
+	{ name: 'Enceladus', parent: 'Saturn', cls: 'major', a: 237948, e: 0.0047, periodD: 1.37022, size: 0.05, color: '#f0f4f5', fact: "Jets icy water from a subsurface ocean through the 'tiger stripe' fractures at its south pole.",
+	  acc: 0.1, orb: { ref: 'Laplace plane', pole: [40.6, 83.5], i: 0.0372, n0: 184.107, nr: 0, e: 0.004734, w0: 171.5701, wr: 0.33796251, L0: 182.25386, Lr: 262.731897785, terms: [[0.089213412, 0.0726, 0.2509], [0.253713793, 0.1376, -0.129]] } },
+	{ name: 'Tethys', parent: 'Saturn', cls: 'major', a: 294619, e: 0.0001, periodD: 1.88780, size: 0.06, color: '#cfc9bd', fact: 'A bright, icy moon scarred by the enormous Odysseus impact crater.',
+	  acc: 0.1, orb: { ref: 'Laplace plane', pole: [40.6, 83.5], i: 1.0913, n0: 259.8193, nr: -0.19784914, e: 0.001203, w0: 318.3253, wr: 190.71104, L0: 188.3842, Lr: 190.697911311, terms: [[0.013986832, 1.5368, -1.2197]] } },
+	{ name: 'Dione', parent: 'Saturn', cls: 'major', a: 377396, e: 0.0022, periodD: 2.73692, size: 0.06, color: '#c3bdb2', fact: 'Wispy bright ice cliffs streak across its trailing hemisphere.',
+	  acc: 0.1, orb: { ref: 'Laplace plane', pole: [40.6, 83.5], i: 0.0414, n0: 191.3936, nr: 0, e: 0.002202, w0: 214.5813, wr: 0.084243538, L0: 176.90198, Lr: 131.534930604, terms: [[0.089290538, -0.0056, -0.0193], [0.253722323, -0.0104, 0.0098]] } },
+	{ name: 'Rhea', parent: 'Saturn', cls: 'major', a: 527108, e: 0.0010, periodD: 4.51821, size: 0.07, color: '#b9b3a8', fact: "Saturn's second-largest moon. A faint ring around it was proposed in 2008, but later Cassini images found none.",
+	  acc: 0.1, orb: { ref: 'Laplace plane', pole: [40.6, 83.5], i: 0.3326, n0: 351.4479, nr: -0.027489733, e: 0.000964, w0: 203.0465, wr: 0.0014124935, L0: 52.16122, Lr: 79.690046026 } },
+	{ name: 'Titan', parent: 'Saturn', cls: 'major', a: 1221870, e: 0.0288, periodD: 15.945, size: 0.12, color: '#d9923b', fact: 'Bigger than Mercury, wrapped in a thick orange haze, with rivers and lakes of liquid methane.',
+	  acc: 0.1, orb: { ref: 'Laplace plane', pole: [36.4, 84], i: 0.3434, n0: 23.7169, nr: -0.0013147551, e: 0.028745, w0: 208.2677, wr: 0.0014085791, L0: 11.72428, Lr: 22.576976218 } },
+	{ name: 'Iapetus', parent: 'Saturn', cls: 'major', a: 3560820, e: 0.0286, periodD: 79.322, size: 0.07, color: '#6b6055', fact: 'Two-faced: one hemisphere is bright ice, the other as dark as coal.',
+	  acc: 0.3, orb: { ref: 'Laplace plane', pole: [288.7, 78.9], i: 7.5766, n0: 74.8029, nr: -0.00031450601, e: 0.02843, w0: 351.262, wr: 0.00027804271, L0: 200.20945, Lr: 4.537948881 } },
 	// Saturn — minor
-	{ name: 'Hyperion', parent: 'Saturn', cls: 'minor', a: 1481009, e: 0.1230, inc: 0.43, periodD: 21.276, size: 0.04, color: '#9a8a76', fact: 'A chaotically tumbling, sponge-like moon that never spins the same way twice.' },
-	{ name: 'Phoebe', parent: 'Saturn', cls: 'minor', a: 12947780, e: 0.1562, inc: 7.0, periodD: 550.31, retro: true, size: 0.04, color: '#4a4641', fact: 'A captured outer moon that orbits backwards — probably a body from the distant Kuiper Belt.' },
-	{ name: 'Janus', parent: 'Saturn', cls: 'minor', a: 151460, e: 0.0068, inc: 0.16, periodD: 0.69497, size: 0.035, color: '#a59c8f', fact: 'Swaps orbits with Epimetheus every four years in a slow game of leapfrog.' },
-	{ name: 'Epimetheus', parent: 'Saturn', cls: 'minor', a: 151410, e: 0.0210, inc: 0.35, periodD: 0.69433, size: 0.03, color: '#9c9285', fact: 'Shares its orbit with Janus — the two trade places without ever colliding.' },
+	{ name: 'Hyperion', parent: 'Saturn', cls: 'minor', a: 1481009, e: 0.1230, periodD: 21.276, size: 0.04, color: '#9a8a76', fact: 'A chaotically tumbling, sponge-like moon that never spins the same way twice.',
+	  tumble: true, acc: 4.5, orb: { ref: 'Laplace plane', pole: [40.2, 83.6], i: 0.676, n0: 276.1326, nr: -0.0062115149, e: 0.102946, w0: 233.1919, wr: -0.0511287, L0: 289.52112, Lr: 16.919950237, terms: [[0.562066521, -2.0292, 8.9147], [0.0525778749, -0.1722, 0.0941]] } },
+	{ name: 'Phoebe', parent: 'Saturn', cls: 'minor', a: 12947780, e: 0.1562, periodD: 550.31, retro: true, size: 0.04, color: '#4a4641', fact: 'A captured outer moon that orbits backwards — probably a body from the distant Kuiper Belt.',
+	  spinH: 9.2735, spinTilt: 152, acc: 3, orb: { ref: 'Laplace plane, pole reversed', pole: [96, -67.5], i: 4.806, n0: 119.108, nr: -0.0013280449, e: 0.16389, w0: 281.2649, wr: 0.00077996169, L0: 334.48699, Lr: 0.654183938 } },
+	{ name: 'Janus', parent: 'Saturn', cls: 'minor', a: 151460, e: 0.0068, periodD: 0.69497, size: 0.035, color: '#a59c8f', fact: 'Swaps orbits with Epimetheus every four years in a slow game of leapfrog.',
+	  acc: null, phaseNote: 'Phase illustrative: Janus and Epimetheus swap orbits every four years, which one ellipse cannot follow.', orb: { ref: 'Laplace plane', pole: [40.6, 83.5], i: 0.1651, n0: 154.0347, nr: -2.0453417, e: 0.006686, w0: 169.2646, wr: 2.0537363, L0: 285.66572, Lr: 518.29185549, terms: [[0.123182439, 31.6701, -1.0199]] } },
+	{ name: 'Epimetheus', parent: 'Saturn', cls: 'minor', a: 151410, e: 0.0210, periodD: 0.69433, size: 0.03, color: '#9c9285', fact: 'Shares its orbit with Janus — the two trade places without ever colliding.',
+	  acc: null, phaseNote: 'Phase illustrative: Janus and Epimetheus swap orbits every four years, which one ellipse cannot follow.', orb: { ref: 'Laplace plane', pole: [40.6, 83.5], i: 0.3531, n0: 192.6404, nr: -2.0455899, e: 0.013513, w0: 268.9331, wr: 3.26566, L0: 225.78336, Lr: 518.415007501, terms: [[0.123089334, -60.22, -88.9433]] } },
 	// Uranus — major (orbit nearly perpendicular, with the tipped-over planet)
-	{ name: 'Miranda', parent: 'Uranus', cls: 'major', a: 129390, e: 0.0013, inc: 4.34, periodD: 1.41348, size: 0.045, color: '#9b9690', fact: 'A jumbled little world with Verona Rupes, a cliff up to 20 km high — the tallest known.' },
-	{ name: 'Ariel', parent: 'Uranus', cls: 'major', a: 190900, e: 0.0012, inc: 0.041, periodD: 2.52038, size: 0.06, color: '#c2bcb3', fact: "The brightest of Uranus's moons, cut by deep branching canyons." },
-	{ name: 'Umbriel', parent: 'Uranus', cls: 'major', a: 266000, e: 0.0039, inc: 0.128, periodD: 4.14418, size: 0.06, color: '#6a665f', fact: "The darkest of Uranus's large moons, with a mysterious bright ring nicknamed the 'fluorescent cheerio'." },
-	{ name: 'Titania', parent: 'Uranus', cls: 'major', a: 435910, e: 0.0011, inc: 0.079, periodD: 8.70587, size: 0.08, color: '#a39c92', fact: "Uranus's largest moon, split by enormous fault canyons." },
-	{ name: 'Oberon', parent: 'Uranus', cls: 'major', a: 583520, e: 0.0014, inc: 0.068, periodD: 13.4632, size: 0.075, color: '#8f8780', fact: 'The outermost large Uranian moon, ancient and heavily cratered.' },
+	{ name: 'Miranda', parent: 'Uranus', cls: 'major', a: 129390, e: 0.0013, periodD: 1.41348, size: 0.045, color: '#9b9690', fact: 'A jumbled little world with Verona Rupes, a cliff up to 20 km high — the tallest known.',
+	  acc: 2, orb: { ref: 'planet equator', pole: [77.311, 15.175], i: 4.4269, n0: 100.8558, nr: -0.05541329, e: 0.001249, w0: 256.492, wr: 0.054870404, L0: 328.59142, Lr: 254.690659567 } },
+	{ name: 'Ariel', parent: 'Uranus', cls: 'major', a: 190900, e: 0.0012, periodD: 2.52038, size: 0.06, color: '#c2bcb3', fact: "The brightest of Uranus's moons, cut by deep branching canyons.",
+	  acc: 0.6, orb: { ref: 'planet equator', pole: [77.311, 15.175], i: 0.0106, n0: 31.3594, nr: 0, e: 0.000306, w0: 275.4833, wr: 0.03417997, L0: 203.05401, Lr: 142.835653042 } },
+	{ name: 'Umbriel', parent: 'Uranus', cls: 'major', a: 266000, e: 0.0039, periodD: 4.14418, size: 0.06, color: '#6a665f', fact: "The darkest of Uranus's large moons, with a mysterious bright ring nicknamed the 'fluorescent cheerio'.",
+	  acc: 0.2, orb: { ref: 'planet equator', pole: [77.311, 15.175], i: 0.0833, n0: 184.1272, nr: -0.0074411526, e: 0.003888, w0: 352.6955, wr: 0.0077708844, L0: 251.24346, Lr: 86.868873978 } },
+	{ name: 'Titania', parent: 'Uranus', cls: 'major', a: 435910, e: 0.0011, periodD: 8.70587, size: 0.08, color: '#a39c92', fact: "Uranus's largest moon, split by enormous fault canyons.",
+	  acc: 0.4, orb: { ref: 'planet equator', pole: [77.311, 15.175], i: 0.084, n0: 20.7349, nr: -0.000038121944, e: 0.001359, w0: 230.9929, wr: 0.0030204524, L0: 281.56311, Lr: 41.3514149 } },
+	{ name: 'Oberon', parent: 'Uranus', cls: 'major', a: 583520, e: 0.0014, periodD: 13.4632, size: 0.075, color: '#8f8780', fact: 'The outermost large Uranian moon, ancient and heavily cratered.',
+	  acc: 0.3, orb: { ref: 'planet equator', pole: [77.311, 15.175], i: 0.169, n0: 32.2341, nr: -0.0010898914, e: 0.001392, w0: 200.2411, wr: 0.00068408013, L0: 352.55895, Lr: 26.739482272 } },
 	// Uranus — minor
-	{ name: 'Puck', parent: 'Uranus', cls: 'minor', a: 86010, e: 0.00012, inc: 0.319, periodD: 0.76183, size: 0.03, color: '#7d766d', fact: 'A small, dark inner moon discovered by Voyager 2 in 1985.' },
+	{ name: 'Puck', parent: 'Uranus', cls: 'minor', a: 86010, e: 0.00012, periodD: 0.76183, size: 0.03, color: '#7d766d', fact: 'A small, dark inner moon discovered by Voyager 2 in 1985.',
+	  acc: 0.1, orb: { ref: 'planet equator', pole: [77.311, 15.175], i: 1.0532, n0: 272.7595, nr: -0.25422421, e: 0.009034, w0: 286.756, wr: 0.25423251, L0: 270.10182, Lr: 472.544209497 } },
 	// Neptune
-	{ name: 'Triton', parent: 'Neptune', cls: 'major', a: 354759, e: 0.000016, inc: 23.2, periodD: 5.87685, retro: true, size: 0.10, color: '#c9b8a8', fact: 'Orbits backwards, so it was likely captured; nitrogen geysers erupt from its frozen surface.' },
-	{ name: 'Proteus', parent: 'Neptune', cls: 'minor', a: 117647, e: 0.0005, inc: 0.026, periodD: 1.12231, size: 0.045, color: '#6a6f72', fact: 'A dark, lumpy moon about as large as a body can be without pulling itself round.' },
-	{ name: 'Nereid', parent: 'Neptune', cls: 'minor', a: 5513818, e: 0.7507, inc: 7.09, periodD: 360.13, size: 0.04, color: '#7a7d80', fact: 'One of the most eccentric orbits of any moon — its distance from Neptune varies sevenfold.' },
+	{ name: 'Triton', parent: 'Neptune', cls: 'major', a: 354759, e: 0.000016, periodD: 5.87685, retro: true, size: 0.10, color: '#c9b8a8', fact: 'Orbits backwards, so it was likely captured; nitrogen geysers erupt from its frozen surface.',
+	  acc: 0.1, orb: { ref: 'planet equator, pole reversed', pole: [119.36, -43.46], i: 23.1656, n0: 182.1423, nr: -0.0014347599, e: 0.000127, w0: 79.2661, wr: 0.0011157395, L0: 60.72946, Lr: 61.257260392 } },
+	{ name: 'Proteus', parent: 'Neptune', cls: 'minor', a: 117647, e: 0.0005, periodD: 1.12231, size: 0.045, color: '#6a6f72', fact: 'A dark, lumpy moon about as large as a body can be without pulling itself round.',
+	  acc: 1.5, orb: { ref: 'planet equator', pole: [299.36, 43.46], i: 0.1087, n0: 234.3995, nr: -0.044993549, e: 0.00049, w0: 17.2319, wr: 0.077043869, L0: 274.11319, Lr: 320.765634566 } },
+	{ name: 'Nereid', parent: 'Neptune', cls: 'minor', a: 5513818, e: 0.7507, periodD: 360.13, size: 0.04, color: '#7a7d80', fact: 'One of the most eccentric orbits of any moon — its distance from Neptune varies sevenfold.',
+	  spinH: 11.594, spinTilt: 60, acc: 14, orb: { ref: 'ecliptic', pole: [270, 66.561], i: 5.0454, n0: 320.1487, nr: -0.00011905886, e: 0.748598, w0: 256.1029, wr: 0.000014800449, L0: 112.90372, Lr: 0.999632988 } },
 	// Pluto
-	{ name: 'Charon', parent: 'Pluto', cls: 'major', a: 19591, e: 0.0002, inc: 0.0, periodD: 6.38723, size: 0.11, color: '#9a938a', fact: 'So large relative to Pluto that the two orbit a point in space between them — a double world.' },
-	{ name: 'Styx', parent: 'Pluto', cls: 'minor', a: 42656, e: 0.0058, inc: 0.81, periodD: 20.162, size: 0.025, color: '#8c867d', fact: 'A tiny moon found in 2012, orbiting in near-resonance with its siblings.' },
-	{ name: 'Nix', parent: 'Pluto', cls: 'minor', a: 48694, e: 0.0020, inc: 0.13, periodD: 24.855, size: 0.03, color: '#9a938a', fact: 'A small moon that tumbles unpredictably as it orbits the Pluto–Charon pair.' },
-	{ name: 'Kerberos', parent: 'Pluto', cls: 'minor', a: 57783, e: 0.0033, inc: 0.39, periodD: 32.168, size: 0.025, color: '#7f7a72', fact: 'A faint double-lobed moon, far darker than expected for the Pluto system.' },
-	{ name: 'Hydra', parent: 'Pluto', cls: 'minor', a: 64738, e: 0.0059, inc: 0.24, periodD: 38.202, size: 0.03, color: '#a39c92', fact: "Pluto's outermost known moon, with a surface of nearly pure water ice." }
+	{ name: 'Charon', parent: 'Pluto', cls: 'major', a: 19591, e: 0.0002, periodD: 6.38723, size: 0.11, color: '#9a938a', fact: 'So large relative to Pluto that the two orbit a point in space between them — a double world.',
+	  acc: 0.1, orb: { ref: 'planet equator', pole: [132.993, -6.163], i: 0.0826, n0: 10.3919, nr: 0, e: 0.000161, w0: 155.3415, wr: 0.0000025144841, L0: 304.1231, Lr: 56.362530378 } },
+	{ name: 'Styx', parent: 'Pluto', cls: 'minor', a: 42656, e: 0.0058, periodD: 20.162, size: 0.025, color: '#8c867d', fact: 'A tiny moon found in 2012, orbiting in near-resonance with its siblings; it spins every 3.2 days.',
+	  spinH: 77.76, spinTilt: 82, acc: 3.5, orb: { ref: 'planet equator', pole: [132.993, -6.163], i: 0.0822, n0: 10.1915, nr: 0, e: 0.000457, w0: 340.677, wr: -0.00013539712, L0: 190.46732, Lr: 17.855469137 } },
+	{ name: 'Nix', parent: 'Pluto', cls: 'minor', a: 48694, e: 0.0020, periodD: 24.855, size: 0.03, color: '#9a938a', fact: 'A small moon that spins every 1.8 days, far faster than it orbits, on a steeply tipped axis.',
+	  spinH: 43.9, spinTilt: 123, acc: 3, orb: { ref: 'planet equator', pole: [132.993, -6.163], i: 0.0831, n0: 10.1962, nr: 0, e: 0.000054, w0: 189.3579, wr: -0.00018824275, L0: 92.11219, Lr: 14.484169207 } },
+	{ name: 'Kerberos', parent: 'Pluto', cls: 'minor', a: 57783, e: 0.0033, periodD: 32.168, size: 0.025, color: '#7f7a72', fact: 'A small double-lobed moon, smaller and brighter than expected for the Pluto system; it spins every 5.3 days.',
+	  spinH: 127.4, spinTilt: 96, acc: 3, orb: { ref: 'planet equator', pole: [132.993, -6.163], i: 0.4175, n0: 314.6177, nr: -0.108889, e: 0.000074, w0: 256.9171, wr: -0.10668673, L0: 267.86702, Lr: 11.191251657 } },
+	{ name: 'Hydra', parent: 'Pluto', cls: 'minor', a: 64738, e: 0.0059, periodD: 38.202, size: 0.03, color: '#a39c92', fact: "Pluto's outermost known moon, with a surface of nearly pure water ice; it spins every 10 hours, unusually fast.",
+	  spinH: 10.31, spinTilt: 110, acc: 3, orb: { ref: 'planet equator', pole: [132.993, -6.163], i: 0.276, n0: 114.6592, nr: -0.070573506, e: 0.000189, w0: 132.6987, wr: -0.074258567, L0: 232.97346, Lr: 9.423584435 } }
 ];
 
 // Mean equatorial radii (km) of the parent bodies — used only to turn each
@@ -429,21 +599,10 @@ const moonsData = [
 const PARENT_R = { Earth: 6371, Mars: 3390, Jupiter: 69911, Saturn: 58232, Uranus: 25362, Neptune: 24622, Pluto: 1188 };
 const MOON_SIZE = 0.78; // global shrink so moons read clearly smaller than planets
 
-// Mean longitude at J2000 (deg) = node + arg.periapsis + mean anomaly, from JPL
-// satellite mean elements (epoch 2000-01-01.5). Only the MAJOR (regular, near-
-// circular) moons get this; with it + the real mean motion they sit at their
-// true positions for the modern era. The frame zero differs per planet from our
-// display frame by a constant, so within each system the moons' configuration
-// and its evolution are right (absolute orientation is arbitrary) — except the
-// Moon, whose frame is the ecliptic, so it is also correct relative to the Sun.
-const MOON_LON0 = {
-	Moon: 218.32,
-	Io: 20.0, Europa: 214.4, Ganymede: 221.6, Callisto: 80.3,
-	Mimas: 141.9, Enceladus: 176.5, Tethys: 248.3, Dione: 328.0, Rhea: 209.5, Titan: 168.6, Iapetus: 55.8,
-	Miranda: 328.7, Ariel: 203.1, Umbriel: 251.2, Titania: 281.6, Oberon: 352.6,
-	Triton: 241.1, Charon: 304.1
-};
-const MOON_ERA = { min: 1900, max: 2100 }; // years the accurate phase is trustworthy
+// Moons that keep one face to their planet (the major moons, and these minor ones; Puck and
+// Proteus are assumed to). The rest spin at their own rate (`spinH`) or tumble (Hyperion).
+const LOCKED_MINOR = new Set(['Phobos', 'Deimos', 'Amalthea', 'Janus', 'Epimetheus', 'Puck', 'Proteus']);
+const MOON_ERA = { min: 1900, max: 2100 }; // the span the satellite fits were checked against Horizons
 
 // Per-planet log range of moon orbital radii, so each planet's moons can be
 // normalised into one compact display band (keeps systems tight, not sprawling).
@@ -457,44 +616,63 @@ for (const m of moonsData) {
 const bodyByName = {};
 for (const b of bodies) bodyByName[b.planet.name] = b;
 
-// A moon's offset from its planet, in the planet's local (tilt) frame.
+// Scene-axis unit vectors of a reference plane given its pole (ICRF RA/Dec, degrees):
+// X = the plane's ascending node on the ICRF equator (ẑ × pole; for the ecliptic, the
+// equinox), Y = Z × X, Z = the pole. Moons live in the planet-centred moonRoot, whose
+// axes are the scene's.
+function refPlaneBasis(pole) {
+	const a = pole[0] * DEG, d = pole[1] * DEG;
+	const Z = new THREE.Vector3(Math.cos(d) * Math.cos(a), Math.cos(d) * Math.sin(a), Math.sin(d));
+	const X = new THREE.Vector3(-Z.y, Z.x, 0).normalize();
+	const Y = new THREE.Vector3().crossVectors(Z, X);
+	return { X: eqToScene(X), Y: eqToScene(Y), Z: eqToScene(Z) };
+}
+// Orbit orientation at `days` from the fitted elements: sets m.P (towards periapsis), m.Q
+// (90° ahead along the orbit) and m.W (orbit pole) in scene axes and returns the eccentric
+// anomaly. Mean longitude λ = L0 + Lr·d + Lq·d² + Σ s·sin(f·d) + c·cos(f·d).
+function moonOrbitState(m, days) {
+	const o = m.orb, B = m.refBasis;
+	const Om = (o.n0 + o.nr * days) * DEG, varpi = (o.w0 + o.wr * days) * DEG, I = o.i * DEG, e = o.e;
+	let L = o.L0 + o.Lr * days + (o.Lq || 0) * days * days;
+	if (o.terms) for (const [f, sn, cs] of o.terms) { const a = f * days * DEG; L += sn * Math.sin(a) + cs * Math.cos(a); }
+	let M = (L * DEG - varpi) % (2 * Math.PI);
+	if (M > Math.PI) M -= 2 * Math.PI; else if (M < -Math.PI) M += 2 * Math.PI;
+	let E = e < 0.8 ? M + e * Math.sin(M) : M + 0.85 * e * Math.sign(Math.sin(M) || 1); // Danby's starter, as heliocentric()
+	for (let k = 0; k < 20; k++) {
+		const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+		E -= dE;
+		if (Math.abs(dE) < 1e-10) break;
+	}
+	const w = varpi - Om, cO = Math.cos(Om), sO = Math.sin(Om), cw = Math.cos(w), sw = Math.sin(w), cI = Math.cos(I), sI = Math.sin(I);
+	m.P.set(0, 0, 0).addScaledVector(B.X, cw * cO - sw * sO * cI).addScaledVector(B.Y, cw * sO + sw * cO * cI).addScaledVector(B.Z, sw * sI);
+	m.Q.set(0, 0, 0).addScaledVector(B.X, -sw * cO - cw * sO * cI).addScaledVector(B.Y, -sw * sO + cw * cO * cI).addScaledVector(B.Z, cw * sI);
+	m.W.crossVectors(m.P, m.Q);
+	return E;
+}
+// A moon's offset from its planet (scene axes, display units before the scale sliders).
 function moonOffset(m, days) {
-	const dir = m.retro ? -1 : 1;
-	const ci = Math.cos(m.inc * DEG), si = Math.sin(m.inc * DEG);
-	let xp, yp;
 	if (m.name === 'Moon') {
 		// The Moon: full lunar theory (longitude, latitude AND distance), ecliptic
 		// -> scene, scaled so the mean distance lands on the display radius.
 		const p = moonGeocentric(days), k = m.dispA / MOON_A;
 		return new THREE.Vector3(p.x * k, p.z * k, -p.y * k);
 	}
-	if (m.meanLon0 !== undefined) {
-		// Major moon: real mean longitude (circular approximation) — accurate phase.
-		const ang = m.meanLon0 + (2 * Math.PI / m.periodD) * days * dir;
-		xp = m.dispA * Math.cos(ang);
-		yp = m.dispA * Math.sin(ang);
-	} else {
-		// Minor moon: deterministic placeholder phase, with the real eccentric shape.
-		let M = (2 * Math.PI / m.periodD) * days * dir;
-		M %= 2 * Math.PI;
-		let E = M;
-		for (let i = 0; i < 6; i++) E -= (E - m.e * Math.sin(E) - M) / (1 - m.e * Math.cos(E));
-		xp = m.dispA * (Math.cos(E) - m.e);
-		yp = m.dispA * Math.sqrt(1 - m.e * m.e) * Math.sin(E);
-	}
-	return new THREE.Vector3(xp, yp * si, -yp * ci); // prograde matches the planets' orbital sense
+	const E = moonOrbitState(m, days), e = m.orb.e;
+	return new THREE.Vector3()
+		.addScaledVector(m.P, m.dispA * (Math.cos(E) - e))
+		.addScaledVector(m.Q, m.dispA * Math.sqrt(1 - e * e) * Math.sin(E));
 }
 
-// Orbit-line points in the planet's moonRoot frame. The Moon gets its real mean
-// ellipse at century T (node regressing over 18.6 yr, perigee advancing over
-// 8.85 yr, in the ecliptic). The other major moons are modelled on circles, so
-// they are drawn as circles (their e ≤ 0.03 would not be visible anyway); minor
-// moons keep their real eccentric shape, periapsis on +x, matching their solver.
+// Orbit-line points. The Moon gets its real mean ellipse at century T in moonRoot
+// (scene) axes: node regressing over 18.6 yr, perigee advancing over 8.85 yr, in the
+// ecliptic (of date, brought to J2000 with the general precession in longitude). The
+// other moons' lines are their fitted ellipse in its own plane (periapsis on +x, orbit
+// pole on +z); placeBodies turns each line to the orbit's current orientation.
 function moonOrbitPoints(m, T) {
 	const pts = [], SEG = 96;
-	const ci = Math.cos(m.inc * DEG), si = Math.sin(m.inc * DEG);
 	if (m.name === 'Moon') {
-		const node = (125.0446 - 1934.1363 * T) * DEG, omega = (83.3532 + 4069.0137 * T) * DEG - node;
+		const ci = Math.cos(m.inc * DEG), si = Math.sin(m.inc * DEG);
+		const node = (125.0446 - 1934.1363 * T - 1.39697 * T) * DEG, omega = (83.3532 + 4069.0137 * T - 1.39697 * T) * DEG - node;
 		const cw = Math.cos(omega), sw = Math.sin(omega), cO = Math.cos(node), sO = Math.sin(node);
 		for (let i = 0; i <= SEG; i++) {
 			const E = (i / SEG) * 2 * Math.PI;
@@ -506,12 +684,10 @@ function moonOrbitPoints(m, T) {
 		}
 		return pts;
 	}
-	const e = m.meanLon0 !== undefined ? 0 : m.e;
+	const e = m.orb.e;
 	for (let i = 0; i <= SEG; i++) {
 		const E = (i / SEG) * 2 * Math.PI;
-		const xp = m.dispA * (Math.cos(E) - e);
-		const yp = m.dispA * Math.sqrt(1 - e * e) * Math.sin(E);
-		pts.push(new THREE.Vector3(xp, yp * si, -yp * ci));
+		pts.push(new THREE.Vector3(m.dispA * (Math.cos(E) - e), m.dispA * Math.sqrt(1 - e * e) * Math.sin(E), 0));
 	}
 	return pts;
 }
@@ -522,9 +698,7 @@ function buildMoons() {
 		const pb = bodyByName[m.parent];
 		if (!pb) continue;
 		if (!pb.moonRoot) {
-			pb.moonRoot = new THREE.Object3D();              // orbits ride the planet's true spin plane
-			const pole = pb.pole || (pb.planet.name !== 'Earth' && pb.iau ? pb.iau : null); // the Moon's elements are ecliptic-referenced
-			if (pole) pb.moonRoot.quaternion.copy(poleQuat(pole));
+			pb.moonRoot = new THREE.Object3D(); // planet-centred, scene axes: each moon carries its own reference plane
 			pb.holder.add(pb.moonRoot);
 		}
 		// Real orbital radius (planet radii) -> a tight, per-planet display band
@@ -536,8 +710,14 @@ function buildMoons() {
 		const rInner = pb.planet.size * (pb.planet.ring ? 2.35 : 1.4);
 		const norm = rng.max > rng.min ? (lg - rng.min) / (rng.max - rng.min) : 0.4;
 		m.dispA = rInner + norm * pb.planet.size * 1.65;
-		m.orbitScale = 1; // 1 = exaggerated display orbit; driven down toward true scale by the size slider
-		if (MOON_LON0[m.name] !== undefined) m.meanLon0 = MOON_LON0[m.name] * DEG; // accurate phase (major moons)
+		m.orbitScale = 1; // display-orbit multiplier set by the Size and Orbits sliders (applyMoonScale)
+		if (m.orb) {
+			m.refBasis = refPlaneBasis(m.orb.pole);
+			m.P = new THREE.Vector3(); m.Q = new THREE.Vector3(); m.W = new THREE.Vector3();
+			// Illustrative spin axis for the moons that are not tidally locked: the reference
+			// pole tipped by `spinTilt` (their real axes are mostly unknown).
+			if (m.spinH || m.tumble) m.spinAxis = m.refBasis.Z.clone().applyAxisAngle(m.refBasis.X, (m.spinTilt || 30) * DEG);
+		}
 		m.moon = true; // tooltip flag
 		m.type = `${m.cls === 'major' ? 'Major' : 'Minor'} moon of ${m.parent}`;
 
@@ -1140,16 +1320,27 @@ function sizeFactor(name, baseR, t) {
 function applyBodyScale(v) {
 	const t = v / 100;
 	for (const b of bodies) b.tilted.scale.setScalar(sizeFactor(b.planet.name, b.planet.size, t)); // scales planet + its ring
-	for (const m of moonObjs) {
-		m.mesh.scale.setScalar(sizeFactor(m.name, m.size * MOON_SIZE, t));
-		// Orbit shrinks with its OWN planet (not the Sun), so each moon system
-		// stays compact and attached to its planet rather than flying out to
-		// true interplanetary distances.
-		m.orbitScale = sizeFactor(m.parentBody.planet.name, m.parentBody.planet.size, t);
-		m.orbitLine.scale.setScalar(m.orbitScale);
-	}
+	for (const m of moonObjs) m.mesh.scale.setScalar(sizeFactor(m.name, m.size * MOON_SIZE, t));
+	applyMoonScale();
 	clearAllTrails(); // moon display orbits shrink with size, so their trails go stale
 	sizeValue.textContent = v >= 99 ? 'Exaggerated' : v <= 1 ? 'True to Sun' : 'Mixed';
+}
+// Moon orbit radii follow BOTH sliders. In units of the planet's displayed radius (which the
+// Size slider sets), a moon's distance morphs from the compact band (Orbits right) to its real
+// ratio a / R_planet (Orbits left). So with both sliders at "True to Sun" every moon is at its
+// real distance, a × SIZE_SCALE, on the same scale as the planets; true sizes with compact
+// orbits shrink each system with its planet; true orbits with exaggerated sizes keep each
+// system's real proportions around the enlarged planet, so no moon sits inside its planet.
+function moonOrbitScale(m, tSize, tOrbit) {
+	const pl = m.parentBody.planet;
+	return sizeFactor(pl.name, pl.size, tSize) * Math.pow((m.a / REAL_R_KM[pl.name]) / (m.dispA / pl.size), 1 - tOrbit);
+}
+function applyMoonScale() {
+	const tS = parseFloat(sizeSlider.value) / 100, tO = parseFloat(orbitSlider.value) / 100;
+	for (const m of moonObjs) {
+		m.orbitScale = moonOrbitScale(m, tS, tO);
+		m.orbitLine.scale.setScalar(m.orbitScale);
+	}
 }
 sizeSlider.addEventListener('input', () => { applyBodyScale(parseFloat(sizeSlider.value)); saveSettings(); });
 applyBodyScale(parseFloat(sizeSlider.value));
@@ -1173,6 +1364,7 @@ function applyOrbitSpacing(v) {
 		outer = Math.max(outer, b.planet.displayA * b.spacingF * (1 + b.planet.el.e[0])); // aphelion
 	}
 	outerAphelion = outer;
+	applyMoonScale();           // moon distances reach their real values at the true-scale end
 	orbitT = t;                 // comet/spacecraft radial mapping follows the slider
 	updateCometOrbits();
 	updateCraftPaths();
@@ -1287,7 +1479,7 @@ document.addEventListener('keydown', (e) => {
 // "Today" is the current instant (not noon of the local calendar day, which
 // could be half a day out — 7° for the Moon), so the opening view, the Today
 // button and the 0 key show where everything is right now; the label says UTC.
-function todayDays() { return dateToDays(new Date()); }
+function todayDays() { return utcToTT(dateToDays(new Date())); } // model time (TT) of the present UTC instant
 // The date picker spans 9999 BC – 9999 AD; beyond ±4 million days a crafted
 // ?t= would reach an invalid JS Date and the formatter would throw at startup.
 const MAX_SIM_DAYS = 4e6;
@@ -1318,9 +1510,9 @@ const dateFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'sh
 function refreshDateUI() {
 	simDays = clampDays(simDays);
 	syncSkyLinks();
-	const d = daysToDate(simDays);
+	const clk = clockOf(simDays), d = daysToDate(clk.days); // UTC for 1000–3000 AD, TT outside (see clockOf)
 	const y = d.getUTCFullYear(); // astronomical year numbering (0 = 1 BC)
-	dateValue.textContent = dateFmt.format(d) + ' UTC';
+	dateValue.textContent = dateFmt.format(d) + ' ' + clk.scale;
 	// The native picker can't show year < 1, so the date input holds a civil
 	// year (1–9999) and the era selector carries AD/BC. Map the astronomical
 	// year (…, -1=2 BC, 0=1 BC, 1=1 AD, …) to civil year + era.
@@ -1377,14 +1569,12 @@ todayBtn.addEventListener('click', () => { pausePlayback(); simDays = simNowAt =
 // step buttons and the arrow-key shortcuts.
 function stepTime(unit, dir) {
 	pausePlayback();
-	if (unit === 'd') {
-		simDays += dir;
-	} else {
-		const d = daysToDate(simDays);
-		if (unit === 'm') d.setUTCMonth(d.getUTCMonth() + dir);
-		else d.setUTCFullYear(d.getUTCFullYear() + dir);
-		simDays = dateToDays(d);
-	}
+	// Step the clock reading (in the scale shown), then back to model time by the date-box rules.
+	const clk = clockOf(simDays), d = daysToDate(clk.days);
+	if (unit === 'd') d.setUTCDate(d.getUTCDate() + dir);
+	else if (unit === 'm') d.setUTCMonth(d.getUTCMonth() + dir);
+	else d.setUTCFullYear(d.getUTCFullYear() + dir);
+	simDays = fromClock(dateToDays(d), clk.scale);
 	refreshDateUI();
 }
 for (const btn of document.querySelectorAll('#stepRow .step')) {
@@ -1435,7 +1625,7 @@ dateInput.addEventListener('focus', () => dateWrap.classList.add('open'));
 dateInput.addEventListener('blur', () => { dateWrap.classList.remove('open'); refreshDateUI(); }); // resync both twins
 function applyDateInput() {
 	if (!dateInput.value) return;
-	const now = daysToDate(simDays);
+	const clk = clockOf(simDays), now = daysToDate(clk.days); // the reading (and scale) shown before the edit
 	const [datePart, timePart = `${now.getUTCHours()}:${now.getUTCMinutes()}`] = dateInput.value.split('T');
 	const [civil, mm, dd] = datePart.split('-').map(Number);
 	const [hh, mi] = timePart.split(':').map(Number);
@@ -1443,7 +1633,7 @@ function applyDateInput() {
 	const d = new Date(Date.UTC(2000, mm - 1, dd, hh, mi)); // UTC base…
 	d.setUTCFullYear(astroYear);                             // …then the real year (handles 0–99 and BC)
 	pausePlayback();
-	simDays = dateToDays(d);
+	simDays = fromClock(dateToDays(d), clk.scale); // UTC inside the clock's UTC span, TT outside (see fromClock)
 	refreshDateUI();
 }
 dateInput.addEventListener('change', applyDateInput);
@@ -1466,14 +1656,21 @@ syncFilterUI();
 // 3000 BC – 3000 AD. `days` = days since J2000, so jumps are exact and work
 // for BC dates the native picker can't represent. `show` lists the categories
 // to display for that event, so selecting it auto-declutters the view.
-// (These are planetary events, so Pluto/dwarfs and moons are hidden.)
+// (These are planetary events, so Pluto/dwarfs and moons are hidden.) "Within N°" and "line through
+// the Sun" angles are spreads in heliocentric LONGITUDE, i.e. as seen from above the ecliptic: the
+// planets' tilted orbits keep them from lining up as exactly in 3D (600 AD's 0.7° is 2.8° in space).
+// The 1953 BC gathering and the planet parades are Earth-sky (geocentric) groupings.
 // "Planet parade" entries are the popular, geocentric kind — several planets
 // in the same part of Earth's sky at dusk or dawn — on the dates Wikipedia and
 // Star Walk give, each checked against this model's geocentric elongations.
 const EVENTS = [
 	{ days: -1733223.7, show: ['planet'], note: 'Six planets (incl. Earth) within 10°' },
 	{ days: -1544576.7, show: ['planet'], note: 'Tightest five-planet — within 7°' },
-	{ days: -1443372.2, show: ['planet'], note: 'The historic five-planet cluster' },
+	// The historic Chinese gathering (Pankenier): 26–27 Feb 1953 BC Julian = 10 Feb proleptic Gregorian,
+	// five naked-eye planets within ~4° of Earth's sky before dawn. The tightest grouping AROUND THE SUN
+	// comes 26 days later and spans 36° of Earth's sky, so the two are listed separately.
+	{ days: -1443398.1, show: ['planet'], note: 'Historic five-planet gathering in Earth’s sky (Chinese records)' },
+	{ days: -1443372.2, show: ['planet'], note: 'Five planets within 10° around the Sun' },
 	{ days: -1312814.3, show: ['planet'], note: 'Tightest eight-planet — within 40°' },
 	{ days:  -950282, show: ['planet'], note: 'Cleanest planetary spiral (271°)' },
 	{ days:  -654480, show: ['planet'], note: 'Planets evenly around the Sun' },
@@ -1488,12 +1685,16 @@ const EVENTS = [
 	{ days:     8210, show: ['planet'], note: 'Planet parade — five naked-eye in order at dawn' },
 	{ days:     8920, show: ['planet'], note: 'Planet parade — six planets at dawn' },
 	{ days:     9152, show: ['planet'], note: 'Planet parade — six planets at dusk' },
-	{ days:     9190, show: ['planet'], note: 'Planet parade — all seven planets at dusk' },
+	{ days:     9190, show: ['planet'], note: 'Planet parade — seven planets on the dusk side (not all visible)' },
 	{ days:     9555, show: ['planet'], note: 'Planet parade — six planets at dusk' },
 	{ days:     9720, show: ['planet'], note: 'Planet parade — six planets at dawn' },
 	{ days:    10220, show: ['planet'], note: 'Planet parade — six planets at dusk' },
-	{ days: 10427.305, show: ['planet', 'major'], note: 'Galilean moons tightest (~59°)' },
-	{ days:    12452, show: ['planet'], note: 'Planet parade — all seven planets at dusk' },
+	// The Laplace resonance keeps Io, Europa and Ganymede from ever bunching tighter than ~61°; with the
+	// fitted elements that floor recurs every few decades (2015, 2035, 2063, 2090). 2035-05-16 02:52 TDB:
+	// 60.93° here, 60.98° in JPL Horizons (fixes-homepage/galilean-tightest.mjs). The old entry, 19 Jul
+	// 2028 at ~59°, came from the previous satellite model; Horizons puts that date at 62.9°.
+	{ days: 12918.62, show: ['planet', 'major'], note: 'Galilean moons within 61° — as close as their resonance allows' },
+	{ days:    12452, show: ['planet'], note: 'Planet parade — seven planets on the dusk side (not all visible)' },
 	{ days:    13228, show: ['planet'], note: 'Venus, Mars, Jupiter & Saturn at dusk' },
 	{ days:    14861, show: ['planet'], note: 'Planet parade — five naked-eye within 10° at dusk' },
 	{ days:  29045.8, show: ['planet'], note: 'All eight planets on a line through the Sun — within 22°' },
@@ -1586,7 +1787,7 @@ for (const ev of MENU) {
 	}
 	const o = document.createElement('option');
 	o.value = String(ev.days);
-	o.textContent = `${eventFmt.format(daysToDate(ev.days))} · ${ev.note}`;
+	o.textContent = `${eventFmt.format(daysToDate(clockOf(ev.days).days))} · ${ev.note}`;
 	eventGroup.appendChild(o);
 }
 // Alignments read best from above: glide to a top-down view framing the
@@ -1716,6 +1917,7 @@ function earthRelRows(p) {
 	const m = Math.sqrt((dx * dx + dy * dy + dz * dz) * (e.x * e.x + e.y * e.y + e.z * e.z));
 	const elong = Math.acos(Math.max(-1, Math.min(1, dot / m))) * RAD2DEG;
 	const east = wrap180((Math.atan2(dy, dx) - Math.atan2(-e.y, -e.x)) * RAD2DEG) > 0;
+	// A rough guide from the angle to the Sun alone: it does not know the viewer's horizon or twilight.
 	const sky = elong < 15 ? 'in the Sun’s glare' : elong > 150 ? 'up most of the night' : east ? 'evening sky' : 'morning sky';
 	return `<dt>From Earth</dt><dd>${dist.toFixed(3)} AU</dd>` +
 	       `<dt>Light time</dt><dd>${light}</dd>` +
@@ -1740,13 +1942,13 @@ function nextEventRow(name) {
 			hit = d === null ? null : { label: 'Next opposition', days: d };
 		} else {
 			const ge = nextElongation(el, from, name === 'Venus' ? 40 : 15);
-			hit = ge === null ? null : { label: `Best ${ge.east ? 'evening' : 'morning'} view`, days: ge.days };
+			hit = ge === null ? null : { label: `Greatest ${ge.east ? 'evening' : 'morning'} elongation`, days: ge.days }; // farthest from the Sun; not a local observing forecast
 		}
 		ent = { from, until: hit ? hit.days : from + 15, hit };
 		nextEvCache.set(name, ent);
 	}
 	const hit = ent.hit;
-	return hit ? `<dt>${hit.label}</dt><dd>${eventFmt.format(daysToDate(hit.days))}</dd>` : '';
+	return hit ? `<dt>${hit.label}</dt><dd>${eventFmt.format(daysToDate(clockOf(hit.days).days))}</dd>` : '';
 }
 
 function buildTooltipHTML(d) {
@@ -1763,7 +1965,7 @@ function buildTooltipHTML(d) {
 		        `<dt>Perihelion</dt><dd>${(d.a * (1 - d.e)).toFixed(2)} AU</dd>` +
 		        `<dt>Orbital period</dt><dd>${period < 100 ? period.toFixed(1) : Math.round(period)} years${d.inc > 90 ? ' ↺' : ''}</dd>` +
 		        `<dt>Eccentricity</dt><dd>${d.e.toFixed(3)}</dd>` +
-		        `<dt>Next perihelion</dt><dd>${eventFmt.format(daysToDate(nextPeri))}</dd></dl>` +
+		        `<dt>Next perihelion</dt><dd>${eventFmt.format(daysToDate(clockOf(nextPeri).days))}</dd></dl>` +
 		        `<div class="note">${d.desig} — orbit is real; position is approximate, drifting further from truth away from the present.</div>`;
 	}
 	if (d.craft) {
@@ -1779,7 +1981,7 @@ function buildTooltipHTML(d) {
 			        `<dt>Distance now</dt><dd>${r.toFixed(2)} AU</dd>` +
 			        earthRelRows(p) +
 			        `<dt>Speed</dt><dd>${kms.toFixed(1)} km/s</dd></dl>` +
-			        `<div class="note">Position from JPL Horizons trajectory data (to 2049).</div>`;
+			        `<div class="note">Interpolated between JPL Horizons positions 180 days apart (to 2049), so planet flybys are smoothed.</div>`;
 		}
 	}
 	if (d.moon) {
@@ -1788,14 +1990,21 @@ function buildTooltipHTML(d) {
 			const p = moonGeocentric(simDays);
 			nowRow = `<dt>Distance now</dt><dd>${fmtKm(Math.hypot(p.x, p.y, p.z))}</dd>`;
 		}
+		const locked = !d.spinH && !d.tumble && (d.cls === 'major' || LOCKED_MINOR.has(d.name));
+		const day = d.tumble ? '<dt>Day length</dt><dd>none: it tumbles chaotically</dd>'
+			: d.spinH ? `<dt>Day length</dt><dd>${d.spinH < 48 ? d.spinH.toFixed(1) + ' hours' : dayDaysLabel(d.spinH / 24)}</dd>`
+			: locked ? `<dt>Day length</dt><dd>${dayDaysLabel(d.periodD)}</dd>` : '';
+		const spinNote = d.tumble ? 'Tumbles chaotically; the drawn spin is illustrative.'
+			: d.spinH ? 'Not tidally locked; the spin axis drawn is illustrative.'
+			: locked ? (LOCKED_MINOR.has(d.name) && (d.name === 'Puck' || d.name === 'Proteus') ? 'Thought to be tidally locked.' : 'Tidally locked — one rotation per orbit.') : '';
+		const posNote = d.name === 'Moon' ? 'Position from a lunar theory, within 0.004° of JPL Horizons over 1900–2100.'
+			: d.acc == null ? d.phaseNote
+			: `Position within ${d.acc}° of JPL Horizons over 1900–2100 (fitted mean orbit).`;
 		html += `<dl><dt>Orbits</dt><dd>${d.parent}</dd>` + sizeRow(d.name) + nowRow +
 		        `<dt>Mean orbit</dt><dd>${fmtKm(d.a)}</dd>` +
-		        `<dt>Orbital period</dt><dd>${moonPeriodLabel(d.periodD)}${d.retro ? ' ↺' : ''}</dd>` +
-		        // Day length only for the large, genuinely tidally-locked major moons;
-		        // many minor moons rotate non-synchronously (e.g. Hyperion tumbles).
-		        (d.cls === 'major' ? `<dt>Day length</dt><dd>${dayDaysLabel(d.periodD)}</dd>` : '') +
+		        `<dt>Orbital period</dt><dd>${moonPeriodLabel(d.periodD)}${d.retro ? ' ↺' : ''}</dd>` + day +
 		        `<dt>Eccentricity</dt><dd>${d.e.toFixed(3)}</dd></dl>` +
-		        (d.cls === 'major' ? `<div class="note">Tidally locked — one rotation per orbit.</div>` : '');
+		        `<div class="note">${spinNote ? spinNote + ' ' : ''}${posNote}</div>`;
 	}
 	if (d.el && !d.comet) {
 		const p = heliocentric(d.el, simDays / 36525);
@@ -2112,7 +2321,7 @@ window.addEventListener('resize', () => {
 const timer = new THREE.Timer(); // THREE.Clock is deprecated; Timer needs update() each frame
 const _MUP = new THREE.Vector3(0, 1, 0);
 const _md = new THREE.Vector3(), _my = new THREE.Vector3(), _mz = new THREE.Vector3();
-const _mbasis = new THREE.Matrix4();
+const _mbasis = new THREE.Matrix4(), _mq = new THREE.Quaternion();
 function placeBodies() {
 	const T = simDays / 36525;
 	for (const b of bodies) {
@@ -2137,13 +2346,26 @@ function placeBodies() {
 			m.orbitDay = simDays;
 		}
 		m.mesh.position.copy(moonOffset(m, simDays)).multiplyScalar(m.orbitScale);
-		// Tidal lock: keep the near side (texture centre = local +x) facing the planet,
-		// so the Moon shows its familiar face and the Sun lights it through its phases.
-		_md.copy(m.mesh.position).negate().normalize();   // toward the planet (moonRoot origin)
-		_mz.crossVectors(_md, _MUP).normalize();
-		_my.crossVectors(_mz, _md).normalize();
-		_mbasis.makeBasis(_md, _my, _mz);
-		m.mesh.quaternion.setFromRotationMatrix(_mbasis);
+		if (m.orb) { // turn the drawn ellipse (built in its own plane) to the orbit's current orientation
+			_mbasis.makeBasis(m.P, m.Q, m.W);
+			m.orbitLine.quaternion.setFromRotationMatrix(_mbasis);
+		}
+		if (m.tumble) {
+			// Hyperion tumbles chaotically; drawn as two incommensurate spins (illustrative).
+			_mq.setFromAxisAngle(m.spinAxis, 2 * Math.PI * simDays / 5.1);
+			m.mesh.quaternion.setFromAxisAngle(m.refBasis.X, 2 * Math.PI * simDays / 13.3).premultiply(_mq);
+		} else if (m.spinH) {
+			// Not tidally locked: the measured spin period about an illustrative axis.
+			m.mesh.quaternion.setFromAxisAngle(m.spinAxis, 2 * Math.PI * simDays * 24 / m.spinH);
+		} else {
+			// Tidal lock: keep the near side (texture centre = local +x) facing the planet,
+			// so the Moon shows its familiar face and the Sun lights it through its phases.
+			_md.copy(m.mesh.position).negate().normalize();   // toward the planet (moonRoot origin)
+			_mz.crossVectors(_md, m.orb ? m.W : _MUP).normalize(); // spin axis = orbit pole (≈ ecliptic north for the Moon)
+			_my.crossVectors(_mz, _md).normalize();
+			_mbasis.makeBasis(_md, _my, _mz);
+			m.mesh.quaternion.setFromRotationMatrix(_mbasis);
+		}
 	}
 	// Comets: real angular position, radius through the display mapping.
 	if (shown.comets) {
@@ -2319,7 +2541,7 @@ document.getElementById('shot').addEventListener('click', () => {
 	g.font = `500 ${11 * pr}px "Segoe UI", system-ui, sans-serif`;
 	g.fillStyle = 'rgba(200,215,255,0.6)';
 	g.fillText(`${dateValue.textContent} · orrery.live`, 12 * pr, out.height - 10 * pr);
-	const d = daysToDate(simDays), y = d.getUTCFullYear();
+	const d = daysToDate(clockOf(simDays).days), y = d.getUTCFullYear();
 	const name = `orrery-live-${y <= 0 ? (1 - y) + 'BC' : y}-` +
 		`${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}.png`;
 	out.toBlob((blob) => {
@@ -2371,7 +2593,7 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 // beside simDays). A time nobody has touched since it was "now" still opens the live sky.
 function syncSkyLinks() {
 	const chosen = simDays !== simNowAt && Math.abs(simDays - todayDays()) > 1 / 24;
-	const h = chosen ? `/night-sky/?t=${simDays.toFixed(4)}` : '/night-sky/';
+	const h = chosen ? `/night-sky/?t=${ttToUTC(simDays).toFixed(4)}` : '/night-sky/'; // the sky page's ?t= is UTC days
 	for (const id of ['skyLink', 'skyRow']) {
 		const a = document.getElementById(id);
 		if (a && a.getAttribute('href') !== h) a.setAttribute('href', h);
@@ -2381,4 +2603,5 @@ syncSkyLinks();
 setInterval(syncSkyLinks, 30000); // a chosen moment drifts more than an hour from "now"
 
 // Headless-test hook (same convention as the other fleet sites).
-window.__ORRERY = { bodies, moonObjs, cometObjs, craftObjs, shown, camera };
+window.__ORRERY = { bodies, moonObjs, cometObjs, craftObjs, shown, camera,
+	get simDays() { return simDays; }, set simDays(v) { pausePlayback(); simDays = clampDays(v); refreshDateUI(); } };

@@ -12,7 +12,6 @@ const DEG = Math.PI / 180;
 // between is a two-body approximation (planetary perturbations are ignored).
 export const HALLEY = { a: 17.834, e: 0.96714, inc: 162.262, node: 58.42, argp: 111.33, tpJD: 2446470.95, periodD: 27563.05 };
 const TP = HALLEY.tpJD - J2000, P = HALLEY.periodD;
-const GM = 1.32712440018e20; // m^3/s^2, the Sun
 const ORBITS = [['Earth', 1.0], ['Jupiter', 5.2], ['Saturn', 9.58], ['Uranus', 19.2], ['Neptune', 30.07]];
 
 function toEcliptic(xp, yp) {
@@ -39,7 +38,14 @@ export function halleyHelio(days) {
 	return { ...p, r: Math.hypot(p.x, p.y, p.z), M };
 }
 export const nextPerihelion = (days) => TP + Math.ceil((days - TP) / P) * P;
-const speedKms = (r) => Math.sqrt(GM * (2 / (r * AU_KM * 1000) - 1 / (HALLEY.a * AU_KM * 1000))) / 1000;
+// Speed along the orbit, and the part of it towards (−) or away from (+) the Sun, in km/s.
+// Taken from the same path the map draws (a numerical derivative) rather than from vis-viva:
+// with the period pinned to JPL's, a = 17.834 AU and the Sun's GM imply a period 54 days
+// shorter, so vis-viva would read about 0.2% faster than the plotted motion.
+export function motion(days) {
+	const h = 0.01, a = halleyHelio(days - h), b = halleyHelio(days + h), k = AU_KM / (2 * h * 86400);
+	return { v: Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z) * k, radial: (b.r - a.r) * k };
+}
 
 function region(r) {
 	if (r > 30.07) return 'beyond the orbit of Neptune';
@@ -63,20 +69,20 @@ export function halleyView(days) {
 	const h = halleyHelio(days), earth = helio('Earth', days);
 	const dE = Math.hypot(h.x - earth.x, h.y - earth.y, h.z - earth.z);
 	const inbound = h.M < 0;                     // mean anomaly in (−π, 0): after aphelion, falling back in
-	const v = speedKms(h.r), next = nextPerihelion(days), last = next - P;
+	const m = motion(days), v = m.v, closing = Math.abs(m.radial), next = nextPerihelion(days), last = next - P;
 	const lightH = dE * LIGHT_S_PER_AU / 3600;
 	const frac = (days - last) / P;
 	const bn = (au) => `${(au * AU_KM / 1e9).toLocaleString('en-GB', { maximumFractionDigits: 2 })} billion km`;
 
 	const summary = `Halley’s Comet is ${h.r.toFixed(2)} AU (${bn(h.r)}) from the Sun right now, ${region(h.r)}, and ` +
-		(inbound ? `falling back towards the Sun at ${v.toFixed(2)} km/s after turning round at the far end of its orbit in late 2023. `
-		         : `heading away from the Sun at ${v.toFixed(2)} km/s. `) +
+		(inbound ? `on its way back in: it is moving at ${v.toFixed(2)} km/s along its orbit and closing on the Sun at ${closing.toFixed(2)} km/s, after turning round at the far end of its orbit in late 2023. `
+		         : `moving at ${v.toFixed(2)} km/s along its orbit and heading away from the Sun at ${closing.toFixed(2)} km/s. `) +
 		`Its next perihelion — closest approach to the Sun — is on ${fmtDate(next)}, in ${span(days, next)}.`;
 
 	const stats = [
 		['dt', null, 'From the Sun'], ['dd', null, `${h.r.toFixed(2)} AU`, ['span', { class: 'sub' }, bn(h.r)]],
 		['dt', null, 'From Earth'], ['dd', null, `${dE.toFixed(2)} AU`, ['span', { class: 'sub' }, `light takes ${lightH.toFixed(1)} hours`]],
-		['dt', null, 'Speed'], ['dd', null, `${v.toFixed(2)} km/s`, ['span', { class: 'sub' }, `about ${speedKms(HALLEY.a * (1 - HALLEY.e)).toFixed(0)} km/s at perihelion`]],
+		['dt', null, 'Speed'], ['dd', null, `${v.toFixed(2)} km/s`, ['span', { class: 'sub' }, `along its orbit, ${closing.toFixed(2)} km/s ${inbound ? 'towards' : 'away from'} the Sun; about ${motion(next).v.toFixed(0)} km/s at perihelion`]],
 		['dt', null, 'Heading'], ['dd', null, inbound ? 'inbound, towards the Sun' : 'outbound, away from the Sun'],
 		['dt', null, 'Through its orbit'], ['dd', null, `${(frac * 100).toFixed(0)}%`, ['span', { class: 'sub' }, `of the time from ${daysToDate(last).getUTCFullYear()} to ${daysToDate(next).getUTCFullYear()}`]],
 		['dt', null, 'Next perihelion'], ['dd', null, fmtDate(next), ['span', { class: 'sub' }, `in ${span(days, next)} (${Math.round(next - days).toLocaleString('en-GB')} days)`]]

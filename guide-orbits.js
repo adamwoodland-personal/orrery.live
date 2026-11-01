@@ -1,5 +1,5 @@
 // Orbital model for orrery.live's guide pages (/now/, /planetary-alignment/).
-// Generated from app.js on 2026-10-12: the element table is a verbatim copy of the
+// Generated from app.js on 2026-11-01: the element table is a verbatim copy of the
 // planetsData `el` rows there (JPL/Standish long-range Keplerian elements,
 // fitted for 3000 BC – 3000 AD) and heliocentric() is the same Kepler solver,
 // so the text pages agree with the 3D view without loading three.js. The
@@ -73,22 +73,74 @@ export function heliocentric(el, T) {
 }
 export const helio = (name, days) => heliocentric(EL[name], days / 36525);
 
-// Geocentric Moon (km, J2000 ecliptic) from the Astronomical Almanac's
-// low-precision lunar formulae (ecliptic of date), precessed to J2000 so it
-// shares the planets' frame. Checked against JPL Horizons DE441 geocentric
-// vectors at six dates 1900–2100: direction within 0.12°, distance within 0.15%.
+// Geocentric Moon (km, J2000 ecliptic): Meeus, Astronomical Algorithms ch. 47 — the ELP-2000/82
+// series truncated to its 60 largest terms in longitude and distance and 60 in latitude (the same
+// series as night-sky/astro.js) — rotated from the mean ecliptic and equinox of date to J2000 with
+// the IAU 1976 precession. `days` is read as dynamical time, like the planets'. Checked against JPL
+// Horizons DE441 geocentric vectors every 7 days 1900–2100 (10,436 dates): direction within 0.004°,
+// distance within 0.004% (13 km). The low-precision formulae used before were up to 0.37° out.
 export const EARTH_MOON_MASS = 1 / 82.30057; // Moon / (Earth + Moon)
 export const MOON_A = 384400;                // km, mean distance (the display-radius reference)
 export function moonGeocentric(days) {
-	const T = days / 36525;
-	const s = (a, b) => Math.sin((a + b * T) * DEG), c = (a, b) => Math.cos((a + b * T) * DEG);
-	const lam = (218.32 + 481267.881 * T - 1.39697 * T // last term: ecliptic of date -> J2000
-		+ 6.29 * s(135.0, 477198.87) - 1.27 * s(259.3, -413335.36) + 0.66 * s(235.7, 890534.22)
-		+ 0.21 * s(269.9, 954397.70) - 0.19 * s(357.5, 35999.05) - 0.11 * s(186.5, 966404.03)) * DEG;
-	const bet = (5.13 * s(93.3, 483202.02) + 0.28 * s(228.2, 960400.89) - 0.28 * s(318.3, 6003.15) - 0.17 * s(217.6, -407332.21)) * DEG;
-	const par = (0.9508 + 0.0518 * c(135.0, 477198.87) + 0.0095 * c(259.3, -413335.36) + 0.0078 * c(235.7, 890534.22) + 0.0028 * c(269.9, 954397.70)) * DEG;
-	const r = 6378.14 / Math.sin(par), cb = Math.cos(bet);
-	return { x: r * cb * Math.cos(lam), y: r * cb * Math.sin(lam), z: r * Math.sin(bet) };
+	// Rows: multiples of D, M, M′, F, then the longitude (1e-6°) and distance (m) amplitudes
+	// (Meeus table 47.A); latitude rows end with one amplitude in 1e-6° (table 47.B). Built once.
+	const LR = moonGeocentric.LR ??= [
+		0, 0, 1, 0, 6288774, -20905355, 2, 0, -1, 0, 1274027, -3699111, 2, 0, 0, 0, 658314, -2955968, 0, 0, 2, 0, 213618, -569925,
+		0, 1, 0, 0, -185116, 48888, 0, 0, 0, 2, -114332, -3149, 2, 0, -2, 0, 58793, 246158, 2, -1, -1, 0, 57066, -152138,
+		2, 0, 1, 0, 53322, -170733, 2, -1, 0, 0, 45758, -204586, 0, 1, -1, 0, -40923, -129620, 1, 0, 0, 0, -34720, 108743,
+		0, 1, 1, 0, -30383, 104755, 2, 0, 0, -2, 15327, 10321, 0, 0, 1, 2, -12528, 0, 0, 0, 1, -2, 10980, 79661,
+		4, 0, -1, 0, 10675, -34782, 0, 0, 3, 0, 10034, -23210, 4, 0, -2, 0, 8548, -21636, 2, 1, -1, 0, -7888, 24208,
+		2, 1, 0, 0, -6766, 30824, 1, 0, -1, 0, -5163, -8379, 1, 1, 0, 0, 4987, -16675, 2, -1, 1, 0, 4036, -12831,
+		2, 0, 2, 0, 3994, -10445, 4, 0, 0, 0, 3861, -11650, 2, 0, -3, 0, 3665, 14403, 0, 1, -2, 0, -2689, -7003,
+		2, 0, -1, 2, -2602, 0, 2, -1, -2, 0, 2390, 10056, 1, 0, 1, 0, -2348, 6322, 2, -2, 0, 0, 2236, -9884,
+		0, 1, 2, 0, -2120, 5751, 0, 2, 0, 0, -2069, 0, 2, -2, -1, 0, 2048, -4950, 2, 0, 1, -2, -1773, 4130,
+		2, 0, 0, 2, -1595, 0, 4, -1, -1, 0, 1215, -3958, 0, 0, 2, 2, -1110, 0, 3, 0, -1, 0, -892, 3258,
+		2, 1, 1, 0, -810, 2616, 4, -1, -2, 0, 759, -1897, 0, 2, -1, 0, -713, -2117, 2, 2, -1, 0, -700, 2354,
+		2, 1, -2, 0, 691, 0, 2, -1, 0, -2, 596, 0, 4, 0, 1, 0, 549, -1423, 0, 0, 4, 0, 537, -1117,
+		4, -1, 0, 0, 520, -1571, 1, 0, -2, 0, -487, -1739, 2, 1, 0, -2, -399, 0, 0, 0, 2, -2, -381, -4421,
+		1, 1, 1, 0, 351, 0, 3, 0, -2, 0, -340, 0, 4, 0, -3, 0, 330, 0, 2, -1, 2, 0, 327, 0,
+		0, 2, 1, 0, -323, 1165, 1, 1, -1, 0, 299, 0, 2, 0, 3, 0, 294, 0, 2, 0, -1, -2, 0, 8752];
+	const LB = moonGeocentric.LB ??= [
+		0, 0, 0, 1, 5128122, 0, 0, 1, 1, 280602, 0, 0, 1, -1, 277693, 2, 0, 0, -1, 173237, 2, 0, -1, 1, 55413, 2, 0, -1, -1, 46271,
+		2, 0, 0, 1, 32573, 0, 0, 2, 1, 17198, 2, 0, 1, -1, 9266, 0, 0, 2, -1, 8822, 2, -1, 0, -1, 8216, 2, 0, -2, -1, 4324,
+		2, 0, 1, 1, 4200, 2, 1, 0, -1, -3359, 2, -1, -1, 1, 2463, 2, -1, 0, 1, 2211, 2, -1, -1, -1, 2065, 0, 1, -1, -1, -1870,
+		4, 0, -1, -1, 1828, 0, 1, 0, 1, -1794, 0, 0, 0, 3, -1749, 0, 1, -1, 1, -1565, 1, 0, 0, 1, -1491, 0, 1, 1, 1, -1475,
+		0, 1, 1, -1, -1410, 0, 1, 0, -1, -1344, 1, 0, 0, -1, -1335, 0, 0, 3, 1, 1107, 4, 0, 0, -1, 1021, 4, 0, -1, 1, 833,
+		0, 0, 1, -3, 777, 4, 0, -2, 1, 671, 2, 0, 0, -3, 607, 2, 0, 2, -1, 596, 2, -1, 1, -1, 491, 2, 0, -2, 1, -451,
+		0, 0, 3, -1, 439, 2, 0, 2, 1, 422, 2, 0, -3, -1, 421, 2, 1, -1, 1, -366, 2, 1, 0, 1, -351, 4, 0, 0, 1, 331,
+		2, -1, 1, 1, 315, 2, -2, 0, -1, 302, 0, 0, 1, 3, -283, 2, 1, 1, -1, -229, 1, 1, 0, -1, 223, 1, 1, 0, 1, 223,
+		0, 1, -2, -1, -220, 2, 1, -1, -1, -220, 1, 0, 1, 1, -185, 2, -1, -2, -1, 181, 0, 1, 2, 1, -177, 4, 0, -2, -1, 176,
+		4, -1, -1, -1, 166, 1, 0, 1, -1, -164, 4, 0, 1, -1, 132, 1, 0, -1, -1, -119, 4, -1, 0, -1, 115, 2, -2, 0, 1, 107];
+	const T = days / 36525, sin = Math.sin, cos = Math.cos, AS = DEG / 3600;
+	const p = (c0, c1, c2, c3, c4) => (c0 + T * (c1 + T * (c2 + T * (c3 + T * c4)))) * DEG;
+	const Lp = p(218.3164477, 481267.88123421, -0.0015786, 1 / 538841, -1 / 65194000);   // mean longitude
+	const D = p(297.8501921, 445267.1114034, -0.0018819, 1 / 545868, -1 / 113065000);    // mean elongation
+	const M = p(357.5291092, 35999.0502909, -0.0001536, 1 / 24490000, 0);                // Sun's mean anomaly
+	const Mp = p(134.9633964, 477198.8675055, 0.0087414, 1 / 69699, -1 / 14712000);      // Moon's mean anomaly
+	const F = p(93.2720950, 483202.0175233, -0.0036539, -1 / 3526000, 1 / 863310000);    // argument of latitude
+	const A1 = (119.75 + 131.849 * T) * DEG, A2 = (53.09 + 479264.290 * T) * DEG, A3 = (313.45 + 481266.484 * T) * DEG;
+	const E = 1 - T * (0.002516 + 0.0000074 * T), Ek = [1, E, E * E]; // eccentricity factor for terms in M
+	let sl = 3958 * sin(A1) + 1962 * sin(Lp - F) + 318 * sin(A2), sr = 0;
+	let sb = -2235 * sin(Lp) + 382 * sin(A3) + 175 * sin(A1 - F) + 175 * sin(A1 + F) + 127 * sin(Lp - Mp) - 115 * sin(Lp + Mp);
+	for (let i = 0; i < LR.length; i += 6) {
+		const a = LR[i] * D + LR[i + 1] * M + LR[i + 2] * Mp + LR[i + 3] * F, e = Ek[Math.abs(LR[i + 1])];
+		sl += LR[i + 4] * e * sin(a); sr += LR[i + 5] * e * cos(a);
+	}
+	for (let i = 0; i < LB.length; i += 5) sb += LB[i + 4] * Ek[Math.abs(LB[i + 1])] * sin(LB[i] * D + LB[i + 1] * M + LB[i + 2] * Mp + LB[i + 3] * F);
+	const lam = Lp + sl * 1e-6 * DEG, bet = sb * 1e-6 * DEG, r = 385000.56 + sr / 1000;
+	// Mean ecliptic of date -> mean equator of date (obliquity of date) -> J2000 equator (the
+	// transposed IAU 1976 precession matrix, Meeus 21.2–21.4) -> J2000 ecliptic.
+	const eps = (84381.448 - (46.8150 + (0.00059 - 0.001813 * T) * T) * T) * AS, eps0 = 84381.448 * AS;
+	const xd = r * cos(bet) * cos(lam), yl = r * cos(bet) * sin(lam), zl = r * sin(bet);
+	const yd = yl * cos(eps) - zl * sin(eps), zd = yl * sin(eps) + zl * cos(eps);
+	const ze = (2306.2181 + (0.30188 + 0.017998 * T) * T) * T * AS;
+	const zz = (2306.2181 + (1.09468 + 0.018203 * T) * T) * T * AS;
+	const th = (2004.3109 - (0.42665 + 0.041833 * T) * T) * T * AS;
+	const cz = cos(ze), sz = sin(ze), cZ = cos(zz), sZ = sin(zz), ct = cos(th), st = sin(th);
+	const x = (cZ * ct * cz - sZ * sz) * xd + (sZ * ct * cz + cZ * sz) * yd + (st * cz) * zd;
+	const y = (-cZ * ct * sz - sZ * cz) * xd + (-sZ * ct * sz + cZ * cz) * yd + (-st * sz) * zd;
+	const z = (-cZ * st) * xd + (-sZ * st) * yd + ct * zd;
+	return { x, y: y * cos(eps0) + z * sin(eps0), z: -y * sin(eps0) + z * cos(eps0) };
 }
 
 // A planet as seen from Earth: distances (AU), ecliptic longitude and the

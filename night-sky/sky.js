@@ -65,6 +65,7 @@ const state = {
 	fov: 70,
 	opts: { ...DEFAULT_OPTS, ...(saved.opts || {}) },
 	selected: null,          // { kind: 'body'|'star'|'const', key }
+	dateLink: null,          // { date: 'YYYY-MM-DD', when: 'dusk'|'dawn' } from a ?date= link, until the time is changed
 	arFov: saved.arFov || 0, // 0 = automatic
 	camFov: saved.camFov || 0,
 };
@@ -91,6 +92,17 @@ const state = {
 		state.live = false;
 		// Say so when the requested moment is out of range, rather than quietly showing another.
 		if (state.t !== t) state.rangeMsg = `${RANGE_TEXT} ${fmtAsked(t)} is shown as ${utcDate.format(daysToDate(state.t))}.`;
+	}
+	// ?date=YYYY-MM-DD&when=dusk|dawn (links from the planet-parade page): a local date rather than an
+	// instant. It becomes a time once the place, and so its time zone, is known (start, setPlace).
+	const date = q.get('date') || '', when = q.get('when');
+	if (!Number.isFinite(t) && /^\d{4}-\d{2}-\d{2}$/.test(date) && (when === 'dusk' || when === 'dawn')) {
+		const d = dateToDays(new Date(date + 'T12:00:00Z'));
+		if (d >= T_MIN && d <= T_MAX) { state.dateLink = { date, when }; state.live = false; }
+		else if (Number.isFinite(d)) {
+			state.t = clamp(d, T_MIN, T_MAX); state.live = false;
+			state.rangeMsg = `${RANGE_TEXT} ${fmtAsked(d)} is shown as ${utcDate.format(daysToDate(state.t))}.`;
+		}
 	}
 	const look = (q.get('look') || '').split(',').map(Number);
 	if (look.length === 3 && look.every(Number.isFinite)) {
@@ -977,7 +989,7 @@ const BODY_INFO = {
 	Jupiter: ['The largest planet, more massive than all the others combined. Binoculars show its four big moons as tiny stars beside it.', 'Jupiter'],
 	Saturn: ['The ringed planet. Any small telescope shows the rings; to the eye it is a steady, pale-gold point.', 'Saturn'],
 	Uranus: ['An ice giant tipped on its side. At the very edge of naked-eye visibility from a dark site; easy in binoculars once you know where to look.', 'Uranus'],
-	Neptune: ['The outermost planet, found in 1846 by maths before anyone saw it. Too faint for the eye: you need a telescope.', 'Neptune'],
+	Neptune: ['The outermost planet, recognised in 1846 where mathematics predicted it would be; Galileo had drawn it in 1612–13 without knowing it was a planet. Too faint for the eye: you need a telescope.', 'Neptune'],
 };
 const wikiHref = (title) => 'https://en.wikipedia.org/wiki/' + encodeURIComponent(title.replace(/ /g, '_')).replace(/%2F/g, '/');
 let skyInfo = null; // the lazily imported sky-info.js module (null until loaded or if it fails)
@@ -1036,7 +1048,8 @@ function showObject(sel) {
 		if (name !== 'Sun') {
 			const a = document.createElement('a');
 			a.className = 'pill accent';
-			a.href = `/?t=${state.t.toFixed(5)}&view=top`;
+			// The orrery's ?t= is dynamical time (TT); this page's clock is UTC, so add ΔT.
+			a.href = `/?t=${(state.t + A.deltaT(state.t) / 86400).toFixed(5)}&view=top`;
 			a.textContent = 'See why from space ›';
 			a.title = 'Open the 3D orrery at this moment, looking down on the solar system';
 			actions.append(a);
@@ -1149,6 +1162,7 @@ function fillTzSelect() {
 function setTime(t, live) {
 	if (t < T_MIN || t > T_MAX) { toast(RANGE_TEXT); t = clamp(t, T_MIN, T_MAX); }
 	state.rangeMsg = null;
+	state.dateLink = null; // any change of time replaces a ?date= link's local date
 	state.t = t;
 	state.live = !!live;
 	const n = state.night;
@@ -1227,7 +1241,7 @@ $('scrub').addEventListener('input', (e) => {
 	const n = state.night;
 	if (!n) return;
 	const t = n.start + (n.end - n.start) * (+e.target.value / 1000);
-	state.t = t; state.live = false; state.rangeMsg = null;
+	state.t = t; state.live = false; state.rangeMsg = null; state.dateLink = null;
 	updateTimeUI(); dirty = true;
 });
 $('nowBtn').addEventListener('click', () => { setTime(dateToDays(new Date()), true); computeTonight(); });
@@ -1250,12 +1264,14 @@ $('datePick').addEventListener('click', (e) => { try { e.target.showPicker(); } 
 function setPlace(pl, why) {
 	// A time picked inside the night stays in the night at the new place; any other moment
 	// (an orrery link to a daytime instant, say) is kept exactly.
-	const n0 = state.night, inNight = !state.live && n0 && state.t >= n0.start && state.t <= n0.end;
+	// A ?date= link still in force moves to the same local date and time of night at the new place.
+	const n0 = state.night, inNight = !state.dateLink && !state.live && n0 && state.t >= n0.start && state.t <= n0.end;
 	state.place = { ...pl, why };
 	setFormatters();
 	$('placeName').textContent = state.place.name;
 	state.night = null;
 	if (state.live) state.t = dateToDays(new Date());
+	else if (state.dateLink) state.t = dateLinkTime(state.dateLink);
 	computeTonight();
 	if (inNight && (state.t < state.night.start || state.t > state.night.end)) setTime(defaultTimeFor(state.night), false);
 	updateSky(true);
@@ -1543,11 +1559,27 @@ function updateReticle() {
 
 // ---- Defaults: when to show, where to look --------------------------------------------------------
 // A good time to look on night n: half an hour after nautical dusk. Used when a time picked in the
-// night lands in daylight at a newly chosen place. (The page itself always opens on now, or a link's ?t=.)
+// night lands in daylight at a newly chosen place, and for a ?date=…&when=dusk link. (The page itself
+// otherwise opens on now, or a link's ?t=.)
 function defaultTimeFor(n) {
 	if (n.polar === 'day' || n.sunset == null) return state.t;
 	const dark = n.nauticalDusk ?? n.civilDusk ?? n.sunset + 1 / 24;
 	return Math.min(dark + 0.5 / 24, n.end);
+}
+// The moment a ?date=…&when=… link stands for at the current place: on that date in the place's own
+// time zone, the evening (half an hour after nautical dusk, as defaultTimeFor) of the night whose
+// sunset falls on it, or the morning (half an hour before nautical dawn) of the night whose sunrise does.
+function dateLinkTime(dl) {
+	const p = state.place, dusk = dl.when === 'dusk';
+	const midnight = dateToDays(new Date(dl.date + 'T00:00:00Z')) - p.lon / 360; // local mean midnight
+	for (const shift of [0, -1, 1]) {
+		const guess = midnight + shift + (dusk ? 20 : 4) / 24, n = A.nightOf(guess, p.lat, p.lon);
+		const edge = dusk ? n.sunset : n.sunrise;
+		if (edge == null) { if (localDate(guess) === dl.date) return guess; continue; } // polar day or night
+		if (localDate(edge) !== dl.date) continue;
+		return dusk ? defaultTimeFor(n) : Math.max((n.nauticalDawn ?? n.civilDawn ?? n.sunrise - 1 / 24) - 0.5 / 24, n.start);
+	}
+	return midnight + (dusk ? 20 : 4) / 24;
 }
 function defaultLook() {
 	// The brightest planet or the Moon that is well up; otherwise the equator-facing horizon.
@@ -1614,7 +1646,9 @@ function frame(now) {
 function start() {
 	setFormatters();
 	$('placeName').textContent = state.place.name;
-	// Always opens on now (or a link's ?t=), never jumps ahead to tonight; in daylight the time bar
+	if (state.dateLink) state.t = clamp(dateLinkTime(state.dateLink), T_MIN, T_MAX);
+	// Opens on now (or a link's ?t=, or a ?date= link's local evening or morning), never jumps ahead to
+	// tonight on its own; in daylight the time bar
 	// and a toast say how to get to the night.
 	computeTonight();
 	updateSky(true);

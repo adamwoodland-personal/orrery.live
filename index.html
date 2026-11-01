@@ -92,7 +92,7 @@
       "name": "Where are the planets right now?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Orrery.live opens on today's date, so the planets you see are where they actually are right now. Hover or tap any planet and its tooltip says where it sits in Earth's sky: whether it is an evening-sky or morning-sky object at the moment, up most of the night, or lost in the Sun's glare - plus its distance and light-travel time from Earth and its next opposition or best viewing date."
+        "text": "Orrery.live opens on today's date, so the planets you see are where they actually are right now. Hover or tap any planet and its tooltip gives a rough guide to where it sits in Earth's sky, judged from its angle to the Sun: an evening-sky or morning-sky object at the moment, up most of the night, or lost in the Sun's glare - plus its distance and light-travel time from Earth and its next opposition or greatest elongation. Whether you can actually see it from where you are also depends on your horizon and twilight, which the night sky page works out."
       }
     },
     {
@@ -100,7 +100,7 @@
       "name": "How are the planet positions calculated?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Each planet's position is computed from JPL orbital elements (Keplerian ephemeris data), so the planets appear in their true heliocentric positions for any chosen date between 3000 BC and 3000 AD. Orbit spacing and the on-screen size of each body are scaled up for visibility, but the angular positions are real."
+        "text": "Each planet's position is computed from JPL's approximate orbital elements, a Keplerian fit valid from 3000 BC to 3000 AD, so the planets appear close to their true heliocentric positions for any date in that range: within about half a degree, and far closer for the inner planets. Orbit spacing and the on-screen size of each body are scaled up for visibility, but each planet's direction from the Sun is kept, so the compact view is not a literal view of Earth's sky."
       }
     },
     {
@@ -116,7 +116,7 @@
       "name": "Can I see planetary alignments, planet parades and conjunctions?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. The 'Jump to a notable alignment' menu lets you instantly travel to famous planetary alignments - popularly called planet parades - and conjunctions, from tight five- and six-planet clusters to the moments the planets spread evenly around the Sun. It includes the planet parades of June 2022, January and February 2025, February and August 2026, and the next big ones on 25 December 2027, 3 February 2034 and 8 September 2040. You can also set any date yourself to check an alignment."
+        "text": "Yes. The 'Jump to a notable alignment' menu lets you instantly travel to famous planetary alignments - popularly called planet parades - and conjunctions, from tight five- and six-planet clusters to the moments the planets spread evenly around the Sun. It includes the planet parades of June 2022, January and February 2025, February and August 2026, and the next big ones on 25 December 2027, 3 February 2034 and 8 September 2040. Those are arrangements on paper: on each date some of the planets sit too close to the Sun, or too low, to see. You can also set any date yourself to check an alignment."
       }
     },
     {
@@ -124,7 +124,7 @@
       "name": "What are the stars in the background?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The background is 1,637 naked-eye stars from the HYG database, placed in their true positions on the sky. It is the real night sky, not a decorative starfield."
+        "text": "The background is 1,637 naked-eye stars from the HYG database, placed in their true present-day positions on the sky (their slow drift over thousands of years is not modelled). It is the real night sky, not a decorative starfield."
       }
     },
     {
@@ -154,7 +154,7 @@
 	<div id="rangeWarn" role="status">⚠ Approximate positions — outside the 3000 BC – 3000 AD data range</div>
 
 	<div id="miniDate" hidden aria-hidden="true"></div>
-	<div id="moonWarn" role="status">⚠ Moon positions are approximate outside 1900–2100</div>
+	<div id="moonWarn" role="status">⚠ Moon positions are fitted for 1900–2100 and drift outside it</div>
 	<div id="ui">
 		<div id="uiHeader">
 			<h1>☉ Solar System</h1>
@@ -173,7 +173,7 @@
 		<div id="dateRow"><span id="dateValue">—</span></div>
 		<div id="gotoRow">
 			<button class="btn accent" id="today">Today</button>
-			<span id="dateWrap"><input type="date" id="dateShow" tabindex="-1" aria-hidden="true" inert><input type="datetime-local" id="dateInput" step="60" aria-label="Go to date and time (UTC)" title="Date and time (UTC) — the time can be set here too"></span>
+			<span id="dateWrap"><input type="date" id="dateShow" tabindex="-1" aria-hidden="true" inert><input type="datetime-local" id="dateInput" step="60" aria-label="Go to date and time (UTC for 1000–3000 AD, TT otherwise)" title="Date and time (UTC for 1000–3000 AD, TT otherwise) — the time can be set here too"></span>
 			<select id="era" aria-label="Era (AD or BC)" title="Switch the year between AD and BC">
 				<option value="AD">AD</option>
 				<option value="BC">BC</option>
@@ -233,9 +233,9 @@
 			<button id="aboutClose" class="btn" title="Close" aria-label="Close about panel">✕</button>
 		</div>
 		<div id="aboutPanelBody">
-			<div id="legend"><strong>Real data:</strong> planet positions from JPL orbital elements; the background is 1,637 naked-eye stars (HYG catalogue) in their true sky positions. Orbit spacing &amp; body sizes are scaled for visibility — the <strong>Size</strong> &amp; <strong>Orbits</strong> sliders morph them to true scale relative to the Sun. Rotation is tied to the date at each body's true sidereal rate &amp; direction (Venus, Uranus &amp; Pluto rotate retrograde), so pausing holds a fixed orientation. The terrestrial planets (Mercury, Venus, Earth, Mars) are oriented from their IAU rotational elements, so the correct longitude faces the Sun — Earth maps to real geography. The giant planets &amp; Pluto point their axes in the true directions — Saturn's rings and Uranus's sideways roll sit in their real planes — but their absolute facing is illustrative. The dwarf planets Ceres, Haumea, Makemake &amp; Eris use mean orbital elements, so their orbit shape &amp; tilt are real but their position along the orbit is approximate. Moons (toggle them in <strong>Show</strong>) use real orbit size, inclination, period &amp; direction around their planet's true spin axis — Triton &amp; Phoebe orbit retrograde, Saturn's moons share its ring plane, and the Moon rides the ecliptic as it really does. The Moon is placed by a lunar theory (longitude, latitude and distance, within ~0.1° of JPL Horizons over 1900–2100) on its real, slowly turning ellipse, and Earth itself sits at its centre rather than the Earth–Moon barycentre that JPL's element table describes. The other major moons follow their real mean motion on circular paths (their eccentricities are below 0.03), calibrated for the modern era (≈1900–2100); minor moons show their real eccentric orbits but their phase is illustrative. Planet orbit lines are redrawn as the orbital elements evolve, so each planet stays on its line even thousands of years from now. Zoom in on a planet to see its moons' orbit paths.</div>
-				<div id="datesNote"><strong>Dates &amp; time:</strong> the view opens at the current moment, shown in UTC; dates are UTC in the modern (proleptic Gregorian) calendar, even before 1582 — history books usually quote Julian-calendar dates, which differ by days to a few weeks in ancient times. The slow drift between clock time and astronomical time (ΔT) is not modelled; near the ends of the range this can shift fast-moving Mercury by a few degrees.</div>
-				<div id="extrasNote"><strong>Comets &amp; spacecraft:</strong> comets use fixed orbital elements, so their orbit shapes are real but positions drift from truth away from the present (Halley's period is pinned to its 1986 and 2061 perihelia so that return lands on the right date). Spacecraft ride JPL Horizons trajectory data (launch era – 2049, extended on their final heading beyond); markers are symbols, not to scale. Because comet and probe paths span the whole system, the compact view maps their distances through the planets' own spacing — they cross each planet's displayed orbit exactly when they cross the real one. <strong>Trails</strong> trace each body's displayed path as time runs; the <strong>Upcoming</strong> events and the tooltips' "next opposition / best view" dates are computed live from the same orbital model (typically within a day or two of almanac values).</div>
+			<div id="legend"><strong>Real data:</strong> planet positions from JPL's approximate orbital elements (fitted for 3000 BC – 3000 AD; within about half a degree, far closer for the inner planets); the background is 1,637 naked-eye stars (HYG catalogue) in their present-day sky positions. Orbit spacing &amp; body sizes are scaled for visibility — the <strong>Size</strong> &amp; <strong>Orbits</strong> sliders morph them to true scale relative to the Sun, moons' distances included. Rotation is tied to the date at each body's true sidereal rate &amp; direction (Venus, Uranus &amp; Pluto rotate retrograde), so pausing holds a fixed orientation. The terrestrial planets (Mercury, Venus, Earth, Mars) are oriented from their IAU rotational elements, so about the right longitude faces the Sun — Earth maps to real geography (simplified rotation models, so not to the minute). The giant planets, Pluto &amp; Ceres point their axes in the true directions — Saturn's rings and Uranus's sideways roll sit in their real planes — but their absolute facing is illustrative. The dwarf planets Ceres, Haumea, Makemake &amp; Eris use orbital elements from JPL Horizons (Ceres within 0.6° over 1900–2100, the others within 0.02°; they drift further from the present). Moons (toggle them in <strong>Show</strong>) ride their real orbital planes — each moon's local Laplace plane, its planet's equator or the ecliptic, from JPL's satellite tables — on mean orbits fitted to JPL Horizons for 1900–2100: most major moons within a few tenths of a degree (Mimas &amp; Miranda within 2°), most small moons within a few degrees, Himalia &amp; Nereid within 10–14°, and Janus &amp; Epimetheus, which swap orbits every four years, only illustrative. Each moon's tooltip gives its figure; outside 1900–2100 the phases drift. Triton &amp; Phoebe orbit retrograde. The Moon is placed by a lunar theory (Meeus, within 0.004° of JPL Horizons over 1900–2100) on its real, slowly turning ellipse, and Earth itself sits at its centre rather than the Earth–Moon barycentre that JPL's element table describes. Most moons keep one face to their planet; Hyperion tumbles chaotically and Pluto's small moons, Himalia, Phoebe &amp; Nereid spin at their own rates, drawn about illustrative axes. Planet orbit lines are redrawn as the orbital elements evolve, so each planet stays on its line even thousands of years from now. Zoom in on a planet to see its moons' orbit paths.</div>
+				<div id="datesNote"><strong>Dates &amp; time:</strong> the view opens at the current moment. Dates are in the modern (proleptic Gregorian) calendar, even before 1582 — history books usually quote Julian-calendar dates, which differ by days to a few weeks in ancient times. The orbits run on astronomical time (TT). From 1000 to 3000 AD the clock shows, and the date box takes, UTC, converted with ΔT = TT − UTC (about 69 seconds today, 35 minutes in 1000 AD and roughly an hour by 3000 AD; held at 69 seconds from 2025 to 2100, as JPL Horizons does). Outside that span, where ΔT grows to hours and is little more than a guess (about 10 hours around 1600 BC), the clock shows and takes TT itself, labelled TT, so those times are not civil clock times.</div>
+				<div id="extrasNote"><strong>Comets &amp; spacecraft:</strong> comets use fixed orbital elements, so their orbit shapes are real but positions drift from truth away from the present (Halley's period is pinned to its 1986 and 2061 perihelia so that return lands on the right date). Spacecraft positions are interpolated between JPL Horizons positions 180 days apart (launch era – 2049, extended on their final heading beyond), so planetary flybys are smoothed; markers are symbols, not to scale. Because comet and probe paths span the whole system, the compact view maps their distances through the planets' own spacing — they cross each planet's displayed orbit exactly when they cross the real one. <strong>Trails</strong> trace each body's displayed path as time runs; the <strong>Upcoming</strong> events and the tooltips' "next opposition / greatest elongation" dates are computed live from the same orbital model (typically within a day or two of almanac values). They are geometry: whether a planet is visible from where you are also depends on your horizon and twilight, which the <a href="/night-sky/">night sky</a> page works out.</div>
 				<div id="kbdNote"><strong>Keyboard:</strong> Space play/pause · ← → ±1 day (Shift = month, Ctrl = year) · + − speed · 0 today · H home · F fullscreen · Esc stop following.</div>
 			<div id="disclaimer"><strong>Disclaimer:</strong> this is an educational visualisation. The data and model have not been independently verified and should not be relied upon for scientific, navigational or any other precise purpose.</div>
 			<div id="credits">Textures © <a href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener">Solar System Scope</a> (CC BY 4.0) · Star data: <a href="https://codeberg.org/astronexus/hyg" target="_blank" rel="noopener">HYG database</a> (CC BY-SA 4.0) · Constellation lines: <a href="https://github.com/ofrohn/d3-celestial" target="_blank" rel="noopener">d3-celestial</a> (BSD-3) · Spacecraft trajectories: <a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener">JPL Horizons</a> · Pluto: stylised map · Built with <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> (MIT)</div>
@@ -267,15 +267,15 @@
 	<section id="seo-content" class="sr-only">
 		<h2>A free online orrery - an interactive 3D solar system model</h2>
 		<p>Orrery.live is a free online orrery — an interactive digital solar system
-		model that you explore in your web browser. Every planet is placed in its true
-		position around the Sun using JPL orbital elements, so the view shows the real
+		model that you explore in your web browser. Every planet is placed close to its
+		true position around the Sun using JPL orbital elements, so the view shows the real
 		arrangement of Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune and
 		Pluto for any date you choose. Drag to orbit the camera, scroll or pinch to zoom,
 		right-drag (or drag with two fingers) to pan, and hover or tap any body to read
 		live facts about it. Double-click a planet or moon to lock the camera onto it
 		and follow it as time plays.</p>
 		<p>It works as a solar system simulator and a live map in one: press play and the
-		planets move on their real orbits, or pause and read off exactly where each one
+		planets move on their real orbits, or pause and read off where each one
 		is today.</p>
 
 		<h2>A time machine for the planets</h2>
@@ -283,9 +283,11 @@
 		time, anywhere from 3000 BC to 3000 AD. Speed time up to watch the planets race
 		around their orbits, or pause on an exact moment and copy a shareable link to it.
 		The 'Jump to a notable alignment' menu travels straight to famous planetary
-		alignments, planet parades and conjunctions so you can see exactly how the
-		planets lined up. The tightest are true syzygies, with the planets in a nearly
-		straight line from the Sun, such as Mercury, Venus, Earth and Mars within 1° in 600 AD.</p>
+		alignments, planet parades and conjunctions so you can see how the planets lined
+		up. Those alignments are measured in longitude, as seen from above: Mercury, Venus,
+		Earth and Mars came within 1° of a line from the Sun in 600 AD. Their tilted orbits
+		still kept them 2.8° apart in space, so even that was not quite a syzygy, a true
+		straight line.</p>
 
 		<p>The <a href="/night-sky/">night sky tonight</a> map turns the same model round to
 		your own horizon: which planets you can see from where you are tonight, when and
@@ -306,20 +308,21 @@
 
 		<h2>A live map of the solar system, from real data</h2>
 		<p>The background is the genuine night sky: 1,637 naked-eye stars from the HYG
-		database in their true positions, with optional constellation figures and named
-		bright stars. Planet positions come from real orbital data, while body sizes and
-		orbit spacing are scaled up for visibility — the same compromise used by
-		physical orreries. It also tells you which planets are up tonight, roughly
-		where to look for them, and when each next reaches opposition or its best
-		viewing date.</p>
+		database in their present-day positions, with optional constellation figures and
+		named bright stars. Planet positions come from real orbital data, while body sizes
+		and orbit spacing are scaled up for visibility — the same compromise used by
+		physical orreries. It also gives a rough guide to which planets are in the evening
+		or morning sky, from their angle to the Sun, and when each next reaches opposition
+		or greatest elongation; the night sky page works out what you can see from where
+		you are.</p>
 
 		<h2>Comets, spacecraft and sky events</h2>
 		<p>Follow Halley's Comet, Comet Encke, Hale–Bopp and Rosetta's comet 67P on
-		their real orbits, or trace Voyager 1 and 2, Pioneer 10 and 11 and New Horizons
-		along trajectories from JPL Horizons. Tooltips show each planet's distance from
-		Earth, light-travel time, where it sits in tonight's sky and its next opposition
-		or best viewing date — and the events menu lists upcoming oppositions and
-		elongations computed live from the orbital model.</p>
+		their real (fixed, so approximate) orbits, or trace Voyager 1 and 2, Pioneer 10
+		and 11 and New Horizons along trajectories interpolated from JPL Horizons. Tooltips
+		show each planet's distance from Earth, light-travel time, roughly where it sits in
+		the sky and its next opposition or greatest elongation — and the events menu lists
+		upcoming oppositions and elongations computed live from the orbital model.</p>
 
 		<h2>Frequently asked questions</h2>
 		<h3>What is an orrery?</h3>
@@ -332,17 +335,21 @@
 
 		<h3>Where are the planets right now?</h3>
 		<p>Orrery.live opens on today's date, so the planets you see are where they
-		actually are right now. Hover or tap any planet and its tooltip says where it
-		sits in Earth's sky: whether it is an evening-sky or morning-sky object at
-		the moment, up most of the night, or lost in the Sun's
-		glare - plus its distance and light-travel time from Earth and its next
-		opposition or best viewing date.</p>
+		actually are right now. Hover or tap any planet and its tooltip gives a rough
+		guide to where it sits in Earth's sky, judged from its angle to the Sun: an
+		evening-sky or morning-sky object at the moment, up most of the night, or lost
+		in the Sun's glare - plus its distance and light-travel time from Earth and its
+		next opposition or greatest elongation. Whether you can actually see it from
+		where you are also depends on your horizon and twilight, which the night sky
+		page works out.</p>
 
 		<h3>How are the planet positions calculated?</h3>
-		<p>Each planet's position is computed from JPL orbital elements, so the planets
-		appear in their true heliocentric positions for any date between 3000 BC and
-		3000 AD. Orbit spacing and on-screen body sizes are scaled for visibility, but the
-		angular positions are real.</p>
+		<p>Each planet's position is computed from JPL's approximate orbital elements, a
+		Keplerian fit valid from 3000 BC to 3000 AD, so the planets appear close to
+		their true heliocentric positions for any date in that range: within about half
+		a degree, and far closer for the inner planets. Orbit spacing and the on-screen
+		size of each body are scaled up for visibility, but each planet's direction from
+		the Sun is kept, so the compact view is not a literal view of Earth's sky.</p>
 
 		<h3>How far back and forward in time can I travel?</h3>
 		<p>Any date from 3000 BC to 3000 AD. Inside that range the positions are computed
@@ -355,12 +362,14 @@
 		tight five- and six-planet clusters to the moments the planets spread evenly
 		around the Sun. It includes the planet parades of June 2022, January and
 		February 2025, February and August 2026, and the next big ones on 25 December
-		2027, 3 February 2034 and 8 September 2040. You can also set any date yourself
-		to check an alignment.</p>
+		2027, 3 February 2034 and 8 September 2040. Those are arrangements on paper: on
+		each date some of the planets sit too close to the Sun, or too low, to see. You
+		can also set any date yourself to check an alignment.</p>
 
 		<h3>What are the stars in the background?</h3>
 		<p>The background is 1,637 naked-eye stars from the HYG database, placed in their
-		true positions on the sky — the real night sky, not a decorative starfield.</p>
+		true present-day positions on the sky (their slow drift over thousands of years
+		is not modelled). It is the real night sky, not a decorative starfield.</p>
 
 		<h3>Why are the planet sizes and orbits not to scale?</h3>
 		<p>A true-scale solar system model would leave the planets as invisible specks separated

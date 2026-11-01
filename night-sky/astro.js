@@ -144,8 +144,8 @@ function vsop(name, tau) {
 }
 // Geocentric Moon, km, J2000 equatorial: Meeus ch. 47, the ELP-2000/82 series truncated to 60
 // terms in longitude and distance and 60 in latitude (~10" and 4"; reproduces Meeus's example
-// 47.a to the last digit). The orrery's own lunar formulae (moonGeocentric in guide-orbits.js)
-// were 0.21° out against Horizons — fine for the 3D view, half a Moon-width on a sky map.
+// 47.a to the last digit). The orrery's homepage Moon used a low-precision formula 0.2–0.4° out until
+// 2026-11-01; app.js (and guide-orbits.js) now use this same Meeus series.
 // Rows: multiples of D, M, M′, F, then the sine (longitude, 1e-6°) and cosine (distance, m)
 // amplitudes (Table 47.A); latitude rows end with the sine amplitude in 1e-6° (Table 47.B).
 const MOON_LR = [
