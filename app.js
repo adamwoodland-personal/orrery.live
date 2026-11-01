@@ -1478,6 +1478,7 @@ const EVENTS = [
 	{ days:  -950282, show: ['planet'], note: 'Cleanest planetary spiral (271°)' },
 	{ days:  -654480, show: ['planet'], note: 'Planets evenly around the Sun' },
 	{ days: -511064.1, show: ['planet'], note: 'Tightest inner-four — within 1°' },
+	{ days: -409727.4, show: ['planet'], note: 'Tightest eight-planet line through the Sun — within 16°' },
 	{ days: -253222.8, show: ['planet'], note: 'All four giant planets within 7°' },
 	{ days:   -22228, show: ['planet'], note: 'Planets evenly around the Sun' },
 	{ days:    -6506, show: ['planet'], note: '“Jupiter Effect” — within 96°' },
@@ -1495,6 +1496,7 @@ const EVENTS = [
 	{ days:    12452, show: ['planet'], note: 'Planet parade — all seven planets at dusk' },
 	{ days:    13228, show: ['planet'], note: 'Venus, Mars, Jupiter & Saturn at dusk' },
 	{ days:    14861, show: ['planet'], note: 'Planet parade — five naked-eye within 10° at dusk' },
+	{ days:  29045.8, show: ['planet'], note: 'All eight planets on a line through the Sun — within 22°' },
 	{ days: 41905.135, show: ['planet'], note: 'Inner four aligned — within 2°' },
 	{ days:   152768, show: ['planet'], note: 'Tight five-planet — within 11°' }
 ];
