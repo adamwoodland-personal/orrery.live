@@ -19,6 +19,7 @@ p, li { max-width: 72ch; }
 .cta:hover { background: #3d6fe6; color: #fff; }
 .card { background: rgba(4, 8, 18, 0.86); border: 1px solid rgba(138, 172, 255, 0.18); border-radius: 14px; padding: 14px 16px; margin: 16px 0; }
 .card p:first-child { margin-top: 0; }
+.card .nexthead { margin: 0 0 6px; } /* /planetary-alignment/'s "Next planet parade: <date>" */
 .card p:last-child { margin-bottom: 0; }
 .tablewrap { overflow-x: auto; margin: 12px 0; }
 table { border-collapse: collapse; width: 100%; font-size: 14.5px; }

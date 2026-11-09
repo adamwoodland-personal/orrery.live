@@ -11,6 +11,8 @@ const INITIAL = { Mercury: 'Me', Venus: 'V', Mars: 'Ma', Jupiter: 'J', Saturn: '
 const skyText = (p) => p.sky === 'dusk' ? 'evening sky, after sunset' : 'morning sky, before sunrise';
 const orreryLink = (p) => `/?t=${p.days}&show=planet,labels,milkyway&view=top`;
 const iso = (p) => daysToDate(p.days).toISOString().slice(0, 10);
+const MONTH = { Jan: 'January', Feb: 'February', Mar: 'March', Apr: 'April', May: 'May', Jun: 'June', Jul: 'July', Aug: 'August', Sep: 'September', Oct: 'October', Nov: 'November', Dec: 'December' };
+const longDate = (p) => p.date.replace(/\b([A-Z][a-z]{2})\b/, (m) => MONTH[m] || m); // '14 Nov 2026' → '14 November 2026'
 // The night-sky page on the parade's local date: it works out that date's evening (or morning)
 // in the visitor's own time zone once it knows where they are.
 const skyLink = (p) => `/night-sky/?date=${iso(p)}&when=${p.sky === 'dusk' ? 'dusk' : 'dawn'}`;
@@ -106,13 +108,16 @@ export function alignmentView(days) {
 		' ', ['a', { href: '/now/' }, 'See every planet’s position right now'], ' or ', ['a', { href: '/night-sky/' }, 'what is up tonight where you are'], '.'
 	];
 	const nextSeen = next ? seenText(next) : '';
-	const nextline = next ? ['span', null, 'Next planet parade: ', ['strong', null, next.date], ` — ${listNames(next.planets)} in the ${skyText(next)} (${when(next, days)}).`, nextSeen ? ' ' + nextSeen : ''] : ['span', null, 'No further parades are listed yet.'];
-	return { today, nextline, cards, pastRows };
+	// (the date in a heading, for "next planet parade" searches; the line under it gives the planets)
+	const nexthead = next ? ['span', null, 'Next planet parade: ', ['time', { datetime: iso(next) }, longDate(next)]] : ['span', null, 'No further planet parades are listed yet'];
+	const nextline = next ? ['span', null, `${listNames(next.planets)} in the ${skyText(next)} (${when(next, days)}).`, nextSeen ? ' ' + nextSeen : ''] : ['span', null, 'The dates below are the parades since 2022.'];
+	return { today, nexthead, nextline, cards, pastRows };
 }
 
 function render() {
 	const v = alignmentView(dateToDays(new Date()));
 	fill('today', v.today);
+	fill('nexthead', v.nexthead);
 	fill('nextline', v.nextline);
 	fill('upcoming', v.cards);
 	fill('pastRows', v.pastRows);
