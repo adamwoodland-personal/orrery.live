@@ -21,6 +21,9 @@ comets, spacecraft, a naked-eye star background with constellations, and a time 
 - Two text guides that share the model: [/now/](https://orrery.live/now/) (where every planet is
   right now) and [/planetary-alignment/](https://orrery.live/planetary-alignment/) (planet parade
   dates, past and future).
+- [/planets-on-your-birthday/](https://orrery.live/planets-on-your-birthday/): where the planets
+  were on any date from 1000 to 3000 AD (evening or morning sky, constellation, brightness, the
+  Moon's phase, a map from above, and your age on every planet). `?date=YYYY-MM-DD` opens a date.
 - A live Voyager page at [/voyager-1/](https://orrery.live/voyager-1/): where Voyager 1 is right now,
   the moment it reaches one light-day from Earth (18 November 2026), and the same figures for Voyager 2.
 
@@ -29,10 +32,12 @@ comets, spacecraft, a naked-eye star background with constellations, and a time 
 - Static site built on [three.js](https://threejs.org/) (vendored in `lib/`, no CDN):
   `index.html`, `styles.css`, `app.js`, with the data in `stars.js`, `constellations.js` and
   `spacecraft.js`. No backend.
-- Positions are computed client-side in the J2000 reference frame from NASA/JPL Horizons
-  ephemeris data, with correct planetary spin axes; the time machine is just a change of epoch.
+- Positions are computed client-side in the J2000 reference frame from JPL's long-range Keplerian
+  elements (fitted for 3000 BC – 3000 AD), with JPL Horizons data for the dwarf planets, moons and
+  spacecraft and correct planetary spin axes; the time machine is just a change of epoch.
 - The guide pages use `guide-orbits.js`, a copy of the planet elements and Kepler solver generated
-  from `app.js`, plus `guide-parades.js` (parade dates), `guide-ui.js` and `guide.css`; their live
+  from `app.js`, plus `guide-parades.js` (parade dates), `guide-map.js` (the top-down map), `guide-ui.js` and
+  `guide.css`; the birthday page uses the night-sky model (`night-sky/astro.js`) for the sky; their live
   sections are pre-rendered into the HTML at publish time and refreshed by JavaScript.
 - The star background is the HYG catalogue; constellation lines derive from d3-celestial;
   planet and sky textures are from Solar System Scope.

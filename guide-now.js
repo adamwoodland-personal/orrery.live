@@ -3,21 +3,19 @@
 // plain view trees (see guide-ui.js) so the same code pre-renders the page's
 // snapshot at publish time (scratch build script; see CLAUDE.md) and, in the
 // browser, replaces it with live values on load and every minute after.
-import { PLANETS, NAKED_EYE, AU_KM, LIGHT_S_PER_AU, DISPLAY_A, COLOR, dateToDays, helio, geocentric,
-         skyPhrase, isRetrograde, nextOpposition, nextElongation, skySpan, fmtDate, fmtDateTime, wrap360 } from './guide-orbits.js';
+import { PLANETS, NAKED_EYE, AU_KM, LIGHT_S_PER_AU, dateToDays, geocentric,
+         skyPhrase, isRetrograde, nextOpposition, nextElongation, skySpan, fmtDate, fmtDateTime } from './guide-orbits.js';
 import { PARADES } from './guide-parades.js';
 import { fill, toDOM, flatten, listNames } from './guide-ui.js';
 import { seenText } from './guide-alignment.js';
+import { topDownMap } from './guide-map.js';
 
-const RAD = 180 / Math.PI;
 const KIND = { Pluto: 'dwarf planet' };
 
 export function nowView(days) {
-	const rows = [], groups = { evening: [], morning: [], night: [], glare: [] }, dots = [];
+	const rows = [], groups = { evening: [], morning: [], night: [], glare: [] };
 	const start = Math.floor(days); // scan from the same noon-UTC samples the orrery's Upcoming menu uses
 	for (const name of PLANETS) {
-		const h = helio(name, days);
-		dots.push({ name, lon: wrap360(Math.atan2(h.y, h.x) * RAD) });
 		if (name === 'Earth') continue;
 		const g = geocentric(name, days), a = Math.abs(g.elong), east = g.elong > 0;
 		const inner = name === 'Mercury' || name === 'Venus';
@@ -46,22 +44,7 @@ export function nowView(days) {
 		`Up most of the night: ${listNames(groups.night)}. Lost in the Sun’s glare: ${listNames(groups.glare)}. ` +
 		'(Uranus is at the limit of naked-eye visibility from a dark site and easy in binoculars; Neptune and Pluto need a telescope.)';
 
-	// Top-down map: ecliptic north towards the viewer, 0° longitude to the right,
-	// so the planets run anticlockwise. Orbit spacing as in the orrery's compact view.
-	const C = 300, K = 280 / DISPLAY_A.Pluto;
-	const map = [
-		...PLANETS.map(n => ['circle', { cx: C, cy: C, r: (DISPLAY_A[n] * K).toFixed(1), fill: 'none', stroke: 'rgba(138,172,255,0.28)' }]),
-		['circle', { cx: C, cy: C, r: 9, fill: COLOR.Sun }],
-		...dots.map(d => {
-			const r = DISPLAY_A[d.name] * K, c = Math.cos(d.lon / RAD), s = Math.sin(d.lon / RAD);
-			const x = C + r * c, y = C - r * s, big = d.name === 'Jupiter' || d.name === 'Saturn';
-			return [
-				['circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: big ? 6 : 4.5, fill: COLOR[d.name] }],
-				['text', { x: (x + (c >= 0 ? 9 : -9)).toFixed(1), y: (y + 4).toFixed(1), 'font-size': 13, fill: '#edf2ff', 'text-anchor': c >= 0 ? 'start' : 'end' }, d.name]
-			];
-		}),
-		['text', { x: 8, y: 592, 'font-size': 11, fill: '#9fb0d8' }, `Top-down view, ${fmtDate(days)}. Planets move anticlockwise; 0° longitude is to the right.`]
-	];
+	const map = topDownMap(days, `Top-down view, ${fmtDate(days)}. Planets move anticlockwise; 0° longitude is to the right.`);
 
 	// Planet-parade check: how bunched the five naked-eye planets are, as seen from Earth.
 	// Reported as a measurement, not a yes/no: the parade lists count any few planets

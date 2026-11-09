@@ -64,3 +64,13 @@ footer.site { margin-top: 40px; padding-top: 16px; border-top: 1px solid rgba(13
 figure.fig { margin: 18px 0; }
 figure.fig img { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid rgba(138, 172, 255, 0.18); background: #0b1020; }
 figure.fig figcaption { color: #9fb0d8; font-size: 14px; margin-top: 8px; }
+
+/* Date form and results (/planets-on-your-birthday/). */
+form.dateform { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px; margin: 16px 0 4px; }
+form.dateform label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #c9d4f0; }
+form.dateform input[type=date] { font: inherit; font-size: 17px; min-height: 44px; padding: 6px 10px; border-radius: 10px; border: 1px solid rgba(138, 172, 255, 0.35); background: rgba(4, 8, 18, 0.86); color: #edf2ff; }
+form.dateform button { font: inherit; font-weight: 600; min-height: 44px; padding: 10px 16px; border: 0; border-radius: 10px; background: #2f5fd1; color: #fff; cursor: pointer; }
+form.dateform button:hover { background: #3d6fe6; }
+.status { min-height: 1.6em; margin: 4px 0; color: #ffc86b; }
+.ctarow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; }
+h2[tabindex="-1"]:focus { outline: none; }

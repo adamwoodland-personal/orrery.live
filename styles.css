@@ -201,6 +201,12 @@ canvas { display: block; }
 	text-shadow: 0 0 4px rgba(0,0,0,0.95), 0 1px 3px rgba(0,0,0,0.9);
 	opacity: .75;
 }
+#glance { margin-top: 6px; font-size: 11.5px; line-height: 1.5; opacity: .85; }
+#glance > strong { color: #a8c5ff; }
+#glance ul { margin: 4px 0 0; padding-left: 16px; }
+#glance li { margin: 3px 0; }
+#glance li strong { color: #c9d8ff; }
+#glance a { color: #9fb8ee; }
 #legend, #datesNote, #extrasNote, #kbdNote { margin-top: 10px; font-size: 11.5px; opacity: .7; }
 #datesNote, #extrasNote, #kbdNote { margin-top: 8px; }
 #legend strong, #datesNote strong, #extrasNote strong, #kbdNote strong { color: #a8c5ff; }
