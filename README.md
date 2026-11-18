@@ -25,7 +25,7 @@ comets, spacecraft, a naked-eye star background with constellations, and a time 
   were on any date from 1000 to 3000 AD (evening or morning sky, constellation, brightness, the
   Moon's phase, a map from above, and your age on every planet). `?date=YYYY-MM-DD` opens a date.
 - A live Voyager page at [/voyager-1/](https://orrery.live/voyager-1/): where Voyager 1 is right now,
-  the moment it reaches one light-day from Earth (18 November 2026), and the same figures for Voyager 2.
+  the moment it passed one light-day from Earth (18 November 2026), and the same figures for Voyager 2.
 
 ## How it works
 
