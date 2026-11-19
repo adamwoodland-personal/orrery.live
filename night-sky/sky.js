@@ -1012,10 +1012,10 @@ function renderTonight() {
 		b.addEventListener('click', () => { goToBody(name); if (!wide()) closeSheet(); });
 		return b;
 	};
-	if (vis.length) { const h = document.createElement('p'); h.className = 'listHead'; h.textContent = 'Visible tonight'; list.append(h); vis.forEach((x) => list.append(row(x))); }
-	if (!vis.length) { const h = document.createElement('p'); h.className = 'listHead'; h.textContent = 'No bright planets tonight'; list.append(h); }
-	if (scope.length) { const h = document.createElement('p'); h.className = 'listHead'; h.textContent = 'With binoculars or a telescope'; list.append(h); scope.forEach((x) => list.append(row(x))); }
-	if (not.length) { const h = document.createElement('p'); h.className = 'listHead'; h.textContent = 'Not visible tonight'; list.append(h); not.forEach((x) => list.append(row(x))); }
+	if (vis.length) { const h = document.createElement('h2'); h.className = 'listHead'; h.textContent = 'Visible tonight'; list.append(h); vis.forEach((x) => list.append(row(x))); }
+	if (!vis.length) { const h = document.createElement('h2'); h.className = 'listHead'; h.textContent = 'No bright planets tonight'; list.append(h); }
+	if (scope.length) { const h = document.createElement('h2'); h.className = 'listHead'; h.textContent = 'With binoculars or a telescope'; list.append(h); scope.forEach((x) => list.append(row(x))); }
+	if (not.length) { const h = document.createElement('h2'); h.className = 'listHead'; h.textContent = 'Not visible tonight'; list.append(h); not.forEach((x) => list.append(row(x))); }
 }
 // Centre a body; if it is not up at the current time, jump to its best moment tonight first.
 function goToBody(name) {

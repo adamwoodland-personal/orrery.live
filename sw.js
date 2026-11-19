@@ -8,7 +8,7 @@
 //    so repeat visits and offline use skip the download entirely.
 //  - Bump CACHE on deploys that must wipe stale entries (activate deletes
 //    every other cache version).
-const CACHE = 'orrery-v37';
+const CACHE = 'orrery-v38';
 const CORE = [
 	'/',
 	'/index.html',

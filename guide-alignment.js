@@ -77,12 +77,14 @@ function when(p, days) {
 	const span = a < 60 ? `${a} day${a === 1 ? '' : 's'}` : a < 700 ? `${Math.round(a / 30.44)} months` : `${(a / 365.25).toFixed(1)} years`;
 	return dd > 0 ? `in ${span}` : `${span} ago`;
 }
-export function alignmentView(days) {
+// opts.snapshot (build-guides.mjs): absolute dates only, so the pre-rendered HTML has no
+// "(in 5 months)" frozen at the build date. The browser re-renders with the live wording.
+export function alignmentView(days, { snapshot = false } = {}) {
 	const upcoming = PARADES.filter(p => p.days >= days - 0.5), past = PARADES.filter(p => p.days < days - 0.5).reverse();
 	const cards = upcoming.map(p => {
 		const seen = seenText(p);
 		return ['article', { class: 'card' },
-			['h3', null, ['time', { datetime: iso(p) }, p.date], ` — ${p.planets.length} planets in the ${skyText(p)} `, ['span', { class: 'muted' }, `(${when(p, days)})`]],
+			['h3', null, ['time', { datetime: iso(p) }, p.date], ` — ${p.planets.length} planets in the ${skyText(p)}`, snapshot ? null : ' ', snapshot ? null : ['span', { class: 'muted' }, `(${when(p, days)})`]],
 			['p', null, ['strong', null, listNames(p.planets)], '. ', p.note],
 			strip(p),
 			seen ? ['p', null, 'On the night: ', seen] : null,
@@ -110,7 +112,7 @@ export function alignmentView(days) {
 	const nextSeen = next ? seenText(next) : '';
 	// (the date in a heading, for "next planet parade" searches; the line under it gives the planets)
 	const nexthead = next ? ['span', null, 'Next planet parade: ', ['time', { datetime: iso(next) }, longDate(next)]] : ['span', null, 'No further planet parades are listed yet'];
-	const nextline = next ? ['span', null, `${listNames(next.planets)} in the ${skyText(next)} (${when(next, days)}).`, nextSeen ? ' ' + nextSeen : ''] : ['span', null, 'The dates below are the parades since 2022.'];
+	const nextline = next ? ['span', null, `${listNames(next.planets)} in the ${skyText(next)}${snapshot ? '' : ` (${when(next, days)})`}.`, nextSeen ? ' ' + nextSeen : ''] : ['span', null, 'The dates below are the parades since 2022.'];
 	return { today, nexthead, nextline, cards, pastRows };
 }
 

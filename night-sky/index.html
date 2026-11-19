@@ -6,7 +6,7 @@
 <title>Night Sky Tonight: What Planets Can I See? | Orrery.live</title>
 <meta name="description" content="A free sky map for tonight from where you are: which planets you can see, and when. Point your phone at the sky to find planets, the Moon and constellations.">
 <meta name="author" content="Adam Woodland">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#01020a">
 <link rel="canonical" href="https://orrery.live/night-sky/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -18,11 +18,15 @@
 <meta property="og:description" content="A free sky map for tonight from your location: the planets you can see, when and where to look. Point your phone at the sky to find them.">
 <meta property="og:site_name" content="Orrery.live">
 <meta property="og:locale" content="en_AU">
-<meta property="og:image" content="https://orrery.live/solar-system.svg">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://orrery.live/og-night-sky.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A night sky map above the eastern horizon, with Jupiter and Saturn labelled below Sagittarius and the Milky Way.">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Night sky tonight: what planets can I see?">
 <meta name="twitter:description" content="A free sky map for tonight from your location. Point your phone at the sky to find planets, the Moon and constellations.">
-<meta name="twitter:image" content="https://orrery.live/solar-system.svg">
+<meta name="twitter:image" content="https://orrery.live/og-night-sky.png">
+<meta name="twitter:image:alt" content="A night sky map above the eastern horizon, with Jupiter and Saturn labelled below Sagittarius and the Milky Way.">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -53,7 +57,7 @@
         "Scrub through the night from sunset to sunrise, or pick any date from 1000 to 3000 AD",
         "City search or your phone's location, used on your device and shared only if you choose to send a link with your exact location"
       ],
-      "author": { "@type": "Person", "name": "Adam Woodland" },
+      "author": { "@type": "Person", "name": "Adam Woodland", "url": "https://adamwoodland.com/" },
       "isPartOf": { "@type": "WebSite", "name": "Orrery.live", "url": "https://orrery.live/" },
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" }
     },
@@ -63,7 +67,7 @@
         {
           "@type": "Question",
           "name": "What planets can I see tonight?",
-          "acceptedAnswer": { "@type": "Answer", "text": "It depends on where you are and the date, which is why this page works it out for you: it opens on your city (guessed from your device's time zone, or from your location if you allow it) and lists every planet that will be at least 5 degrees above your horizon after dark tonight, with the time it is best placed, which direction to face and how bright it will be. Mercury, Venus, Mars, Jupiter and Saturn are easy to see with the naked eye when they are up; Uranus is at the limit of naked-eye visibility from a dark site and easy in binoculars, and Neptune needs a telescope." }
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on where you are and the date, which is why this page works it out for you: it opens on your city (guessed from your device’s time zone, or from your location if you allow it) and lists every planet that will be at least 5 degrees above your horizon after dark tonight, with the time it is best placed, which direction to face and how bright it will be. Mercury, Venus, Mars, Jupiter and Saturn are easy to see with the naked eye when they are up; Uranus is at the limit of naked-eye visibility from a dark site and easy in binoculars, and Neptune needs a telescope." }
         },
         {
           "@type": "Question",
@@ -73,11 +77,11 @@
         {
           "@type": "Question",
           "name": "Do I have to share my location?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. The page starts on a city guessed from your device's time zone and you can search for any other city. If you tap Use my location, your position (rounded to about a kilometre) is used on your device to work out your sky and is not sent anywhere. The ordinary share link uses the nearest town; only the separate Copy link with my exact location button puts your position in a link, and anyone you send that link to, and the website's server logs, can then see it. City-level accuracy is plenty for the sky." }
+          "acceptedAnswer": { "@type": "Answer", "text": "No. The page starts on a city guessed from your device’s time zone and you can search for any other city. If you tap Use my location, your position (rounded to about a kilometre) is used on your device to work out your sky and is not sent anywhere. The ordinary share link uses the nearest town; only the separate Copy link with my exact location button puts your position in a link, and anyone you send that link to, and the website’s server logs, can then see it. City-level accuracy is plenty for the sky." }
         },
         {
           "@type": "Question",
-          "name": "Why doesn't the phone view line up exactly with the sky?",
+          "name": "Why doesn’t the phone view line up exactly with the sky?",
           "acceptedAnswer": { "@type": "Answer", "text": "Phone compasses are easily thrown off by metal, magnets and phone cases, and can be several degrees out until they are calibrated. The map already corrects for the difference between magnetic and true north where you are. Move the phone in a figure of eight, keep it away from cars and metal railings, and drag sideways to nudge the view until a bright star or planet lines up." }
         },
         {
@@ -88,7 +92,7 @@
         {
           "@type": "Question",
           "name": "How accurate are the positions?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The planets come from the VSOP87 planetary theory and the Moon from Meeus's lunar theory, both checked against JPL Horizons. From 1990 to 2060 the planets, the Sun and the Moon are within about two thousandths of a degree and rise and set times within a minute or so (three for the Moon), far finer than you can see by eye. Back to 1800 and on to 2200 the Sun and planets stay within a few thousandths of a degree and the Moon within a few hundredths, because how fast Earth turns is less certain that far from today. Further from the present the map marks its positions as approximate. By 1000 or 3000 AD the Sun and planets are still within about a tenth of a degree, but the Moon can be off by up to about half a degree and times by a minute or two, because Earth's rotation then is uncertain. The stars are drawn where they were in 2000 and do not move with the date: a few nearby ones drift by up to about 1.3° in 1,000 years (Rigil Kentaurus, in Alpha Centauri, about 1°), so they are out by that much in 1000 or 3000 AD. Rise and set times are for a flat horizon and normal air, so hills and buildings will hide a low planet for longer." }
+          "acceptedAnswer": { "@type": "Answer", "text": "The planets come from the VSOP87 planetary theory and the Moon from Meeus’s lunar theory, both checked against JPL Horizons. From 1990 to 2060 the planets, the Sun and the Moon are within about two thousandths of a degree and rise and set times within a minute or so (three for the Moon), far finer than you can see by eye. Back to 1800 and on to 2200 the Sun and planets stay within a few thousandths of a degree and the Moon within a few hundredths, because how fast Earth turns is less certain that far from today. Further from the present the map marks its positions as approximate. By 1000 or 3000 AD the Sun and planets are still within about a tenth of a degree, but the Moon can be off by up to about half a degree and times by a minute or two, because Earth’s rotation then is uncertain. The stars are drawn where they were in 2000 and do not move with the date: a few nearby ones drift by up to about 1.3° in 1,000 years (Rigil Kentaurus, in Alpha Centauri, about 1°), so they are out by that much in 1000 or 3000 AD. Rise and set times are for a flat horizon and normal air, so hills and buildings will hide a low planet for longer." }
         }
       ]
     }
@@ -176,7 +180,7 @@
 				<p class="msg noglMsg">This browser can’t draw the sky map (WebGL is switched off or not supported), but everything below still works: tonight’s planets, times and directions for any place and date.</p>
 				<div id="sunTimes" class="sunTimes"></div>
 				<div id="tonightList">
-					<!-- snap:week --><p>The planets this week (as of 19 Nov 2026), going by their angle from the Sun; how high each one gets depends on where you are:</p><ul class="weekList"><li><b>Mercury</b> is in the morning sky before sunrise.</li><li><b>Venus</b> is in the morning sky before sunrise.</li><li><b>Mars</b> is in the morning sky before sunrise.</li><li><b>Jupiter</b> is in the morning sky before sunrise.</li><li><b>Saturn</b> is in the evening sky after sunset.</li></ul><p>Pick your location to see exact times, directions and the Moon.</p><!-- /snap:week -->
+					<!-- snap:week --><h2 class="listHead">The planets this week (19 Nov 2026)</h2><p>Going by their angle from the Sun; how high each one gets depends on where you are:</p><ul class="weekList"><li><b>Mercury</b> is in the morning sky before sunrise.</li><li><b>Venus</b> is in the morning sky before sunrise.</li><li><b>Mars</b> is in the morning sky before sunrise.</li><li><b>Jupiter</b> is in the morning sky before sunrise.</li><li><b>Saturn</b> is in the evening sky after sunset.</li></ul><p>Pick your location to see exact times, directions and the Moon.</p><!-- /snap:week -->
 				</div>
 				<p class="note">Times are for <span id="tzNote">your location</span>. Uranus is easiest with binoculars; Neptune needs a telescope.</p>
 			</div>
@@ -223,8 +227,28 @@
 				<h2>About this sky map</h2>
 				<p>The sky above your horizon, from real data: the planets from the VSOP87 planetary theory and the Moon from Meeus’s lunar theory, both checked against JPL Horizons, and 1,637 naked-eye stars from the HYG catalogue. Drag to look around, pinch or scroll to zoom, and tap anything to find out what it is. On a phone, <strong>Point at the sky</strong> turns the map with the phone so you can hold it up and identify what you are looking at.</p>
 				<p>Dates from 1000 to 3000 AD are covered; positions are most accurate between 1800 and 2200 and marked approximate outside that. The stars are drawn where they were in 2000; a few nearby ones actually move by up to about 1.3° every 1,000 years. Times are local to the place you choose. A planet counts as visible when it is at least 5° above a flat horizon while the sky is dark enough for its brightness; hills, trees and buildings will hide low ones for longer. Phone compasses are corrected for magnetic declination where you are, but can still be a few degrees out: move the phone in a figure of eight to calibrate, and drag sideways to nudge the view into line.</p>
-				<h3>More guides</h3>
-				<p><a href="/now/">Where the planets are right now</a> · <a href="/planets-on-your-birthday/">Where the planets were on your birthday</a> · <a href="/planetary-alignment/">Planetary alignments &amp; planet parades</a> · <a href="/halleys-comet/">Halley’s Comet</a> · <a href="/voyager-1/">Where is Voyager 1 now</a> · <a href="/what-is-an-orrery/">What is an orrery?</a></p>
+				<h3>Night sky tonight, from where you are</h3>
+				<p>This free sky map shows the sky above your own horizon tonight: the planets, the Moon, the brightest stars and the constellations, placed where they really are. It is a map of the planetary sky as much as the stars: it opens on your city and works out which planets are up after dark, when each is best placed, which direction to face and how high to look. Drag the time slider to watch the sky turn through the night from sunset to sunrise, or step to another night or another city.</p>
+				<h3>Point your phone at the sky</h3>
+				<p>On a phone, tap Point at the sky and hold the phone up. The map follows the phone, so the planet or star in the middle of the screen is the one in front of you, and an arrow shows which way to turn to find the planet you picked. Switch on the camera to see the labels over the real view. The compass is corrected for magnetic declination at your location.</p>
+				<h3>Which planets can you see with the naked eye?</h3>
+				<p>Five planets are easy to see without a telescope when they are above the horizon in a dark sky: Mercury, Venus, Mars, Jupiter and Saturn. Venus and Jupiter outshine every star. Mercury never strays far from the Sun, so it is only ever seen low in the twilight after sunset or before sunrise. Uranus is at the limit of naked-eye visibility from a dark site and Neptune needs binoculars or a telescope. A planet that is lined up with the Sun cannot be seen at all until it moves out of the Sun’s glare.</p>
+				<p>See also <a href="/now/">where the planets are right now</a>, <a href="/planetary-alignment/">planetary alignments and planet parades</a> and the <a href="/">3D orrery</a>, which shows why each planet is in the evening or morning sky.</p>
+				<h2>Questions</h2>
+				<h3>What planets can I see tonight?</h3>
+				<p>It depends on where you are and the date, which is why this page works it out for you: it opens on your city (guessed from your device’s time zone, or from your location if you allow it) and lists every planet that will be at least 5 degrees above your horizon after dark tonight, with the time it is best placed, which direction to face and how bright it will be. Mercury, Venus, Mars, Jupiter and Saturn are easy to see with the naked eye when they are up; Uranus is at the limit of naked-eye visibility from a dark site and easy in binoculars, and Neptune needs a telescope.</p>
+				<h3>How do I find a planet in the sky with my phone?</h3>
+				<p>Tap Point at the sky and hold your phone up: the map turns with the phone, so whatever the back of the phone points at sits in the middle of the screen with its name. Tap a planet in the Tonight list first and an arrow shows which way to turn. If the map looks a little off, move the phone in a figure of eight to calibrate its compass, then drag sideways to nudge the view into line.</p>
+				<h3>Do I have to share my location?</h3>
+				<p>No. The page starts on a city guessed from your device’s time zone and you can search for any other city. If you tap Use my location, your position (rounded to about a kilometre) is used on your device to work out your sky and is not sent anywhere. The ordinary share link uses the nearest town; only the separate Copy link with my exact location button puts your position in a link, and anyone you send that link to, and the website’s server logs, can then see it. City-level accuracy is plenty for the sky.</p>
+				<h3>Why doesn’t the phone view line up exactly with the sky?</h3>
+				<p>Phone compasses are easily thrown off by metal, magnets and phone cases, and can be several degrees out until they are calibrated. The map already corrects for the difference between magnetic and true north where you are. Move the phone in a figure of eight, keep it away from cars and metal railings, and drag sideways to nudge the view until a bright star or planet lines up.</p>
+				<h3>Can I see the sky for another night or another place?</h3>
+				<p>Yes. Drag the time slider to move through the night from sunset to sunrise, use the arrows to step a night at a time, tap the date to pick any date from 1000 to 3000 AD, and tap the place name to choose any city in the world. Outside 1800 to 2200 the map marks its positions as approximate.</p>
+				<h3>How accurate are the positions?</h3>
+				<p>The planets come from the VSOP87 planetary theory and the Moon from Meeus’s lunar theory, both checked against JPL Horizons. From 1990 to 2060 the planets, the Sun and the Moon are within about two thousandths of a degree and rise and set times within a minute or so (three for the Moon), far finer than you can see by eye. Back to 1800 and on to 2200 the Sun and planets stay within a few thousandths of a degree and the Moon within a few hundredths, because how fast Earth turns is less certain that far from today. Further from the present the map marks its positions as approximate. By 1000 or 3000 AD the Sun and planets are still within about a tenth of a degree, but the Moon can be off by up to about half a degree and times by a minute or two, because Earth’s rotation then is uncertain. The stars are drawn where they were in 2000 and do not move with the date: a few nearby ones drift by up to about 1.3° in 1,000 years (Rigil Kentaurus, in Alpha Centauri, about 1°), so they are out by that much in 1000 or 3000 AD. Rise and set times are for a flat horizon and normal air, so hills and buildings will hide a low planet for longer.</p>
+				<h2>More guides</h2>
+				<p><a href="/now/">Where the planets are right now</a> · <a href="/planets-on-your-birthday/">Where the planets were on your birthday</a> · <a href="/planetary-alignment/">Planetary alignments &amp; planet parades</a> · <a href="/halleys-comet/">Halley’s Comet</a> · <a href="/voyager-1/">Where is Voyager 1 now</a> · <a href="/what-is-an-orrery/">What is an orrery?</a> · <a href="/perfect-alignment/">The perfect alignment?</a></p>
 				<p class="disclaimer"><strong>Disclaimer:</strong> an educational visualisation. The data and model have not been independently verified and should not be relied upon for scientific, navigational or any other precise purpose.</p>
 				<p class="credits" id="credits">Star data: <a href="https://codeberg.org/astronexus/hyg" target="_blank" rel="noopener">HYG database</a> (CC BY-SA 4.0) · Constellations: <a href="https://github.com/ofrohn/d3-celestial" target="_blank" rel="noopener">d3-celestial</a> (BSD-3) · Places: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> and the IANA time zone database (public domain) · Constellation boundaries: IAU (Delporte 1930) via Roman (1987), CDS VI/42 · Magnetic declination: NOAA World Magnetic Model (public domain) · Milky Way: <a href="https://svs.gsfc.nasa.gov/4851" target="_blank" rel="noopener">NASA/Goddard Space Flight Center Scientific Visualization Studio</a>, Deep Star Maps 2020; Gaia DR2: ESA/Gaia/DPAC · Built with <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> (MIT)</p>
 				<p class="credits">
@@ -239,32 +263,6 @@
 
 	<div id="toast" role="status" aria-live="polite"></div>
 	<div id="redFilter" hidden aria-hidden="true"></div>
-
-	<!-- Crawlable text behind the WebGL canvas: what the page does, in words. -->
-	<section id="seo-content" class="sr-only">
-		<h2>Night sky tonight, from where you are</h2>
-		<p>This free sky map shows the sky above your own horizon tonight: the planets, the Moon,
-		the brightest stars and the constellations, placed where they really are. It is a map of the
-		planetary sky as much as the stars: it opens on your city and works out which planets
-		are up after dark, when each is best placed, which direction to face and how high to
-		look. Drag the time slider to watch the sky turn through
-		the night from sunset to sunrise, or step to another night or another city.</p>
-		<h2>Point your phone at the sky</h2>
-		<p>On a phone, tap Point at the sky and hold the phone up. The map follows the phone, so the
-		planet or star in the middle of the screen is the one in front of you, and an arrow shows
-		which way to turn to find the planet you picked. Switch on the camera to see the labels over
-		the real view. The compass is corrected for magnetic declination at your location.</p>
-		<h2>Which planets can you see with the naked eye?</h2>
-		<p>Five planets are easy to see without a telescope when they are above the horizon in a dark
-		sky: Mercury, Venus, Mars, Jupiter and Saturn. Venus and Jupiter outshine every star. Mercury
-		never strays far from the Sun, so it is only ever seen low in the twilight after sunset or
-		before sunrise. Uranus is at the limit of naked-eye visibility from a dark site and Neptune
-		needs binoculars or a telescope. A planet that is lined up with the Sun cannot be seen at all
-		until it moves out of the Sun's glare.</p>
-		<p>See also <a href="/now/">where the planets are right now</a>,
-		<a href="/planetary-alignment/">planetary alignments and planet parades</a> and the
-		<a href="/">3D orrery</a>, which shows why each planet is in the evening or morning sky.</p>
-	</section>
 
 	<script type="module" src="/night-sky/sky.js"></script>
 </body>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Where were the planets on the day you were born? - Orrery.live</title>
 <meta name="description" content="Enter your birthday, or any date from 1000 to 3000 AD, to see where every planet was: evening or morning sky, constellation, the Moon’s phase and a map.">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="author" content="Adam Woodland">
 <meta name="theme-color" content="#01020a">
 <link rel="canonical" href="https://orrery.live/planets-on-your-birthday/">
@@ -16,10 +16,15 @@
 <meta property="og:title" content="Where were the planets on the day you were born?">
 <meta property="og:description" content="Which planets were in the evening and morning sky, the constellation each was in, the Moon’s phase, a map of the solar system and your age on every planet, for any date from 1000 to 3000 AD.">
 <meta property="og:site_name" content="Orrery.live">
-<meta property="og:image" content="https://orrery.live/solar-system.svg">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://orrery.live/og-planets-on-your-birthday.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A date-of-birth box and a Show the planets button beside a top-down map of the planets on their orbits around the Sun.">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Where were the planets on the day you were born?">
 <meta name="twitter:description" content="The planets, the Moon’s phase and your age on every planet, for your birthday or any date from 1000 to 3000 AD.">
+<meta name="twitter:image" content="https://orrery.live/og-planets-on-your-birthday.png">
+<meta name="twitter:image:alt" content="A date-of-birth box and a Show the planets button beside a top-down map of the planets on their orbits around the Sun.">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -38,7 +43,7 @@
       "name": "Where were the planets on the day you were born?",
       "description": "For a birthday or any date from 1000 to 3000 AD: which planets were in the evening or morning sky, the constellation each was in, how bright and how far away they were, the Moon's phase, a map of the solar system from above, and your age on every planet. Computed in the browser from the VSOP87 planetary theory, checked against NASA JPL Horizons.",
       "isPartOf": { "@type": "WebSite", "name": "Orrery.live", "url": "https://orrery.live/" },
-      "author": { "@type": "Person", "name": "Adam Woodland" },
+      "author": { "@type": "Person", "name": "Adam Woodland", "url": "https://adamwoodland.com/" },
       "inLanguage": "en"
     },
     {
@@ -62,7 +67,7 @@
         {
           "@type": "Question",
           "name": "Were the planets aligned when I was born?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The results say how spread out the five bright planets were, as seen from Earth, and how that compares with every day from 1900 to 2100. Half the time they are spread across more than 170° of sky, and they fit within 60° on only about 2% of days. The tightest groupings in those two centuries are 5 February 1962 (16°), 17 May 2000 (19°) and 8 September 2040 (under 10°), and close groupings often sit near the Sun, where they are hard to see. The planets never line up exactly: see the perfect alignment." }
+          "acceptedAnswer": { "@type": "Answer", "text": "The results say how spread out the five bright planets were, as seen from Earth, and how that compares with every day from 1900 to 2100. Half the time they are spread across more than 170° of sky, and they fit within 60° on only about 2% of days. The tightest groupings in those two centuries are 5 February 1962 (16°), 17 May 2000 (19°) and 8 September 2040 (under 10°), and close groupings often sit near the Sun, where they are hard to see. The planets never line up exactly: see the perfect alignment. For the next close groupings, see the planet parade dates." }
         },
         {
           "@type": "Question",
@@ -134,7 +139,7 @@
 		<p class="muted">Looking down on the plane of the solar system from the north: the planets move anticlockwise. Orbit spacing is compressed, as in the orrery’s compact view; the positions along the orbits are real.</p>
 
 		<h3>Your age on the other planets</h3>
-		<div id="age"><!-- snap:age --><p>From 1 January 2000 to 19 November 2026 is 9,819 days. In that time the Earth has gone round the Sun 26.88 times, carrying you about 25.3 billion km.</p><div class="tablewrap"><table class="stack ages"><thead><tr><th scope="col">World</th><th scope="col">Your age there</th><th scope="col">One year there</th><th scope="col">Next birthday there</th></tr></thead><tbody><tr><th scope="row">Mercury</th><td class="num" data-label="Your age there">111.61</td><td class="num" data-label="One year there">88 days</td><td data-label="Next birthday there">23 December 2026</td></tr><tr><th scope="row">Venus</th><td class="num" data-label="Your age there">43.69</td><td class="num" data-label="One year there">225 days</td><td data-label="Next birthday there">26 January 2027</td></tr><tr><th scope="row">Earth</th><td class="num" data-label="Your age there">26.88</td><td class="num" data-label="One year there">365 days</td><td data-label="Next birthday there">1 January 2027</td></tr><tr><th scope="row">Mars</th><td class="num" data-label="Your age there">14.29</td><td class="num" data-label="One year there">1.88 years</td><td data-label="Next birthday there">19 March 2028</td></tr><tr><th scope="row">Jupiter</th><td class="num" data-label="Your age there">2.26</td><td class="num" data-label="One year there">11.9 years</td><td data-label="Next birthday there">3 August 2035</td></tr><tr><th scope="row">Saturn</th><td class="num" data-label="Your age there">0.91</td><td class="num" data-label="One year there">29.5 years</td><td data-label="Next birthday there">16 June 2029</td></tr><tr><th scope="row">Uranus</th><td class="num" data-label="Your age there">0.31</td><td class="num" data-label="One year there">84.0 years</td><td data-label="Next birthday there">5 January 2084</td></tr><tr><th scope="row">Neptune</th><td class="num" data-label="Your age there">0.16</td><td class="num" data-label="One year there">164.8 years</td><td data-label="Next birthday there">16 October 2164</td></tr><tr><th scope="row">Pluto<span class="sub">dwarf planet</span></th><td class="num" data-label="Your age there">0.10</td><td class="num" data-label="One year there">247.9 years</td><td data-label="Next birthday there">12 December 2247</td></tr></tbody></table></div><!-- /snap:age --></div>
+		<div id="age"><!-- snap:age --><p>From 1 January 2000 to 20 November 2026 is 9,820 days. In that time the Earth has gone round the Sun 26.88 times, carrying you about 25.3 billion km.</p><div class="tablewrap"><table class="stack ages"><thead><tr><th scope="col">World</th><th scope="col">Your age there</th><th scope="col">One year there</th><th scope="col">Next birthday there</th></tr></thead><tbody><tr><th scope="row">Mercury</th><td class="num" data-label="Your age there">111.63</td><td class="num" data-label="One year there">88 days</td><td data-label="Next birthday there">23 December 2026</td></tr><tr><th scope="row">Venus</th><td class="num" data-label="Your age there">43.70</td><td class="num" data-label="One year there">225 days</td><td data-label="Next birthday there">26 January 2027</td></tr><tr><th scope="row">Earth</th><td class="num" data-label="Your age there">26.88</td><td class="num" data-label="One year there">365 days</td><td data-label="Next birthday there">1 January 2027</td></tr><tr><th scope="row">Mars</th><td class="num" data-label="Your age there">14.29</td><td class="num" data-label="One year there">1.88 years</td><td data-label="Next birthday there">19 March 2028</td></tr><tr><th scope="row">Jupiter</th><td class="num" data-label="Your age there">2.26</td><td class="num" data-label="One year there">11.9 years</td><td data-label="Next birthday there">3 August 2035</td></tr><tr><th scope="row">Saturn</th><td class="num" data-label="Your age there">0.91</td><td class="num" data-label="One year there">29.5 years</td><td data-label="Next birthday there">16 June 2029</td></tr><tr><th scope="row">Uranus</th><td class="num" data-label="Your age there">0.32</td><td class="num" data-label="One year there">84.0 years</td><td data-label="Next birthday there">5 January 2084</td></tr><tr><th scope="row">Neptune</th><td class="num" data-label="Your age there">0.16</td><td class="num" data-label="One year there">164.8 years</td><td data-label="Next birthday there">16 October 2164</td></tr><tr><th scope="row">Pluto<span class="sub">dwarf planet</span></th><td class="num" data-label="Your age there">0.10</td><td class="num" data-label="One year there">247.9 years</td><td data-label="Next birthday there">12 December 2247</td></tr></tbody></table></div><!-- /snap:age --></div>
 	</section>
 
 	<h2>How to read it</h2>
@@ -151,7 +156,7 @@
 		<h3>Which planets could I see on the night I was born?</h3>
 		<p>Planets in the evening sky were up after sunset, those in the morning sky before sunrise, and any up most of the night from dusk to dawn. Mercury, Venus, Mars, Jupiter and Saturn are bright enough to see with the naked eye; Uranus is at the limit from a dark site, and Neptune needs binoculars or a telescope. For when each one rose and set where you were born, follow the night sky links in the results and choose that place.</p>
 		<h3>Were the planets aligned when I was born?</h3>
-		<p>The results say how spread out the five bright planets were, as seen from Earth, and how that compares with every day from 1900 to 2100. Half the time they are spread across more than 170° of sky, and they fit within 60° on only about 2% of days. The tightest groupings in those two centuries are 5 February 1962 (16°), 17 May 2000 (19°) and 8 September 2040 (under 10°), and close groupings often sit near the Sun, where they are hard to see. The planets never line up exactly: see <a href="/perfect-alignment/">the perfect alignment</a>.</p>
+		<p>The results say how spread out the five bright planets were, as seen from Earth, and how that compares with every day from 1900 to 2100. Half the time they are spread across more than 170° of sky, and they fit within 60° on only about 2% of days. The tightest groupings in those two centuries are 5 February 1962 (16°), 17 May 2000 (19°) and 8 September 2040 (under 10°), and close groupings often sit near the Sun, where they are hard to see. The planets never line up exactly: see <a href="/perfect-alignment/">the perfect alignment</a>. For the next close groupings, see <a href="/planetary-alignment/">the planet parade dates</a>.</p>
 		<h3>Why does it put the Sun in a different constellation from my star sign?</h3>
 		<p>Because star signs and constellations are different things. Astrology’s signs are twelve equal slices of the Sun’s yearly path, counted from the March equinox, and they last matched the constellations of the same names about 2,000 years ago. Since then the slow wobble of the Earth’s axis has moved the equinox about 30° along the sky, and the real constellations are unequal in size. So the Sun is in the constellation its sign is named after on only about one day in eight. On most days it is in the one before, and from about 30 November to 17 December it is in Ophiuchus, which has no sign.</p>
 		<h3>Is this a horoscope or a birth chart?</h3>

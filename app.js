@@ -52,7 +52,7 @@ scene.add(sunLight);
 // ---- Sun -------------------------------------------------------------
 const sun = new THREE.Mesh(
 	new THREE.SphereGeometry(1.7, 64, 64),
-	new THREE.MeshBasicMaterial({ map: loadMap('2k_sun.jpg') })
+	new THREE.MeshBasicMaterial({ map: loadMap('2k_sun.webp') })
 );
 scene.add(sun);
 
@@ -83,21 +83,21 @@ const AU_KM = 149597870.7;
 const OBLIQUITY = 23.43928 * DEG; // tilt between Earth's equatorial frame and the ecliptic
 
 const planetsData = [
-	{ name: 'Mercury', rotH: 1407.6, tex: '2k_mercury.jpg',       size: 0.24, displayA: 2.6,  type: 'Terrestrial planet', fact: 'Smallest planet; no atmosphere to speak of, with 430 °C days and −180 °C nights.',
+	{ name: 'Mercury', rotH: 1407.6, tex: '2k_mercury.webp',       size: 0.24, displayA: 2.6,  type: 'Terrestrial planet', fact: 'Smallest planet; no atmosphere to speak of, with 430 °C days and −180 °C nights.',
 	  el: { a:[0.38709843,0.0], e:[0.20563661,0.00002123], I:[7.00559432,-0.00590158], L:[252.25166724,149472.67486623], peri:[77.45771895,0.15940013], node:[48.33961819,-0.12214182] } },
-	{ name: 'Venus', rotH: -5832.5, tex: '2k_venus_surface.jpg',   size: 0.36, displayA: 3.7,  type: 'Terrestrial planet', fact: 'Hottest planet (465 °C) under a thick CO₂ atmosphere; spins backwards.',
+	{ name: 'Venus', rotH: -5832.5, tex: '2k_venus_surface.webp',   size: 0.36, displayA: 3.7,  type: 'Terrestrial planet', fact: 'Hottest planet (465 °C) under a thick CO₂ atmosphere; spins backwards.',
 	  el: { a:[0.72332102,-0.00000026], e:[0.00676399,-0.00005107], I:[3.39777545,0.00043494], L:[181.97970850,58517.81560260], peri:[131.76755713,0.05679648], node:[76.67261496,-0.27274174] } },
-	{ name: 'Earth', rotH: 23.9345, tex: '2k_earth_daymap.jpg',    size: 0.38, displayA: 4.9,  type: 'Terrestrial planet', fact: 'The only known world with liquid surface water and life.',
+	{ name: 'Earth', rotH: 23.9345, tex: '2k_earth_daymap.webp',    size: 0.38, displayA: 4.9,  type: 'Terrestrial planet', fact: 'The only known world with liquid surface water and life.',
 	  el: { a:[1.00000018,-0.00000003], e:[0.01673163,-0.00003661], I:[-0.00054346,-0.01337178], L:[100.46691572,35999.37306329], peri:[102.93005885,0.31795260], node:[-5.11260389,-0.24123856], emb: true } },
-	{ name: 'Mars', rotH: 24.6229, tex: '2k_mars.jpg',             size: 0.29, displayA: 6.1,  type: 'Terrestrial planet', fact: 'The “Red Planet”; home to Olympus Mons, the tallest volcano in the solar system.',
+	{ name: 'Mars', rotH: 24.6229, tex: '2k_mars.webp',             size: 0.29, displayA: 6.1,  type: 'Terrestrial planet', fact: 'The “Red Planet”; home to Olympus Mons, the tallest volcano in the solar system.',
 	  el: { a:[1.52371243,0.00000097], e:[0.09336511,0.00009149], I:[1.85181869,-0.00724757], L:[-4.56813164,19140.29934243], peri:[-23.91744784,0.45223625], node:[49.71320984,-0.26852431] } },
-	{ name: 'Jupiter', rotH: 9.925, tex: '2k_jupiter.jpg',       size: 0.95, displayA: 8.9,  type: 'Gas giant', fact: 'The largest planet — 2.5× the mass of all the others combined. The Great Red Spot is a centuries-old storm.',
+	{ name: 'Jupiter', rotH: 9.925, tex: '2k_jupiter.webp',       size: 0.95, displayA: 8.9,  type: 'Gas giant', fact: 'The largest planet — 2.5× the mass of all the others combined. The Great Red Spot is a centuries-old storm.',
 	  el: { a:[5.20248019,-0.00002864], e:[0.04853590,0.00018026], I:[1.29861416,-0.00322699], L:[34.33479152,3034.90371757], peri:[14.27495244,0.18199196], node:[100.29282654,0.13024619], bcsf:[-0.00012452,0.06064060,-0.35635438,38.35125] } },
-	{ name: 'Saturn', rotH: 10.561, tex: '2k_saturn.jpg',         size: 0.80, displayA: 11.4, type: 'Gas giant', ring: true, fact: 'Famous for its bright ring system of ice and rock; low enough density to float on water.',
+	{ name: 'Saturn', rotH: 10.561, tex: '2k_saturn.webp',         size: 0.80, displayA: 11.4, type: 'Gas giant', ring: true, fact: 'Famous for its bright ring system of ice and rock; low enough density to float on water.',
 	  el: { a:[9.54149883,-0.00003065], e:[0.05550825,-0.00032044], I:[2.49424102,0.00451969], L:[50.07571329,1222.11494724], peri:[92.86136063,0.54179478], node:[113.63998702,-0.25015002], bcsf:[0.00025899,-0.13434469,0.87320147,38.35125] } },
-	{ name: 'Uranus', rotH: -17.24, tex: '2k_uranus.jpg',         size: 0.58, displayA: 13.3, type: 'Ice giant', fact: 'Tipped on its side (98° axial tilt), so it rolls around the Sun.',
+	{ name: 'Uranus', rotH: -17.24, tex: '2k_uranus.webp',         size: 0.58, displayA: 13.3, type: 'Ice giant', fact: 'Tipped on its side (98° axial tilt), so it rolls around the Sun.',
 	  el: { a:[19.18797948,-0.00020455], e:[0.04685740,-0.00001550], I:[0.77298127,-0.00180155], L:[314.20276625,428.49512595], peri:[172.43404441,0.09266985], node:[73.96250215,0.05739699], bcsf:[0.00058331,-0.97731848,0.17689245,7.67025] } },
-	{ name: 'Neptune', rotH: 16.11, tex: '2k_neptune.jpg',       size: 0.56, displayA: 14.8, type: 'Ice giant', fact: 'Windiest planet, with gusts over 2,000 km/h. Predicted by maths and recognised as a planet in 1846; Galileo had seen it in 1612–13 but took it for a star.',
+	{ name: 'Neptune', rotH: 16.11, tex: '2k_neptune.webp',       size: 0.56, displayA: 14.8, type: 'Ice giant', fact: 'Windiest planet, with gusts over 2,000 km/h. Predicted by maths and recognised as a planet in 1846; Galileo had seen it in 1612–13 but took it for a star.',
 	  el: { a:[30.06952752,0.00006447], e:[0.00895439,0.00000818], I:[1.77005520,0.00022400], L:[304.22289287,218.46515314], peri:[46.68158724,0.01009938], node:[131.78635853,-0.00606302], bcsf:[-0.00041348,0.68346318,-0.10162547,7.67025] } },
 	{ name: 'Pluto', rotH: -153.3,                                size: 0.21, displayA: 16.3, type: 'Dwarf planet', fact: 'Reclassified as a dwarf planet in 2006; its tilted, eccentric orbit sometimes brings it closer than Neptune.',
 	  el: { a:[39.48686035,0.00449751], e:[0.24885238,0.00006016], I:[17.14104260,0.00000501], L:[238.96535011,145.18042903], peri:[224.09702598,-0.00968827], node:[110.30167986,-0.00809981], bcsf:[-0.01262724,0.0,0.0,0.0] } },
@@ -516,7 +516,7 @@ for (const planet of planetsData) {
 // =====================================================================
 const moonsData = [
 	// Earth
-	{ name: 'Moon', parent: 'Earth', cls: 'major', a: 384400, e: 0.0549, inc: 5.145, periodD: 27.3217, size: 0.10, tex: '2k_moon.jpg', color: '#b8b3ab', fact: "Earth's only natural satellite; it raises the tides and is drifting away ~3.8 cm a year." },
+	{ name: 'Moon', parent: 'Earth', cls: 'major', a: 384400, e: 0.0549, inc: 5.145, periodD: 27.3217, size: 0.10, tex: '2k_moon.webp', color: '#b8b3ab', fact: "Earth's only natural satellite; it raises the tides and is drifting away ~3.8 cm a year." },
 	// Mars
 	{ name: 'Phobos', parent: 'Mars', cls: 'minor', a: 9376, e: 0.0151, periodD: 0.31891, size: 0.04, color: '#8a7d70', fact: 'Orbits Mars faster than Mars spins; it is spiralling inward and doomed in ~50 million years.',
 	  acc: 0.2, orb: { ref: 'Laplace plane', pole: [317.7, 52.9], i: 1.0749, n0: 169.1394, nr: -0.43578937, e: 0.015124, w0: 25.5974, wr: 0.43518326, L0: 215.16646, Lr: 1128.844756184, Lq: 9.442e-9 } },
@@ -1179,7 +1179,7 @@ function ensureMilkyWay() {
 	// 4096 and have less memory/bandwidth to spare).
 	const mobile = /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent) ||
 		(matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 820);
-	const file = (!mobile && renderer.capabilities.maxTextureSize >= 8192) ? '8k_stars_milky_way.jpg' : '4k_stars_milky_way.jpg';
+	const file = (!mobile && renderer.capabilities.maxTextureSize >= 8192) ? '8k_stars_milky_way.webp' : '4k_stars_milky_way.webp';
 	// Unmanaged loader: this large optional backdrop must never hold the loading screen.
 	const mwTex = new THREE.TextureLoader().setPath('./textures/').load(file);
 	mwTex.colorSpace = THREE.SRGBColorSpace;
