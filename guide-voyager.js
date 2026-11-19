@@ -125,6 +125,7 @@ function statRows(key, s, days, extra) {
 
 // Side view to scale, looking along the plane of the planets, square to Voyager 1's
 // direction: Voyager 1 is drawn at its true distance and angle, the others foreshortened.
+// The Sun is at the centre (C, C); Earth is not drawn (its orbit is inside the Sun's dot).
 function sideMap(days, s1) {
 	const L = Math.atan2(s1.p.y, s1.p.x), cL = Math.cos(L), sL = Math.sin(L);
 	const C = 300, K = 250 / Math.max(LIGHT_DAY_AU, s1.r), f = (n) => n.toFixed(1);
@@ -138,9 +139,14 @@ function sideMap(days, s1) {
 		return 'M' + pts.map(([x, y]) => f(x) + ',' + f(y)).join('L');
 	};
 	const ld = LIGHT_DAY_AU * K, nep = 30.07 * K;
+	// The light-day circle is centred on Earth as seen in this view (within 1 AU of the Sun, so about
+	// a pixel away), which puts Voyager 1 inside it exactly while it is less than a light-day from
+	// Earth (Earth's depth out of the view changes that distance by 0.003 AU at most). Centred on the
+	// Sun, it showed Voyager 1 still inside for about three months after the crossing.
+	const [ex, ey] = xy(helio('Earth', days));
 	const out = [
-		['circle', { cx: C, cy: C, r: f(ld), fill: 'none', stroke: 'rgba(255,209,102,0.55)', 'stroke-dasharray': '5 5' }],
-		label(C, C - ld - 8, `one light-day from Earth (${LIGHT_DAY_AU.toFixed(0)} AU)`, { anchor: 'middle', fill: '#ffd166', size: 15 }),
+		['circle', { cx: f(ex), cy: f(ey), r: f(ld), fill: 'none', stroke: 'rgba(255,209,102,0.55)', 'stroke-dasharray': '5 5' }],
+		label(ex, ey - ld - 8, `one light-day from Earth (${LIGHT_DAY_AU.toFixed(0)} AU)`, { anchor: 'middle', fill: '#ffd166', size: 15 }),
 		['line', { x1: f(C - nep), y1: C, x2: f(C + nep), y2: C, stroke: 'rgba(138,172,255,0.7)', 'stroke-width': 2 }]
 	];
 	for (const k of ['p10', 'p11', 'nh', 'v2', 'v1']) {

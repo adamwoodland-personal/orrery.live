@@ -28,16 +28,62 @@ const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const wrap360 = (x) => ((x % 360) + 360) % 360;
 const isTouch = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
 
-// Supported dates. The planets (truncated VSOP87), the Moon (Meeus ch. 47), precession and the ΔT
-// fit agree with JPL to arcseconds over 1800–2200 and drift to arcminutes by 1000/3000 AD, where
-// Earth's rotation (ΔT) is uncertain by tens of seconds and the stars, which carry no proper motion
-// here, have moved by up to half a degree. Outside 1000–3000 the page says so rather than guessing.
-const T_MIN = dateToDays(new Date(Date.UTC(1000, 0, 1))), T_MAX = dateToDays(new Date(Date.UTC(2999, 11, 31, 12)));
+// Supported dates: 1 Jan 1000 to 31 Dec 3000, as the date picker. Both ends depend on the place: see
+// rangeEnds() below. T_FIRST and T_LAST (noon UTC on the first and last days) only bound ?date= links
+// and anchor the search.
+// Against JPL Horizons at the same UT, every century 1000–1800 and 2200–3000 (checked 2026-11-19):
+// the Sun and planets within 0.01° in the past and 0.08° by 3000, nearly all of it the two ΔT
+// guesses differing (at the same TT the model is within 0.006°); the Moon within 0.08° by 1000, and
+// by 3000 0.2° from the model alone plus whatever ΔT turns out to be (an hour of ΔT moves the Moon
+// about 0.5°). The stars are J2000 with no proper motion: a few nearby ones drift by up to 1.3° per
+// 1,000 years (ε Indi; Rigil Kentaurus about 1°). Out of range the page says so.
+const T_FIRST = dateToDays(new Date(Date.UTC(1000, 0, 1, 12))), T_LAST = dateToDays(new Date(Date.UTC(3000, 11, 31, 12)));
 const T_GOOD_MIN = dateToDays(new Date(Date.UTC(1800, 0, 1))), T_GOOD_MAX = dateToDays(new Date(Date.UTC(2200, 0, 1)));
 const utcDate = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'short', year: 'numeric', era: 'short' });
 const RANGE_TEXT = 'This sky map covers the years 1000 to 3000.';
+const FIRST_TEXT = `${RANGE_TEXT} Its first night is 1 Jan 1000.`, LAST_TEXT = `${RANGE_TEXT} Its last night is 31 Dec 3000.`;
 // Formats a requested moment for the range note; JavaScript dates stop at about ±270,000 years.
 const fmtAsked = (d) => { const dt = daysToDate(d); return Number.isFinite(dt.getTime()) ? utcDate.format(dt) : 'The requested date'; };
+// The date a clamped moment is shown at, in the place's own zone (as the time row shows it).
+const fmtShown = (d) => new Intl.DateTimeFormat('en-GB', { timeZone: state.place.tz, day: 'numeric', month: 'short', year: 'numeric', era: 'short' }).format(daysToDate(d));
+
+// The ends of the range at the current place. A night belongs to the local date just before its
+// sunset (the date picker's label for it, in the place's own zone). The first night is the one whose
+// evening falls on 1 Jan 1000 and the last the one whose evening falls on 31 Dec 3000, so both ends
+// spill past the UTC dates: the last night runs to its local dawn on 1 Jan 3001 (in UTC−12, about
+// 19:00 UTC on 1 Jan 3001), and east of UTC the morning of 1 Jan 1000 is still 31 Dec 999 in UTC.
+//   floor  the earliest moment shown: just after the night of 31 Dec 999 ends (sunrise + 1 h on
+//          1 Jan 1000, local), so the daytime of 1 Jan 1000 is in range;
+//   end    the latest moment shown: the end of the last night (sunrise + 1 h on 1 Jan 3001, local);
+//   first, cap  where an earlier or later request lands instead: the first or last night's evening
+//          (half an hour after nautical dusk, or 6 pm in polar day or night, kept within 1 Jan 1000
+//          or 31 Dec 3000 local), so neither a clamped time nor the date picker shows 999 or 3001.
+// Kept until the place or its zone changes.
+let rangeMemo = null;
+function rangeEnds() {
+	const p = state.place, key = `${p.lat},${p.lon},${p.tz}`;
+	if (rangeMemo && rangeMemo.key === key) return rangeMemo;
+	const fmt = new Intl.DateTimeFormat('en-US', { timeZone: p.tz, year: 'numeric', month: 'numeric', day: 'numeric' });
+	const dayNum = (d) => { const o = Object.fromEntries(fmt.formatToParts(daysToDate(d)).map((x) => [x.type, x.value])); return o.year * 10000 + o.month * 100 + +o.day; };
+	const label = (n) => dayNum(n.start + 0.02);
+	// The nights of the local mean midnights round an anchor, in order.
+	const near = (anchor) => { const off = 0.5 + p.lon / 360, M0 = Math.round(anchor + off) - off; return [-2, -1, 0, 1, 2].map((k) => A.nightOf(M0 + k, p.lat, p.lon)); };
+	// Local midnight starting a UTC calendar day, in the place's zone.
+	const localMidnight = (ms) => dateToDays(new Date(ms - tzOffsetMin(p.tz, new Date(ms)) * 60000));
+	const evening = (n) => n.polar === 'day' || n.sunset == null ? n.start + 0.25 : defaultTimeFor(n);
+	const lo = near(T_FIRST), i = lo.findIndex((n) => label(n) >= 10000101), firstN = lo[i], before = lo[i - 1];
+	const floor = [before ? before.end + 1 / 1440 : NaN, firstN.start + 0.02, firstN.start + 0.25]
+		.find((t) => Number.isFinite(t) && label(A.nightOf(t, p.lat, p.lon)) >= 10000101) ?? firstN.start + 0.25;
+	const lastN = near(T_LAST).filter((n) => label(n) <= 30001231).pop();
+	rangeMemo = {
+		key, floor, end: lastN.end,
+		first: Math.max(Math.min(evening(firstN), localMidnight(Date.UTC(1000, 0, 2)) - 1 / 1440), floor),
+		cap: Math.min(evening(lastN), localMidnight(Date.UTC(3001, 0, 1)) - 1 / 1440)
+	};
+	return rangeMemo;
+}
+// A requested moment brought into the supported range at the current place.
+const clampT = (t) => t < rangeEnds().floor ? rangeEnds().first : t > rangeEnds().end ? rangeEnds().cap : t;
 
 // ---- Persistent state ----------------------------------------------------
 let saved = {};
@@ -82,26 +128,30 @@ const state = {
 			lat: at[0], lon: at[1], tz: tz && validTz(tz) ? tz : TZS[CITIES[near][5]], why: 'link'
 		};
 	} else if (saved.place && Number.isFinite(saved.place.lat) && validTz(saved.place.tz)) {
-		state.place = { ...saved.place, why: 'saved' };
+		// A remembered "My location" stays a GPS place, so after a reload the ordinary share link still
+		// gives the nearest town, not the device's position. Until 2026-11-19 a reload relabelled it
+		// 'saved' (and the next save stored that), so such places are also known by their name.
+		const gps = saved.place.why === 'gps' || saved.place.name === 'My location';
+		state.place = { ...saved.place, why: gps ? 'gps' : 'saved' };
 	} else {
 		state.place = placeFromCity(cityForTimeZone(deviceTz), 'guess');
 	}
 	const t = parseFloat(q.get('t'));
 	if (Number.isFinite(t)) {
-		state.t = clamp(t, T_MIN, T_MAX);
+		state.t = clampT(t);
 		state.live = false;
 		// Say so when the requested moment is out of range, rather than quietly showing another.
-		if (state.t !== t) state.rangeMsg = `${RANGE_TEXT} ${fmtAsked(t)} is shown as ${utcDate.format(daysToDate(state.t))}.`;
+		if (state.t !== t) state.rangeMsg = `${RANGE_TEXT} ${fmtAsked(t)} is shown as ${fmtShown(state.t)}.`;
 	}
 	// ?date=YYYY-MM-DD&when=dusk|dawn (links from the planet-parade page): a local date rather than an
 	// instant. It becomes a time once the place, and so its time zone, is known (start, setPlace).
 	const date = q.get('date') || '', when = q.get('when');
 	if (!Number.isFinite(t) && /^\d{4}-\d{2}-\d{2}$/.test(date) && (when === 'dusk' || when === 'dawn')) {
 		const d = dateToDays(new Date(date + 'T12:00:00Z'));
-		if (d >= T_MIN && d <= T_MAX) { state.dateLink = { date, when }; state.live = false; }
+		if (d >= T_FIRST && d <= T_LAST) { state.dateLink = { date, when }; state.live = false; }
 		else if (Number.isFinite(d)) {
-			state.t = clamp(d, T_MIN, T_MAX); state.live = false;
-			state.rangeMsg = `${RANGE_TEXT} ${fmtAsked(d)} is shown as ${utcDate.format(daysToDate(state.t))}.`;
+			state.t = d > T_LAST ? rangeEnds().cap : rangeEnds().first; state.live = false;
+			state.rangeMsg = `${RANGE_TEXT} ${fmtAsked(d)} is shown as ${fmtShown(state.t)}.`;
 		}
 	}
 	const look = (q.get('look') || '').split(',').map(Number);
@@ -1160,7 +1210,8 @@ function fillTzSelect() {
 
 // ---- Time controls -----------------------------------------------------------------------------
 function setTime(t, live) {
-	if (t < T_MIN || t > T_MAX) { toast(RANGE_TEXT); t = clamp(t, T_MIN, T_MAX); }
+	const c = clampT(t);
+	if (c !== t) { toast(t > c ? LAST_TEXT : FIRST_TEXT); t = c; }
 	state.rangeMsg = null;
 	state.dateLink = null; // any change of time replaces a ?date= link's local date
 	state.t = t;
@@ -1201,7 +1252,7 @@ function updateTimeUI() {
 	}
 	$('datePick').value = localDate(n ? n.start + 0.02 : state.t);
 	const msg = state.rangeMsg || (state.t < T_GOOD_MIN || state.t > T_GOOD_MAX
-		? 'Approximate: this map is most accurate between 1800 and 2200. This far out, positions can be off by up to about half a degree and times by a minute or two.' : '');
+		? 'Approximate: most accurate 1800–2200. This far out, the Sun and planets can be off by up to 0.1°, the Moon by up to 0.5° and times by a minute or two. Stars are drawn where they were in 2000; a few nearby ones drift up to 1.3° per 1,000 years.' : '');
 	const note = $('rangeNote');
 	if (note.textContent !== msg) note.textContent = msg;
 	note.hidden = !msg;
@@ -1272,6 +1323,9 @@ function setPlace(pl, why) {
 	state.night = null;
 	if (state.live) state.t = dateToDays(new Date());
 	else if (state.dateLink) state.t = dateLinkTime(state.dateLink);
+	// The first and last nights go by the local date, so the range can end at different moments here.
+	if (!state.live && state.t > rangeEnds().end) { state.t = rangeEnds().cap; state.rangeMsg = null; toast(LAST_TEXT); }
+	else if (!state.live && state.t < rangeEnds().floor) { state.t = rangeEnds().first; state.rangeMsg = null; toast(FIRST_TEXT); }
 	computeTonight();
 	if (inNight && (state.t < state.night.start || state.t > state.night.end)) setTime(defaultTimeFor(state.night), false);
 	updateSky(true);
@@ -1646,7 +1700,11 @@ function frame(now) {
 function start() {
 	setFormatters();
 	$('placeName').textContent = state.place.name;
-	if (state.dateLink) state.t = clamp(dateLinkTime(state.dateLink), T_MIN, T_MAX);
+	if (state.dateLink) {
+		const want = dateLinkTime(state.dateLink);
+		state.t = clampT(want);
+		if (state.t !== want) state.rangeMsg = `${RANGE_TEXT} ${fmtAsked(want)} is shown as ${fmtShown(state.t)}.`;
+	}
 	// Opens on now (or a link's ?t=, or a ?date= link's local evening or morning), never jumps ahead to
 	// tonight on its own; in daylight the time bar
 	// and a toast say how to get to the night.
@@ -1675,4 +1733,4 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 }
 
 // Headless-test hook (same convention as the other fleet sites).
-window.__SKY = { state, bodyObjs, camera, A, select, setTime, setPlace, ar, starIndex, project, lookAt, visSentence, renderer };
+window.__SKY = { state, bodyObjs, camera, A, select, setTime, setPlace, rangeEnds, ar, starIndex, project, lookAt, visSentence, renderer };

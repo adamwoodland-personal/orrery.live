@@ -88,7 +88,7 @@
         {
           "@type": "Question",
           "name": "How accurate are the positions?",
-          "acceptedAnswer": { "@type": "Answer", "text": "The planets come from the VSOP87 planetary theory and the Moon from Meeus's lunar theory, both checked against JPL Horizons. Between 1800 and 2200 the planets, the Sun and the Moon are within about two thousandths of a degree and rise and set times within a minute or so (three for the Moon), far finer than you can see by eye. Further from the present the map marks its positions as approximate: by 1000 or 3000 AD they can be off by up to about half a degree and times by a minute or two, because Earth's rotation then is uncertain and the stars have drifted. Rise and set times are for a flat horizon and normal air, so hills and buildings will hide a low planet for longer." }
+          "acceptedAnswer": { "@type": "Answer", "text": "The planets come from the VSOP87 planetary theory and the Moon from Meeus's lunar theory, both checked against JPL Horizons. From 1990 to 2060 the planets, the Sun and the Moon are within about two thousandths of a degree and rise and set times within a minute or so (three for the Moon), far finer than you can see by eye. Back to 1800 and on to 2200 the Sun and planets stay within a few thousandths of a degree and the Moon within a few hundredths, because how fast Earth turns is less certain that far from today. Further from the present the map marks its positions as approximate. By 1000 or 3000 AD the Sun and planets are still within about a tenth of a degree, but the Moon can be off by up to about half a degree and times by a minute or two, because Earth's rotation then is uncertain. The stars are drawn where they were in 2000 and do not move with the date: a few nearby ones drift by up to about 1.3° in 1,000 years (Rigil Kentaurus, in Alpha Centauri, about 1°), so they are out by that much in 1000 or 3000 AD. Rise and set times are for a flat horizon and normal air, so hills and buildings will hide a low planet for longer." }
         }
       ]
     }
@@ -136,7 +136,7 @@
 			</button>
 			<label id="timeLabel" title="Pick a date">
 				<span id="timeMain">—</span><span id="timeSub"></span>
-				<input type="date" id="datePick" min="1000-01-01" max="2999-12-31" aria-label="Pick a date">
+				<input type="date" id="datePick" min="1000-01-01" max="3000-12-31" aria-label="Pick a date">
 			</label>
 			<button id="nextNight" class="iconBtn" title="Next night" aria-label="Next night">
 				<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M5 2.5 9.5 7 5 11.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -176,7 +176,7 @@
 				<p class="msg noglMsg">This browser can’t draw the sky map (WebGL is switched off or not supported), but everything below still works: tonight’s planets, times and directions for any place and date.</p>
 				<div id="sunTimes" class="sunTimes"></div>
 				<div id="tonightList">
-					<!-- snap:week --><p>The planets this week (as of 18 Nov 2026), going by their angle from the Sun; how high each one gets depends on where you are:</p><ul class="weekList"><li><b>Mercury</b> is in the morning sky before sunrise.</li><li><b>Venus</b> is in the morning sky before sunrise.</li><li><b>Mars</b> is in the morning sky before sunrise.</li><li><b>Jupiter</b> is in the morning sky before sunrise.</li><li><b>Saturn</b> is in the evening sky after sunset.</li></ul><p>Pick your location to see exact times, directions and the Moon.</p><!-- /snap:week -->
+					<!-- snap:week --><p>The planets this week (as of 19 Nov 2026), going by their angle from the Sun; how high each one gets depends on where you are:</p><ul class="weekList"><li><b>Mercury</b> is in the morning sky before sunrise.</li><li><b>Venus</b> is in the morning sky before sunrise.</li><li><b>Mars</b> is in the morning sky before sunrise.</li><li><b>Jupiter</b> is in the morning sky before sunrise.</li><li><b>Saturn</b> is in the evening sky after sunset.</li></ul><p>Pick your location to see exact times, directions and the Moon.</p><!-- /snap:week -->
 				</div>
 				<p class="note">Times are for <span id="tzNote">your location</span>. Uranus is easiest with binoculars; Neptune needs a telescope.</p>
 			</div>
@@ -222,7 +222,7 @@
 				<p id="copyNote" class="note" hidden>The first link shows the nearest town, not where you are. The exact-location link shows anyone you send it to, and the website’s server logs, your position to within about a kilometre.</p>
 				<h2>About this sky map</h2>
 				<p>The sky above your horizon, from real data: the planets from the VSOP87 planetary theory and the Moon from Meeus’s lunar theory, both checked against JPL Horizons, and 1,637 naked-eye stars from the HYG catalogue. Drag to look around, pinch or scroll to zoom, and tap anything to find out what it is. On a phone, <strong>Point at the sky</strong> turns the map with the phone so you can hold it up and identify what you are looking at.</p>
-				<p>Dates from 1000 to 3000 AD are covered; positions are most accurate between 1800 and 2200 and marked approximate outside that. Times are local to the place you choose. A planet counts as visible when it is at least 5° above a flat horizon while the sky is dark enough for its brightness; hills, trees and buildings will hide low ones for longer. Phone compasses are corrected for magnetic declination where you are, but can still be a few degrees out: move the phone in a figure of eight to calibrate, and drag sideways to nudge the view into line.</p>
+				<p>Dates from 1000 to 3000 AD are covered; positions are most accurate between 1800 and 2200 and marked approximate outside that. The stars are drawn where they were in 2000; a few nearby ones actually move by up to about 1.3° every 1,000 years. Times are local to the place you choose. A planet counts as visible when it is at least 5° above a flat horizon while the sky is dark enough for its brightness; hills, trees and buildings will hide low ones for longer. Phone compasses are corrected for magnetic declination where you are, but can still be a few degrees out: move the phone in a figure of eight to calibrate, and drag sideways to nudge the view into line.</p>
 				<h3>More guides</h3>
 				<p><a href="/now/">Where the planets are right now</a> · <a href="/planets-on-your-birthday/">Where the planets were on your birthday</a> · <a href="/planetary-alignment/">Planetary alignments &amp; planet parades</a> · <a href="/halleys-comet/">Halley’s Comet</a> · <a href="/voyager-1/">Where is Voyager 1 now</a> · <a href="/what-is-an-orrery/">What is an orrery?</a></p>
 				<p class="disclaimer"><strong>Disclaimer:</strong> an educational visualisation. The data and model have not been independently verified and should not be relied upon for scientific, navigational or any other precise purpose.</p>
